@@ -4,7 +4,9 @@ from google.cloud import workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 
-def main(project="ninthage-data-analytics", location="us-central1", workflow="parse-lists"):
+
+#name of the function in main.py must equal the trigger name as a defualt or be set explictly
+def function_data_ingestion(project="ninthage-data-analytics", location="us-central1", workflow="parse-lists"):
 
     # Set up API clients.
     execution_client = executions_v1beta.ExecutionsClient()
@@ -36,4 +38,4 @@ def main(project="ninthage-data-analytics", location="us-central1", workflow="pa
             return execution.result
 
 if __name__ == "__main__":
-    main()
+    function_data_ingestion()
