@@ -1,5 +1,4 @@
 import time
-
 from google.cloud import workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
@@ -14,9 +13,10 @@ def function_data_ingestion(project="ninthage-data-analytics", location="us-cent
 
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)
+    execution = executions.Execution(argument = '{}')
 
     # Execute the workflow.
-    response = execution_client.create_execution(request={"parent": parent})
+    response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
     # Wait for execution to finish, then print results.
