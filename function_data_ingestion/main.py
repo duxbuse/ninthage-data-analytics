@@ -1,7 +1,8 @@
-import time
+# import time
 from google.cloud import workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
+import json
 
 #name of the function in main.py must equal the trigger name as a defualt or be set explictly
 def function_data_ingestion(data={}, context={}):
@@ -20,7 +21,7 @@ def function_data_ingestion(data={}, context={}):
 
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)
-    execution = executions.Execution(argument = {data})
+    execution = executions.Execution(argument = json.dumps(data))
 
     # Execute the workflow.
     response = execution_client.create_execution(parent=parent, execution=execution)
