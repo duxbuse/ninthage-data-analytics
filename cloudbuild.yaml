@@ -4,10 +4,6 @@ substitutions:
 
 steps:
 
-# gcloud workflows deploy MY_WORKFLOW \
-#    --source=MY_WORKFLOW.YAML \
-#    --service-account=MY_SERVICE_ACCOUNT@MY_PROJECT.IAM.GSERVICEACCOUNT.COM
-
 - id: Deploy workflow_parse_lists
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
@@ -31,14 +27,14 @@ steps:
   - --trigger-bucket=tournament-lists
   - --runtime=python39
 
-# - id: Deploy function-data-conversion
-#   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#   args:
-#   - gcloud
-#   - functions
-#   - deploy
-#   - FUNCTION_NAME
-#   - --region=${_REGION}
-#   - --source=.
-#   - --trigger-http
-#   - --runtime=python39
+- id: Deploy function-data-conversion
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_data_conversion
+  - --region=${_REGION}
+  - --source=./function_data_conversion/
+  - --trigger-http
+  - --runtime=python39

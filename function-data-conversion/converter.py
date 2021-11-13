@@ -1,39 +1,40 @@
-from docx import Document
-import re
-from dataclasses import dataclass
 import jsons
+import re
+from docx import Document
+from dataclasses import dataclass
 
 
-def main(request):
-    filePath = 'data\Round 1'
+def docx_to_line_list(docxFile):
+    doc = Document(docxFile)
 
-    doc = Document(f"{filePath}.docx")
-
-
-    lines = []  # ALL the text in the archive, separated by lines
+    lines = []  # ALL the text in the file, separated by lines
 
     par = doc.paragraphs
     for i in range(len(par)):
         text = par[i].text
         if len(text) > 1:
             lines.append(text)
+    return lines
 
+@dataclass
+class UnitEntry():
+    """Keeping track of a single unit entry"""
+    points: int
+    quantity: int
+    name: str
+    upgrades: list
+
+def Convert(docxFile):    
+    
     armyList = ["Beast Herds", "Dread Elves", "Dwarven Holds", "Daemon Legions", "Empire of Sonnstahl", "Highborn Elves", "Infernal Dwarves", "Kingdom of Equitaine",
                 "Ogre Khans", "Orcs and Goblins", "Saurian Ancients", "Sylvan Elves", "Undying Dynasties", "Vampire Covenant", "Vermin Swarm", "Warriors of the Dark Gods"]
-
-
-    @dataclass
-    class UnitEntry():
-        """Keeping track of a single unit entry"""
-        points: int
-        quantity: int
-        name: str
-        upgrades: list
-
 
     parsingList = False
     previousLine = ''
     listDict = {}
+
+    lines = docx_to_line_list(docxFile)
+
     for line in lines:
 
         currentArmy = [army for army in armyList if army in line]
@@ -65,10 +66,5 @@ def main(request):
                 parsingList = False
         previousLine = line
 
-    jsonString = jsons.dumps(listDict)
-    jsonFile = open(f"{filePath}.json", "w")
-    jsonFile.write(jsonString)
-    jsonFile.close
 
-if __name__ == "__main__":
-    main()
+    return jsons.dumps(listDict)
