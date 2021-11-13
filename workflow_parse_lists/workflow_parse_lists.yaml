@@ -8,13 +8,13 @@ main:
     params: [input]
     steps:
         - function_data_conversion:
-          call: http.get
-          args:
-              url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
-              query:
-                  data: ${input}
-              auth:
-                  type: OIDC
+            call: http.get
+            args:
+                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
+                query:
+                    data: ${input}
+                auth:
+                    type: OIDC
 
     # - checkSearchTermInInput:
     #     switch:
