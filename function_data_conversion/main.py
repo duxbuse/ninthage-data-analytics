@@ -1,6 +1,9 @@
 from google.cloud import storage
 from pathlib import Path
+
+import requests
 from converter import Convert
+
 
 def download_blob(bucket_name, blob_name):
     """Uploads a file to the bucket."""
@@ -27,10 +30,11 @@ def upload_blob(bucket_name, blob_text, destination_blob_name):
 def function_data_conversion(request):
 
 
-    print(f"request = {request}")
+    data = request.json
+    print(f"request.json = {data}")
 
-    bucket_name = request.data["bucket"]
-    file_name = request.data["name"]
+    bucket_name = data["bucket"]
+    file_name = data["name"]
 
     downloaded_docx = download_blob(bucket_name, file_name)
     print(f"Downloaded ${file_name} from ${bucket_name}")
