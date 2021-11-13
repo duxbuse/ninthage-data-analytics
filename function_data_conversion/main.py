@@ -30,7 +30,7 @@ def upload_blob(bucket_name, blob_text, destination_blob_name):
 def function_data_conversion(request):
 
 
-    data = request.json
+    data = request.json["data"]
     print(f"request.json = {data}")
 
     bucket_name = data["bucket"]

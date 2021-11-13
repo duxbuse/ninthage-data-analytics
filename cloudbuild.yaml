@@ -13,6 +13,7 @@ steps:
   - workflow_parse_lists
   - --source=./workflow_parse_lists/workflow_parse_lists.yaml
   - --location=${_REGION}
+  waitFor: ['-']
 
 
 - id: Deploy function_data_ingestion
@@ -26,6 +27,7 @@ steps:
   - --source=./function_data_ingestion/
   - --trigger-bucket=tournament-lists
   - --runtime=python39
+  waitFor: ['-']
 
 - id: Deploy function-data-conversion
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -38,3 +40,4 @@ steps:
   - --source=./function_data_conversion/
   - --trigger-http
   - --runtime=python39
+  waitFor: ['-']
