@@ -16,6 +16,7 @@ steps:
   - deploy
   - workflow_parse_lists
   - --source=./workflow_parse_lists/workflow_parse_lists.yaml
+  - --location=${_REGION}
 
 
 - id: Deploy function_data_ingestion
