@@ -18,9 +18,6 @@ main:
                     data: ${input}
                 auth:
                     type: OIDC
-                result: the_message
-        - return_value:
-            return: ${the_message.body}
 
     # - checkSearchTermInInput:
     #     switch:
