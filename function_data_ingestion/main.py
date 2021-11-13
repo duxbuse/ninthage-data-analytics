@@ -13,7 +13,7 @@ def function_data_ingestion(data={}, context={}):
 
     project="ninthage-data-analytics"
     location="us-central1"
-    workflow="worflow_parse_lists"
+    workflow="workflow_parse_lists"
 
     # Set up API clients.
     execution_client = executions_v1beta.ExecutionsClient()
