@@ -4,6 +4,20 @@ substitutions:
 
 steps:
 
+# gcloud workflows deploy MY_WORKFLOW \
+#    --source=MY_WORKFLOW.YAML \
+#    --service-account=MY_SERVICE_ACCOUNT@MY_PROJECT.IAM.GSERVICEACCOUNT.COM
+
+- id: Deploy workflow_parse_lists
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - workflows
+  - deploy
+  - workflow_parse_lists
+  - --source=./workflow_parse_lists/workflow_parse_lists.yaml
+
+
 - id: Deploy function_data_ingestion
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:

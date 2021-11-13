@@ -5,7 +5,7 @@ from google.cloud.workflows.executions_v1beta.types import executions
 
 
 #name of the function in main.py must equal the trigger name as a defualt or be set explictly
-def function_data_ingestion(data, context):
+def function_data_ingestion(data="", context=""):
 
     print(f"data = ${data}")
     print(f"context = ${context}")
