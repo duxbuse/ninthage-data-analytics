@@ -11,8 +11,7 @@ main:
             call: http.get
             args:
                 url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
-                query:
-                    data: ${input}
+                body: ${input}
                 auth:
                     type: OIDC
 
