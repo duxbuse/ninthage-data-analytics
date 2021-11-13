@@ -11,7 +11,7 @@ def download_blob(bucket_name, blob_name):
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.get_blob(blob_name)
 
-    return blob.download_as_text
+    return blob
 
 
 def upload_blob(bucket_name, blob_text, destination_blob_name):
@@ -36,16 +36,17 @@ def function_data_conversion(request):
     bucket_name = data["bucket"]
     file_name = data["name"]
 
-    downloaded_docx = download_blob(bucket_name, file_name)
-    print(f"Downloaded ${file_name} from ${bucket_name}")
+    downloaded_docx_blob = download_blob(bucket_name, file_name)
+    downloaded_docx_blob.download_to_filename(file_name)
+    print(f"Downloaded {file_name} from {bucket_name}")
 
-    converted_file = Convert(downloaded_docx)
-    print(f"Converted ${file_name} to .json")
+    converted_file = Convert(file_name)
+    print(f"Converted {file_name} to .json")
 
     converted_filename = Path(file_name).stem + ".json"
 
     upload_blob(bucket_name, converted_file, converted_filename)
-    print(f"Uploaded ${converted_filename} to ${bucket_name}")
+    print(f"Uploaded {converted_filename} to {bucket_name}")
 
 
 

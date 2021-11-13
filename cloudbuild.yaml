@@ -4,6 +4,10 @@ substitutions:
 
 steps:
 
+- id: Preload cloud-sdk image
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+
+
 - id: Deploy workflow_parse_lists
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
@@ -13,7 +17,7 @@ steps:
   - workflow_parse_lists
   - --source=./workflow_parse_lists/workflow_parse_lists.yaml
   - --location=${_REGION}
-  waitFor: ['-']
+  waitFor: ['Preload cloud-sdk image']
 
 
 - id: Deploy function_data_ingestion
@@ -27,7 +31,7 @@ steps:
   - --source=./function_data_ingestion/
   - --trigger-bucket=tournament-lists
   - --runtime=python39
-  waitFor: ['-']
+  waitFor: ['Preload cloud-sdk image']
 
 - id: Deploy function-data-conversion
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -40,4 +44,4 @@ steps:
   - --source=./function_data_conversion/
   - --trigger-http
   - --runtime=python39
-  waitFor: ['-']
+  waitFor: ['Preload cloud-sdk image']
