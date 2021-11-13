@@ -7,11 +7,10 @@
 main:
     params: [input]
     steps:
-        - function_data_conversion:
+        - workflow_function_data_conversion:
             call: http.post
             args:
                 url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
-                method: http.get
                 headers:
                     Content-type: application/json
                 body:
