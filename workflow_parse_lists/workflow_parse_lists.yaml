@@ -12,7 +12,7 @@ main:
                     data: ${input}
                 auth:
                     type: OIDC
-                result: json_file
+            result: json_file
 
         - workflow_function_upload_data_into_bigquery:
             call: http.post
