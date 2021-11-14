@@ -50,14 +50,15 @@ def function_data_conversion(request):
 
         list_of_armies = Convert_docx_to_list(download_file_path)
 
-        converted_filename = str(Path(download_file_path).parent / (Path(download_file_path).stem + ".json"))
+        upload_filename = Path(download_file_path).stem + ".json"
+        converted_filename = str(Path(download_file_path).parent / upload_filename)
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
         print(f"Converted {download_file_path} to {converted_filename}")
 
-        upload_blob(bucket_name, converted_filename, converted_filename)
-        print(f"Uploaded {converted_filename} to {bucket_name}")
+        upload_blob(bucket_name, converted_filename, upload_filename)
+        print(f"Uploaded {upload_filename} to {bucket_name}")
 
-        return jsons.dumps({"bucket_name": bucket_name,  "filename": converted_filename})
+        return jsons.dumps({"bucket_name": bucket_name,  "filename": upload_filename})
 
 
 if __name__ == "__main__":
