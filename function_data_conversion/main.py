@@ -36,10 +36,10 @@ def function_data_conversion(request):
     print(f"request.json = {data}")
 
     bucket_name = data["bucket"]
-    file_name = Path(data["name"])
+    file_name = data["name"]
 
     # only convert .docx files, because the json verions are also put back into the bucket there is another trigger
-    if file_name.suffix == ".docx":
+    if Path(file_name).suffix == ".docx":
 
         downloaded_docx_blob = download_blob(bucket_name, file_name)
         downloaded_docx_blob.download_to_filename(f"/tmp/{file_name}")
@@ -47,7 +47,7 @@ def function_data_conversion(request):
 
         list_of_armies = Convert_docx_to_list(f"/tmp/{file_name}")
 
-        converted_filename = file_name.parent / (file_name.stem + ".json")
+        converted_filename = Path(file_name).parent / (Path(file_name).stem + ".json")
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
         print(f"Converted /tmp/{file_name} to {converted_filename}")
 
