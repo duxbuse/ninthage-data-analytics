@@ -48,7 +48,7 @@ def function_data_conversion(request):
 
         list_of_armies = Convert_docx_to_list(download_file_path)
 
-        converted_filename = Path(download_file_path).parent / (Path(download_file_path).stem + ".json")
+        converted_filename = str(Path(download_file_path).parent / (Path(download_file_path).stem + ".json"))
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
         print(f"Converted {download_file_path} to {converted_filename}")
 
