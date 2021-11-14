@@ -45,3 +45,16 @@ steps:
   - --trigger-http
   - --runtime=python39
   waitFor: ['Preload cloud-sdk image']
+
+- id: Deploy function_upload_data_into_bigquery
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_upload_data_into_bigquery
+  - --region=${_REGION}
+  - --source=./function_upload_data_into_bigquery/
+  - --trigger-http
+  - --runtime=python39
+  waitFor: ['Preload cloud-sdk image']
