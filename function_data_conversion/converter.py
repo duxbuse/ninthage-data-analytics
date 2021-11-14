@@ -2,6 +2,8 @@ import jsons
 import re
 from docx import Document
 from dataclasses import dataclass
+from pathlib import Path
+
 
 
 def docx_to_line_list(docxFile):
@@ -32,6 +34,8 @@ def Convert(docxFile):
     parsingList = False
     previousLine = ''
     listDict = {}
+
+    filename = Path(docxFile).stem
 
     lines = docx_to_line_list(docxFile)
 
@@ -66,5 +70,20 @@ def Convert(docxFile):
                 parsingList = False
         previousLine = line
 
+        output = {filename: [listDict]}
 
-    return jsons.dumps(listDict)
+
+    return jsons.dumps(output)
+
+
+if __name__ == "__main__":
+    import sys
+    filePath = Path(sys.argv[1])
+
+    print(f"Input filepath = {filePath}")
+    jsonString = Convert(filePath)
+    new_path = filePath.parent / (filePath.stem + ".json")
+
+    jsonFile = open(new_path, "w")
+    jsonFile.write(jsonString)
+    jsonFile.close
