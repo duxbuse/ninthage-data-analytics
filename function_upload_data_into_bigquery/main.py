@@ -15,8 +15,8 @@ def function_upload_data_into_bigquery(request):
 
     # print(request.get_json())
 
-    request_body = request.get_json()["json_file"]["body"]
-    print(request_body)
+    request_body = request.json["json_file"]["body"]
+    print(f"request.json = {request_body}")
 
     if request_body != "Uploaded file was not of extension \'.docx\' so is being ignored.":
 
