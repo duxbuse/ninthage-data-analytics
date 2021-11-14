@@ -13,7 +13,10 @@ def download_blob(bucket_name, blob_name):
 
 def function_upload_data_into_bigquery(request):
 
-    print(request)
+    print(request.data)
+    print(request.get_json)
+    print(request.args.get("json_file"))
+
 
     filename = request.json_file["filename"]
     bucket_name = request.json_file["bucket_name"]
