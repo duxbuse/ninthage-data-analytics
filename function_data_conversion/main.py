@@ -54,6 +54,8 @@ def function_data_conversion(request):
         upload_blob(bucket_name, converted_filename, converted_filename)
         print(f"Uploaded {converted_filename} to {bucket_name}")
 
+        return {"bucket_name": bucket_name,  "filename": converted_filename}
+
 
 if __name__ == "__main__":
     function_data_conversion()

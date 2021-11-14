@@ -1,9 +1,4 @@
-# This is a sample workflow to test or replace with your source code.
-#
-# This workflow passes the current day of the week to the Wikipedia API and
-# returns a list of related Wikipedia articles.
-# The current day of the week (in GMT) is retrieved from a Cloud Function
-# unless you input your own search term (for example, {"searchTerm": "Monday"}).
+# Uses 666654103849-compute@developer.gserviceaccount.com
 main:
     params: [input]
     steps:
@@ -15,6 +10,18 @@ main:
                     Content-type: application/json
                 body:
                     data: ${input}
+                auth:
+                    type: OIDC
+                result: json_file
+
+        - workflow_function_upload_data_into_bigquery:
+            call: http.post
+            args:
+                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_upload_data_into_bigquery
+                headers:
+                    Content-type: application/json
+                body:
+                    json_file: ${json_file}
                 auth:
                     type: OIDC
 
