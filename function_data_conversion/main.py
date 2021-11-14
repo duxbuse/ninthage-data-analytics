@@ -47,8 +47,8 @@ def function_data_conversion(request):
 
         list_of_armies = Convert_docx_to_list(f"/tmp/{file_name}")
 
-        Write_army_lists_to_json_file(file_name, list_of_armies)
         converted_filename = file_name.parent / (file_name.stem + ".json")
+        Write_army_lists_to_json_file(converted_filename, list_of_armies)
         print(f"Converted /tmp/{file_name} to {converted_filename}")
 
         upload_blob(bucket_name, converted_filename, converted_filename)
