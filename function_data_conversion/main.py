@@ -36,10 +36,10 @@ def function_data_conversion(request):
     print(f"request.json = {data}")
 
     bucket_name = data["bucket"]
-    file_name = data["name"]
+    file_name = Path(data["name"])
 
     # only convert .docx files, because the json verions are also put back into the bucket there is another trigger
-    if Path(file_name).suffix == ".docx":
+    if file_name.suffix == ".docx":
 
         downloaded_docx_blob = download_blob(bucket_name, file_name)
         downloaded_docx_blob.download_to_filename(f"/tmp/{file_name}")
