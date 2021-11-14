@@ -1,5 +1,6 @@
 from google.cloud import bigquery
 from google.cloud import storage
+import json
 
 
 def download_blob(bucket_name, blob_name):
@@ -15,10 +16,10 @@ def function_upload_data_into_bigquery(request):
 
     # print(request.get_json())
 
-    request_body = request.json["json_file"]["body"]
+    request_body = json.loads(request.json["json_file"]["body"])
     print(f"request.json = {request_body}")
 
-    if request_body != "Uploaded file was not of extension \'.docx\' so is being ignored.":
+    if not request_body["message"]:
 
         filename = request_body["filename"]
         bucket_name = request_body["bucket_name"]
