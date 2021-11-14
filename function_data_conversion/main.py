@@ -1,5 +1,7 @@
 from google.cloud import storage
 from pathlib import Path
+
+import jsons
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
 
 
@@ -55,7 +57,7 @@ def function_data_conversion(request):
         upload_blob(bucket_name, converted_filename, converted_filename)
         print(f"Uploaded {converted_filename} to {bucket_name}")
 
-        return {"bucket_name": bucket_name,  "filename": converted_filename}
+        return jsons.dumps({"bucket_name": bucket_name,  "filename": converted_filename})
 
 
 if __name__ == "__main__":
