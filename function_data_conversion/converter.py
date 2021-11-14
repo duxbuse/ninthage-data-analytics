@@ -1,79 +1,64 @@
+from typing import List
 import jsons
-import re
-from docx import Document
-from dataclasses import dataclass
 from pathlib import Path
+from data_classes import ArmyEntry
+from utility_functions import Docx_to_line_list, Create_unitEntry_from_line, Is_int
 
 
+def Convert_docx_to_list(docxFilePath) -> List:
+    """Read in a .docx file reading in multiple army lists and saving them into a list object
 
-def docx_to_line_list(docxFile):
-    doc = Document(docxFile)
+    Args:
+        docxFilePath (str): path to .docx file
 
-    lines = []  # ALL the text in the file, separated by lines
+    Returns:
+        List: list of ArmyEntry objects representing all lists in the .docx file
+    """
 
-    par = doc.paragraphs
-    for i in range(len(par)):
-        text = par[i].text
-        if len(text) > 1:
-            lines.append(text)
-    return lines
-
-@dataclass
-class UnitEntry():
-    """Keeping track of a single unit entry"""
-    points: int
-    quantity: int
-    name: str
-    upgrades: list
-
-def Convert(docxFile):    
-    
+    # Possible army list strings to look for and to determine that the current line is initiating a list
     armyList = ["Beast Herds", "Dread Elves", "Dwarven Holds", "Daemon Legions", "Empire of Sonnstahl", "Highborn Elves", "Infernal Dwarves", "Kingdom of Equitaine",
                 "Ogre Khans", "Orcs and Goblins", "Saurian Ancients", "Sylvan Elves", "Undying Dynasties", "Vampire Covenant", "Vermin Swarm", "Warriors of the Dark Gods"]
 
-    parsingList = False
+    curently_parsing_army = False
     previousLine = ''
-    listDict = {}
+    list_of_armies = []
 
-    filename = Path(docxFile).stem
+    filename = Path(docxFilePath).stem
 
-    lines = docx_to_line_list(docxFile)
+    lines = Docx_to_line_list(docxFilePath)
 
     for line in lines:
+        if curently_parsing_army:
+            new_unitEntry = Create_unitEntry_from_line(line)
+            curently_parsing_army.units.append(new_unitEntry)
+        else:
+            currentArmy = [army for army in armyList if army in line]
+            if currentArmy:
+                curently_parsing_army = ArmyEntry(
+                    tournament=filename, army=currentArmy[0], player_name=previousLine, units=[])
 
-        currentArmy = [army for army in armyList if army in line]
-        if currentArmy:
-            parsingList = previousLine
-            listDict[parsingList] = []
-            continue
-        if parsingList:
-            splitLine = [x.strip(' .') for x in line.split(', ')]
+        if Is_int(line) and 4480 < int(line) <= 4500:
+            curently_parsing_army.total_points = int(line)
+            list_of_armies.append(curently_parsing_army)
+            curently_parsing_army = False
 
-            splitOutPointsRegex = '(\d{4}|\d{3}|\d{2})(?: - | )(.*)'
-            pointsSearch = re.search(splitOutPointsRegex, splitLine[0])
-            if pointsSearch:
-                # break group 2 ("15 knights" | "41x spearmen" | chariot) into unit name and quantity
-                splitOutQuantityRegex = '(\d{2}|\d{1}|)(?:x | |)(.*)'
-                quantitySearch = re.search(
-                    splitOutQuantityRegex, pointsSearch.group(2))
-                if quantitySearch:
-                    # if there was no quantity number then the regex match for group 1 is '' so we need to code that as 1
-                    quantity = quantitySearch.group(
-                        1) if quantitySearch.group(1) else 1
-                    newEntry = UnitEntry(points=pointsSearch.group(
-                        1), quantity=quantity, name=quantitySearch.group(2), upgrades=splitLine[1:])
-                    listDict[parsingList].append(newEntry)
-                    continue
-
-            if 4480 < int(line) <= 4500:
-                listDict[parsingList].append(int(line))
-                parsingList = False
         previousLine = line
 
-        output = {filename: [listDict]}
+    return list_of_armies
 
 
-    return jsons.dumps(output)
+def Write_army_lists_to_json_file(file_path, list_of_armies):
+    """Takes a list of army lists and a file path and writes the list of armies in json new line delimited to the filepath
+
+    Args:
+        file_path (string): path to write new file to
+        list_of_armies (list[ArmyEntry]): list of ArmyEntry objects to be written to file
+    """
+    jsonFile = open(file_path, "w")
+
+    for list in list_of_armies:
+        jsonFile.write(jsons.dumps(list) + '\n')
+    jsonFile.close
 
 
 if __name__ == "__main__":
@@ -81,9 +66,7 @@ if __name__ == "__main__":
     filePath = Path(sys.argv[1])
 
     print(f"Input filepath = {filePath}")
-    jsonString = Convert(filePath)
+    list_of_armies = Convert_docx_to_list(filePath)
     new_path = filePath.parent / (filePath.stem + ".json")
 
-    jsonFile = open(new_path, "w")
-    jsonFile.write(jsonString)
-    jsonFile.close
+    Write_army_lists_to_json_file(new_path, list_of_armies)
