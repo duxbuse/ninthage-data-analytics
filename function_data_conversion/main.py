@@ -42,14 +42,15 @@ def function_data_conversion(request):
     if Path(file_name).suffix == ".docx":
 
         downloaded_docx_blob = download_blob(bucket_name, file_name)
-        downloaded_docx_blob.download_to_filename(f"/tmp/{file_name}")
-        print(f"Downloaded {file_name} from {bucket_name}")
+        download_file_path = f"/tmp/{file_name}"
+        downloaded_docx_blob.download_to_filename(download_file_path)
+        print(f"Downloaded {file_name} from {bucket_name} to {download_file_path}")
 
-        list_of_armies = Convert_docx_to_list(f"/tmp/{file_name}")
+        list_of_armies = Convert_docx_to_list(download_file_path)
 
-        converted_filename = Path(file_name).parent / (Path(file_name).stem + ".json")
+        converted_filename = Path(download_file_path).parent / (Path(download_file_path).stem + ".json")
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
-        print(f"Converted /tmp/{file_name} to {converted_filename}")
+        print(f"Converted {download_file_path} to {converted_filename}")
 
         upload_blob(bucket_name, converted_filename, converted_filename)
         print(f"Uploaded {converted_filename} to {bucket_name}")
