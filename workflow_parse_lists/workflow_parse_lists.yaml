@@ -24,6 +24,7 @@ main:
                     json_file: ${json_file}
                 auth:
                     type: OIDC
+                    
         - returnOutput:
             return: "${input[name]} successfully uploaded into bigquery"
 

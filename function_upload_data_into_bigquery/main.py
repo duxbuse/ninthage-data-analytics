@@ -19,7 +19,7 @@ def function_upload_data_into_bigquery(request):
     request_body = json.loads(request.json["json_file"]["body"])
     print(f"request.json = {request_body}")
 
-    if not request_body["message"]:
+    if not "message" in request_body:
 
         filename = request_body["filename"]
         bucket_name = request_body["bucket_name"]
@@ -47,3 +47,4 @@ def function_upload_data_into_bigquery(request):
         job.result()  # Waits for table load to complete.
 
         print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
+    return "its over"
