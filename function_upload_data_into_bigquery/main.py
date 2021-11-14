@@ -13,13 +13,13 @@ def download_blob(bucket_name, blob_name):
 
 def function_upload_data_into_bigquery(request):
 
-    print(request.data)
-    print(request.get_json)
-    print(request.args.get("json_file"))
+    print(request.get_json())
 
+    request_body = request.get_json()["json_file"]["body"]
+    print(request_body)
 
-    filename = request.json_file["filename"]
-    bucket_name = request.json_file["bucket_name"]
+    filename = request_body["filename"]
+    bucket_name = request_body["bucket_name"]
     client = bigquery.Client()
     dataset_id = 'all_lists'
     table_id = 'tournament_lists'
