@@ -12,6 +12,9 @@ def download_blob(bucket_name, blob_name):
 
 
 def function_upload_data_into_bigquery(request):
+
+    print(request)
+
     filename = request.json_file["filename"]
     bucket_name = request.json_file["bucket_name"]
     client = bigquery.Client()
