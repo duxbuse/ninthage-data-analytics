@@ -60,6 +60,7 @@ def function_data_conversion(request):
 
         return jsons.dumps({"bucket_name": bucket_name,  "filename": upload_filename})
 
+    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."})
 
 if __name__ == "__main__":
     function_data_conversion()
