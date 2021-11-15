@@ -36,16 +36,18 @@ def Convert_docx_to_list(docxFilePath) -> List:
             
 
         currentArmy = [army for army in armyList if army in line]
-        if currentArmy or line == lines[-1]:
-            if curently_parsing_army: #if a player forgot to put the total points at the end, we can assume since a new army is starting that the old one is finished.
-                if line == lines[-1]:
+        if currentArmy or line == lines[-1]:#if a player forgot to put the total points at the end, we can assume since a new army is starting or we are on the last line that the old one is finished.
+            if curently_parsing_army: 
+                if line == lines[-1]: #last line is a unit in a list with no total points so we still need to add the unit to the army
                     new_unitEntry = Create_unitEntry_from_line(line)
                     if new_unitEntry:
                         curently_parsing_army.units.append(new_unitEntry)
-                curently_parsing_army.calculate_total_points()
+
+                curently_parsing_army.calculate_total_points() #no total points were found so claculate it
                 list_of_armies.append(curently_parsing_army)
-                curently_parsing_army = False #end the old list
-            if currentArmy:
+                curently_parsing_army = False #end the current list
+
+            if currentArmy: #if we found a subsequent list then assume the current line is for a new army
                 curently_parsing_army = ArmyEntry(tournament=filename, army=currentArmy[0], player_name=previousLine, units=[]) #start a new list
 
         elif curently_parsing_army:
