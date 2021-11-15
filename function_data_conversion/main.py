@@ -38,6 +38,7 @@ def function_data_conversion(request):
     print(f"request.json = {data}")
 
     bucket_name = data["bucket"]
+    upload_bucket = "tournament-lists-json"
     file_name = data["name"]
 
     # only convert .docx files, because the json verions are also put back into the bucket there is another trigger
@@ -55,10 +56,10 @@ def function_data_conversion(request):
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
         print(f"Converted {download_file_path} to {converted_filename}")
 
-        upload_blob(bucket_name, converted_filename, upload_filename)
-        print(f"Uploaded {upload_filename} to {bucket_name}")
+        upload_blob(upload_bucket, converted_filename, upload_filename)
+        print(f"Uploaded {upload_filename} to {upload_bucket}")
 
-        return jsons.dumps({"bucket_name": bucket_name,  "filename": upload_filename})
+        return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename})
 
     return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."})
 
