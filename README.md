@@ -15,10 +15,12 @@ Then the document itself is a list of legal 9thage army lists in new recruit for
 
 `list`
 
-`total points`
+`total points` ***optional***
 ```
 
 ***Note:*** All lines are trimmed and lines of lenght 1 or less are removed during parsing as such dont worry if there is lots of whitespace.
+
+
 
 eg:
 ```text

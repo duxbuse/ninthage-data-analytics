@@ -34,15 +34,24 @@ def Convert_docx_to_list(docxFilePath) -> List:
             list_of_armies.append(curently_parsing_army)
             curently_parsing_army = False
             
-        if curently_parsing_army:
-            new_unitEntry = Create_unitEntry_from_line(line)
-            curently_parsing_army.units.append(new_unitEntry)
-        else:
-            currentArmy = [army for army in armyList if army in line]
-            if currentArmy:
-                curently_parsing_army = ArmyEntry(
-                    tournament=filename, army=currentArmy[0], player_name=previousLine, units=[])
 
+        currentArmy = [army for army in armyList if army in line]
+        if currentArmy or line == lines[-1]:
+            if curently_parsing_army: #if a player forgot to put the total points at the end, we can assume since a new army is starting that the old one is finished.
+                if line == lines[-1]:
+                    new_unitEntry = Create_unitEntry_from_line(line)
+                    if new_unitEntry:
+                        curently_parsing_army.units.append(new_unitEntry)
+                curently_parsing_army.calculate_total_points()
+                list_of_armies.append(curently_parsing_army)
+                curently_parsing_army = False #end the old list
+            if currentArmy:
+                curently_parsing_army = ArmyEntry(tournament=filename, army=currentArmy[0], player_name=previousLine, units=[]) #start a new list
+
+        elif curently_parsing_army:
+            new_unitEntry = Create_unitEntry_from_line(line)
+            if new_unitEntry:
+                curently_parsing_army.units.append(new_unitEntry)
 
         previousLine = line
 
@@ -58,8 +67,13 @@ def Write_army_lists_to_json_file(file_path, list_of_armies):
     """
     jsonFile = open(file_path, "w")
 
-    for list in list_of_armies:
-        jsonFile.write(jsons.dumps(list) + '\n')
+    for army in list_of_armies:
+        army_as_string = jsons.dumps(army) + '\n'
+        if "null" in army_as_string:
+            jsonFile.close
+            raise ValueError(f"Invalid List for Player: {army.player_name}, playing: {army.army}")
+        else:
+            jsonFile.write(army_as_string)
     jsonFile.close
 
 

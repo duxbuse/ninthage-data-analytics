@@ -16,6 +16,9 @@ class ArmyEntry():
     """
     player_name: str
     army: str
-    units: list
+    units: list[UnitEntry]
     tournament: str
-    total_points: int = -1
+    total_points: int = 0
+
+    def calculate_total_points(self):
+        self.total_points = sum([int(x.points) for x in self.units])
