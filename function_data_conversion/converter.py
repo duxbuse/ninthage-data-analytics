@@ -17,7 +17,8 @@ def Convert_docx_to_list(docxFilePath) -> List:
 
     # Possible army list strings to look for and to determine that the current line is initiating a list
     armyList = ["Beast Herds", "Dread Elves", "Dwarven Holds", "Daemon Legions", "Empire of Sonnstahl", "Highborn Elves", "Infernal Dwarves", "Kingdom of Equitaine",
-                "Ogre Khans", "Orcs and Goblins", "Saurian Ancients", "Sylvan Elves", "Undying Dynasties", "Vampire Covenant", "Vermin Swarm", "Warriors of the Dark Gods"]
+                "Ogre Khans", "Orcs and Goblins", "Saurian Ancients", "Sylvan Elves", "Undying Dynasties", "Vampire Covenant", "Vermin Swarm", "Warriors of the Dark Gods",
+                "Åsklanders", "Cultists", "Hobgolbins", "Makhar", ]
 
     curently_parsing_army = False
     previousLine = ''
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filePath = Path(sys.argv[1])
     else:
-        filePath = Path("data/Round 1.docx")
+        filePath = Path("data/Round 6.docx")
 
     print(f"Input filepath = {filePath}")
     list_of_armies = Convert_docx_to_list(filePath)
