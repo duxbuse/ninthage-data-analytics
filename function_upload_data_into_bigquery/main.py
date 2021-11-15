@@ -66,7 +66,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         request_payload = {'json_file': {'body': sys.argv[1]} }
     else:
-        request_payload = {'json_file': {'body': '{"bucket_name": "tournament-lists", "filename": "Round 1.json"}'} }
+        request_payload = {'json_file': {'body': '{"bucket_name": "tournament-lists-json", "filename": "Round 1.json"}'} }
 
     request_obj = Request.from_values(json=request_payload)
 
