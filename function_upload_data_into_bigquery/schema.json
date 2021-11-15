@@ -1,0 +1,43 @@
+[
+    {
+        "name": "army",
+        "type": "STRING"
+    },
+    {
+        "name": "player_name",
+        "type": "STRING"
+    },
+    {
+        "name": "total_points",
+        "type": "INTEGER"
+    },
+    {
+        "name": "units",
+        "type": "RECORD",
+        "fields": [
+            {
+                "name": "name",
+                "type": "STRING"
+            },
+            {
+                "name": "points",
+                "type": "INTERGER"
+            },
+            {
+                "name": "quantity",
+                "type": "INTERGER"
+            },
+            {
+                "name": "upgrades",
+                "type": "RECORD",
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "STRING",
+                        "mode": "REPEATED"
+                    }
+                ]
+            }
+        ]
+    }
+]

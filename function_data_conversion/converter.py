@@ -28,6 +28,11 @@ def Convert_docx_to_list(docxFilePath) -> List:
     lines = Docx_to_line_list(docxFilePath)
 
     for line in lines:
+        if Is_int(line) and 4480 < int(line) <= 4500:
+            curently_parsing_army.total_points = int(line)
+            list_of_armies.append(curently_parsing_army)
+            curently_parsing_army = False
+            
         if curently_parsing_army:
             new_unitEntry = Create_unitEntry_from_line(line)
             curently_parsing_army.units.append(new_unitEntry)
@@ -37,10 +42,6 @@ def Convert_docx_to_list(docxFilePath) -> List:
                 curently_parsing_army = ArmyEntry(
                     tournament=filename, army=currentArmy[0], player_name=previousLine, units=[])
 
-        if Is_int(line) and 4480 < int(line) <= 4500:
-            curently_parsing_army.total_points = int(line)
-            list_of_armies.append(curently_parsing_army)
-            curently_parsing_army = False
 
         previousLine = line
 
@@ -63,7 +64,11 @@ def Write_army_lists_to_json_file(file_path, list_of_armies):
 
 if __name__ == "__main__":
     import sys
-    filePath = Path(sys.argv[1])
+
+    if len(sys.argv) > 1:
+        filePath = Path(sys.argv[1])
+    else:
+        filePath = Path("data/Round 1.docx")
 
     print(f"Input filepath = {filePath}")
     list_of_armies = Convert_docx_to_list(filePath)
