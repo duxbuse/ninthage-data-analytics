@@ -12,5 +12,6 @@ steps:
   - deploy
   - function_upload_data_into_bigquery
   - --region=${_REGION}
+  - --source=./function_upload_data_into_bigquery/
   - --trigger-http
   - --runtime=python39

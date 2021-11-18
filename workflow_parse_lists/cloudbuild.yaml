@@ -11,5 +11,5 @@ steps:
   - workflows
   - deploy
   - workflow_parse_lists
-  - --source=workflow_parse_lists.yaml
+  - --source=./workflow_parse_lists/workflow_parse_lists.yaml
   - --location=${_REGION}

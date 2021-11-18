@@ -12,5 +12,6 @@ steps:
   - deploy
   - function_data_conversion
   - --region=${_REGION}
+  - --source=./function_data_conversion/
   - --trigger-http
   - --runtime=python39
