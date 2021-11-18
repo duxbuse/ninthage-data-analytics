@@ -46,4 +46,4 @@ Also supported is the `20x Skeletons` in addition to `20 Skeletons`
 
 ## Architecture
 
-![Architecture Diagram](architecture\arch-diagram.drawio.svg)
+![Architecture Diagram](architecture/arch-diagram.drawio.svg)
