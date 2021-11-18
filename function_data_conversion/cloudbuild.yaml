@@ -1,0 +1,16 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function-data-conversion
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_data_conversion
+  - --region=${_REGION}
+  - --trigger-http
+  - --runtime=python39
