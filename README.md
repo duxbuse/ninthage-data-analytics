@@ -8,7 +8,7 @@ To be read we require a .docx word document.
 The title of the document is the tournament aka "bigbellybash.docx" -> tournament = "bigbellybash"
 
 Then the document itself is a list of legal 9thage army lists in new recruit format but with the following requirements
-```
+```asdasdasdasdasdasd
 `name`
 
 `army`
