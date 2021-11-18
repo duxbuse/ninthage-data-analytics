@@ -6,7 +6,7 @@ from utility_functions import Docx_to_line_list, Create_unitEntry_from_line, Is_
 
 
 def Convert_docx_to_list(docxFilePath) -> List:
-    """Read in a .docx file reading in multiple army lists and saving them into a list object
+    """Read in a .docx file reading in multiple army lists and saving them into a list object basijdfhbaifbsdpifubasdf
 
     Args:
         docxFilePath (str): path to .docx file
