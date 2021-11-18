@@ -1,0 +1,15 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy workflow_parse_lists
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - workflows
+  - deploy
+  - workflow_parse_lists
+  - --source=./workflow_parse_lists/workflow_parse_lists.yaml
+  - --location=${_REGION}
