@@ -1,11 +1,13 @@
 from google.cloud import storage
 from pathlib import Path
+from typing import Union
+from google.cloud.storage.blob import Blob
 
 import jsons
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
 
 
-def download_blob(bucket_name, blob_name) -> None:
+def download_blob(bucket_name, blob_name) ->  Union[Blob, None]:
     """Downloads a file from a bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
