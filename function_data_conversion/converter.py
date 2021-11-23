@@ -1,8 +1,21 @@
 from typing import List
+import uuid
 import jsons
 from pathlib import Path
-from data_classes import ArmyEntry
-from utility_functions import Docx_to_line_list, Create_unitEntry_from_line, Is_int
+from parser_protocol import Parser
+from new_recruit_parser import new_recruit_parser
+from datetime import datetime
+from data_classes import (
+    ArmyEntry,
+    Parsers,
+    Event_types,
+    Army_names
+)
+from utility_functions import (
+    Docx_to_line_list,
+    DetectParser,
+    Is_int
+)
 
 
 def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
@@ -14,54 +27,76 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
     Returns:
         List: list of ArmyEntry objects representing all lists in the .docx file
     """
-
-    # Possible army list strings to look for and to determine that the current line is initiating a list
-    armyList = ["Beast Herds", "Dread Elves", "Dwarven Holds", "Daemon Legions", "Empire of Sonnstahl", "Highborn Elves", "Infernal Dwarves", "Kingdom of Equitaine",
-                "Ogre Khans", "Orcs and Goblins", "Saurian Ancients", "Sylvan Elves", "Undying Dynasties", "Vampire Covenant", "Vermin Swarm", "Warriors of the Dark Gods",
-                "Åsklanders", "Cultists", "Hobgolbins", "Makhar", ]
-
-    curently_parsing_army = False
-    previousLine = ''
-    list_of_armies = []
-
+    lines = Docx_to_line_list(docxFilePath)
     filename = Path(docxFilePath).stem
 
-    lines = Docx_to_line_list(docxFilePath)
 
+    parser_selected = DetectParser()
+    if parser_selected == Parsers.NEW_RECRUIT:
+        active_parser = new_recruit_parser()
+    # elif parser_selected == Parsers.BATTLE_SCRIBE:
+    #     pass
+    else:
+        active_parser = new_recruit_parser()
+
+    # break file into blocks
+    active_block = []
+    armyblocks = []
+    previousLine = str
     for line in lines:
-        if Is_int(line) and 4480 < int(line) <= 4500:
-            assert(isinstance(curently_parsing_army, ArmyEntry))
-            curently_parsing_army.total_points = int(line)
-            list_of_armies.append(curently_parsing_army)
-            curently_parsing_army = False
-            
-        currentArmy = [army for army in armyList if army in line]
-        if currentArmy or line == lines[-1]:#if a player forgot to put the total points at the end, we can assume since a new army is starting or we are on the last line that the old one is finished.
-            if curently_parsing_army: 
-                if line == lines[-1]: #last line is a unit in a list with no total points so we still need to add the unit to the army
-                    new_unitEntry = Create_unitEntry_from_line(line)
-                    if new_unitEntry:
-                        curently_parsing_army.units.append(new_unitEntry)
+        # look for list starting
+        found_army_name = [
+            army.value for army in Army_names if army.value in line]
+        if found_army_name:
+            if active_block:  # found a new list but haven't ended the old list yet.
+                # remove the last line from the old block as its the player name of the new active_block
+                previousLine = active_block.pop()
+                # end the old block
+                armyblocks.append(active_block)
 
-                curently_parsing_army.calculate_total_points() #no total points were found so calculate it
-                list_of_armies.append(curently_parsing_army)
-                curently_parsing_army = False #end the current list
+            # start new block including previous lines
+            # using previous line as the player name usual precedes the army name
+            active_block = [previousLine]
 
-            if currentArmy: #if we found a subsequent list then assume the current line is for a new army
-                curently_parsing_army = ArmyEntry(tournament=filename, army=currentArmy[0], player_name=previousLine) #start a new list
+        # storing lines from an active block
+        if active_block:
+            active_block.append(line)
 
-        elif curently_parsing_army:
-            new_unitEntry = Create_unitEntry_from_line(line)
-            if new_unitEntry:
-                assert(isinstance(curently_parsing_army, ArmyEntry))
-                curently_parsing_army.units.append(new_unitEntry)
+            # look for list ending
+            if Is_int(line) and 4480 < int(line) <= 4500:
+                armyblocks.append(active_block)
+                active_block = []
 
-        previousLine = line  
+        previousLine = line
+
+    return parse_army_blocks(active_parser, armyblocks, filename)
+
+
+def parse_army_blocks(parser: Parser, armyblocks: List[List[str]], tournament_name: str) -> List[ArmyEntry]:
+    ingest_date = datetime.now()
+    list_of_armies = []
+    for armylist in armyblocks:
+        army = parser.parse_block(armylist)
+        army.ingest_date = ingest_date
+        army.event_size = len(armyblocks)
+        army.player_name = armylist[0]
+        army.calculate_total_points()
+        army.tournament = tournament_name
+
+        # TODO: these are all being hardcoded until real ways of calculating them are found
+        army.validated = False
+        army.list_placing = -1  # Should be pulled from the info table
+        # Should be pulled from the info table
+        army.event_date = datetime(1970, 1, 1)# Should be pulled from the info table
+        # Should be pulled from the info table
+        army.event_type = Event_types.SINGLES  # Should be pulled from the info table
+
+        list_of_armies.append(army)
 
     return list_of_armies
 
 
-def Write_army_lists_to_json_file(file_path, list_of_armies) -> None:
+def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntry]) -> None:
     """Takes a list of army lists and a file path and writes the list of armies in json new line delimited to the filepath
 
     Args:
@@ -74,7 +109,8 @@ def Write_army_lists_to_json_file(file_path, list_of_armies) -> None:
             army_as_string = jsons.dumps(army) + '\n'
             if "null" in army_as_string:
                 jsonFile.close
-                raise ValueError(f"Invalid List for Player: {army.player_name}, playing: {army.army}")
+                raise ValueError(
+                    f"Invalid List for Player: {army.player_name}, playing: {army.army} for event: {file_path}")
             else:
                 jsonFile.write(army_as_string)
 
@@ -82,15 +118,12 @@ def Write_army_lists_to_json_file(file_path, list_of_armies) -> None:
 if __name__ == "__main__":
     """Used for testing locally
     """
-    import sys
+    for i in range(1, 6):
 
-    if len(sys.argv) > 1:
-        filePath = Path(sys.argv[1])
-    else:
-        filePath = Path("data/Round 6.docx")
+        filePath = Path(f"data/Round {i}.docx")
 
-    print(f"Input filepath = {filePath}")
-    list_of_armies = Convert_docx_to_list(filePath)
-    new_path = filePath.parent / (filePath.stem + ".json")
+        print(f"Input filepath = {filePath}")
+        list_of_armies = Convert_docx_to_list(filePath)
+        new_path = filePath.parent / (filePath.stem + ".json")
 
-    Write_army_lists_to_json_file(new_path, list_of_armies)
+        Write_army_lists_to_json_file(new_path, list_of_armies)

@@ -3,6 +3,12 @@ ninthage-data-analytics-3eeb86b69c3a.json
 # Google Credentials - laptop
 ninthage-data-analytics-323758ae3de4.json
 
+#exporation work
+parser-exploration/
+
+# test data
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
