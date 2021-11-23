@@ -110,7 +110,7 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
             if "null" in army_as_string:
                 jsonFile.close
                 raise ValueError(
-                    f"Invalid List for Player: {army.player_name}, playing: {army.army}")
+                    f"Invalid List for Player: {army.player_name}, playing: {army.army} for event: {file_path}")
             else:
                 jsonFile.write(army_as_string)
 
@@ -118,15 +118,12 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
 if __name__ == "__main__":
     """Used for testing locally
     """
-    import sys
+    for i in range(1, 6):
 
-    if len(sys.argv) > 1:
-        filePath = Path(sys.argv[1])
-    else:
-        filePath = Path("data/Round 1.docx")
+        filePath = Path(f"data/Round {i}.docx")
 
-    print(f"Input filepath = {filePath}")
-    list_of_armies = Convert_docx_to_list(filePath)
-    new_path = filePath.parent / (filePath.stem + ".json")
+        print(f"Input filepath = {filePath}")
+        list_of_armies = Convert_docx_to_list(filePath)
+        new_path = filePath.parent / (filePath.stem + ".json")
 
-    Write_army_lists_to_json_file(new_path, list_of_armies)
+        Write_army_lists_to_json_file(new_path, list_of_armies)

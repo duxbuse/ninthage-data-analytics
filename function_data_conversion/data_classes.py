@@ -62,7 +62,7 @@ class ArmyEntry():
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
     event_size: Optional[int] = None
-    reported_total_points: Optional[int] = None
+    reported_total_points: Optional[int] = -1
     calculated_total_points: Optional[int] = None
     validated: bool  = False
     army_uuid: UUID = field(default_factory=lambda: uuid4())
