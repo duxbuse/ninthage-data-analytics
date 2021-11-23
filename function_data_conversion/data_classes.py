@@ -46,7 +46,7 @@ class UnitEntry():
     points: int #300
     quantity: int #25
     name: str #spearmen
-    unit_uuid: UUID = uuid4()
+    unit_uuid: UUID = field(default_factory=lambda: uuid4())
     upgrades: list[str] = field(default_factory=list) #musician and banner
 
 
@@ -65,7 +65,7 @@ class ArmyEntry():
     reported_total_points: Optional[int] = None
     calculated_total_points: Optional[int] = None
     validated: bool  = False
-    army_uuid: UUID = uuid4()
+    army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)
 
     def calculate_total_points(self) -> None:
