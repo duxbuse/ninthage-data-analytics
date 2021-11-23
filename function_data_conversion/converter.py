@@ -28,6 +28,8 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
         List: list of ArmyEntry objects representing all lists in the .docx file
     """
     lines = Docx_to_line_list(docxFilePath)
+    filename = Path(docxFilePath).stem
+
 
     parser_selected = DetectParser()
     if parser_selected == Parsers.NEW_RECRUIT:
@@ -67,10 +69,10 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
         previousLine = line
 
-    return parse_army_blocks(active_parser, armyblocks)
+    return parse_army_blocks(active_parser, armyblocks, filename)
 
 
-def parse_army_blocks(parser: Parser, armyblocks: List[List[str]]) -> List[ArmyEntry]:
+def parse_army_blocks(parser: Parser, armyblocks: List[List[str]], tournament_name: str) -> List[ArmyEntry]:
     ingest_date = datetime.now()
     list_of_armies = []
     for armylist in armyblocks:
@@ -79,14 +81,15 @@ def parse_army_blocks(parser: Parser, armyblocks: List[List[str]]) -> List[ArmyE
         army.event_size = len(armyblocks)
         army.player_name = armylist[0]
         army.calculate_total_points()
+        army.tournament = tournament_name
 
         # TODO: these are all being hardcoded until real ways of calculating them are found
         army.validated = False
         army.list_placing = -1  # Should be pulled from the info table
         # Should be pulled from the info table
-        army.event_date = datetime(1970, 1, 1)
+        army.event_date = datetime(1970, 1, 1)# Should be pulled from the info table
+        # Should be pulled from the info table
         army.event_type = Event_types.SINGLES  # Should be pulled from the info table
-        army.tournament = "test-tournament"
 
         list_of_armies.append(army)
 
