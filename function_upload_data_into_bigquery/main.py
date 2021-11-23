@@ -1,10 +1,14 @@
+from typing import Union
 from google.cloud import bigquery
 from google.cloud import storage
 from google.api_core.exceptions import BadRequest
+from flask.wrappers import Request
 import json
 
-def download_blob(bucket_name, blob_name):
-    """Uploads a file to the bucket."""
+from google.cloud.storage.blob import Blob
+
+def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
+    """Downloads a file from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.get_blob(blob_name)
@@ -12,8 +16,11 @@ def download_blob(bucket_name, blob_name):
     return blob
 
 
-def function_upload_data_into_bigquery(request, is_remote = True):
 
+def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> str:
+
+    assert request is not None
+    
     request_body = json.loads(request.json["json_file"]["body"])
     print(f"request.json = {request_body}")
 
@@ -27,7 +34,10 @@ def function_upload_data_into_bigquery(request, is_remote = True):
         if is_remote:
             downloaded_docx_blob = download_blob(bucket_name, filename)
             file_path = f"/tmp/{filename}"
-            downloaded_docx_blob.download_to_filename(file_path)
+            if downloaded_docx_blob:
+                downloaded_docx_blob.download_to_filename(file_path)
+            else:
+                raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
         else:
             file_path = f"data/{filename}"
 
@@ -61,8 +71,6 @@ def function_upload_data_into_bigquery(request, is_remote = True):
 
 if __name__ == "__main__":
     import sys
-    from flask import Request
-
     if len(sys.argv) > 1:
         request_payload = {'json_file': {'body': sys.argv[1]} }
     else:

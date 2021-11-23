@@ -3,10 +3,10 @@ from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 import json
 
-# name of the function in main.py must equal the trigger name as a defualt or be set explictly
+# name of the function in main.py must equal the trigger name as a default or be set explicitly
 
 
-def function_data_ingestion(data={}, context={}):
+def function_data_ingestion(data: str= "{}", context: str="{}") -> None:
 
     print(f"data = {data}")
     print(f"context = {context}")

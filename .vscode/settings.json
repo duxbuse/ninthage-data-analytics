@@ -1,3 +1,6 @@
 {
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "cSpell.words": [
+        "jsons"
+    ]
 }
