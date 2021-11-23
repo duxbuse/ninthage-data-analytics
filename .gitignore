@@ -6,6 +6,9 @@ ninthage-data-analytics-323758ae3de4.json
 #exporation work
 parser-exploration/
 
+# test data
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
