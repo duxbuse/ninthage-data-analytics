@@ -4,7 +4,7 @@ import jsons
 from pathlib import Path
 from parser_protocol import Parser
 from new_recruit_parser import new_recruit_parser
-from datetime import datetime
+from datetime import datetime, timezone
 from data_classes import (
     ArmyEntry,
     Parsers,
@@ -29,7 +29,6 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
     """
     lines = Docx_to_line_list(docxFilePath)
     filename = Path(docxFilePath).stem
-
 
     parser_selected = DetectParser()
     if parser_selected == Parsers.NEW_RECRUIT:
@@ -73,21 +72,22 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
 
 def parse_army_blocks(parser: Parser, armyblocks: List[List[str]], tournament_name: str) -> List[ArmyEntry]:
-    ingest_date = datetime.now()
+    ingest_date = datetime.now(timezone.utc)
     list_of_armies = []
     for armylist in armyblocks:
         army = parser.parse_block(armylist)
         army.ingest_date = ingest_date
         army.event_size = len(armyblocks)
         army.player_name = armylist[0]
-        army.calculate_total_points()
         army.tournament = tournament_name
+        army.calculate_total_points()
 
         # TODO: these are all being hardcoded until real ways of calculating them are found
-        army.validated = False
+        # army.validated = False
         army.list_placing = -1  # Should be pulled from the info table
         # Should be pulled from the info table
-        army.event_date = datetime(1970, 1, 1)# Should be pulled from the info table
+        # Should be pulled from the info table
+        army.event_date = datetime(1970, 1, 1, tzinfo=timezone.utc)
         # Should be pulled from the info table
         army.event_type = Event_types.SINGLES  # Should be pulled from the info table
 
@@ -118,7 +118,7 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
 if __name__ == "__main__":
     """Used for testing locally
     """
-    for i in range(1, 6):
+    for i in [4]:
 
         filePath = Path(f"data/Round {i}.docx")
 
