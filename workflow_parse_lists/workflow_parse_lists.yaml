@@ -26,4 +26,4 @@ main:
                     type: OIDC
                     
         - returnOutput:
-            return: ${input.name} successfully uploaded into bigquery
+            return: ${input.name + " successfully uploaded into bigquery"}
