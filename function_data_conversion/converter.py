@@ -109,8 +109,12 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
             army_as_string = jsons.dumps(army) + '\n'
             if "null" in army_as_string:
                 jsonFile.close
-                raise ValueError(
-                    f"Invalid List for Player: {army.player_name}, playing: {army.army} for event: {file_path}")
+                raise ValueError(f"""
+                    Invalid List 
+                    Army: {army.army}
+                    Player: {army.player_name}
+                    Tournament: {army.tournament}
+                    """)
             else:
                 jsonFile.write(army_as_string)
 
@@ -118,7 +122,9 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
 if __name__ == "__main__":
     """Used for testing locally
     """
-    for i in [4]:
+    # range(1,6)
+    # [2]
+    for i in range(5,6):
 
         filePath = Path(f"data/Round {i}.docx")
 
