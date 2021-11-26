@@ -1,11 +1,18 @@
-from data_classes import ArmyEntry, UnitEntry, Army_names
 from typing import List, Union
-from utility_functions import Is_int
 import re
 import requests
+from data_classes import ArmyEntry, UnitEntry, Army_names
 
 
 class new_recruit_parser():
+
+    def Is_int(self, n) -> bool:
+        try:
+            float(n)
+        except ValueError:
+            return False
+        else:
+            return float(n).is_integer()
 
     def validate(self, lines: List[str]) -> bool:
         url = "https://www.newrecruit.eu/api/listcheck"
@@ -40,7 +47,7 @@ class new_recruit_parser():
         return None
 
     def detect_total_points(self, line) -> Union[int, None]:
-        if Is_int(line) and 4480 < int(line) <= 4500:
+        if self.Is_int(line) and 4480 < int(line) <= 4500:
             return int(line)
         return None
 
@@ -85,7 +92,7 @@ class new_recruit_parser():
             # potentially multiple units were on the same line and need to be handle separately
 
             for unit in pointsSearch:
-                unit_points = int(unit[0]) if Is_int(unit[0]) else -1
+                unit_points = int(unit[0]) if self.Is_int(unit[0]) else -1
 
                 if unit_points == -1:
                     raise ValueError(

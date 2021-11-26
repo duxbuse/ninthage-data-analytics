@@ -3,7 +3,10 @@ import jsons
 from typing import List, Tuple
 from uuid import UUID
 from docx import Document
+
+from parser_protocol import Parser
 from data_classes import Parsers
+from new_recruit_parser import new_recruit_parser
 from data_classes import (
     ArmyEntry
 )
@@ -22,9 +25,18 @@ def Docx_to_line_list(docxFile) -> List[str]:
     return lines
 
 
-def DetectParser() -> Parsers:
-    #TODO: currently hardcoded to always use newrecruit
-    return Parsers.NEW_RECRUIT
+def DetectParser(armyblock: List[str]) -> Parser:
+    # Read through block to determine formatting
+    # TODO: currently hardcoded to always use newrecruit
+    parser_selected = Parsers.NEW_RECRUIT
+
+    if parser_selected == Parsers.NEW_RECRUIT:
+        active_parser = new_recruit_parser()
+    # elif parser_selected == Parsers.BATTLE_SCRIBE:
+    #     active_parser = battle_scribe_parser() #TODO: need to build a battle scribe parser
+    else:
+        active_parser = new_recruit_parser()
+    return active_parser
 
 
 def Is_int(n) -> bool:
@@ -36,7 +48,7 @@ def Is_int(n) -> bool:
         return float(n).is_integer()
 
 
-def convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
+def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
     army1_uuid = None
     army2_uuid = None
     for army in list_of_armies:
