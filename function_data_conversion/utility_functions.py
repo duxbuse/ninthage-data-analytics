@@ -1,6 +1,12 @@
-from typing import List
+from pathlib import Path
+import jsons
+from typing import List, Tuple
+from uuid import UUID
 from docx import Document
 from data_classes import Parsers
+from data_classes import (
+    ArmyEntry
+)
 
 
 def Docx_to_line_list(docxFile) -> List[str]:
@@ -15,9 +21,11 @@ def Docx_to_line_list(docxFile) -> List[str]:
             lines.append(text)
     return lines
 
+
 def DetectParser() -> Parsers:
-    #currently hardcoded to always use newrecruit
+    #TODO: currently hardcoded to always use newrecruit
     return Parsers.NEW_RECRUIT
+
 
 def Is_int(n) -> bool:
     try:
@@ -26,3 +34,46 @@ def Is_int(n) -> bool:
         return False
     else:
         return float(n).is_integer()
+
+
+def convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
+    army1_uuid = None
+    army2_uuid = None
+    for army in list_of_armies:
+        if army.tourney_keeper_id == TKID_1:
+            army1_uuid = army.army_uuid
+        elif army.tourney_keeper_id == TKID_2:
+            army2_uuid = army.army_uuid
+
+    if not army1_uuid:
+        raise ValueError(f"""
+            TKID_1:{TKID_1} could not be found in file {list_of_armies[0].tournament}
+        """)
+    if not army2_uuid:
+        raise ValueError(f"""
+            TKID_2:{TKID_2} could not be found in file {list_of_armies[0].tournament}
+        """)
+    return (army1_uuid, army2_uuid)
+
+
+def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntry]) -> None:
+    """Takes a list of army lists and a file path and writes the list of armies in json new line delimited to the filepath
+
+    Args:
+        file_path (string): path to write new file to
+        list_of_armies (list[ArmyEntry]): list of ArmyEntry objects to be written to file
+    """
+    with open(file_path, "w") as jsonFile:
+
+        for army in list_of_armies:
+            army_as_string = jsons.dumps(army) + '\n'
+            if "null" in army_as_string:
+                jsonFile.close
+                raise ValueError(f"""
+                    Invalid List 
+                    Army: {army.army}
+                    Player: {army.player_name}
+                    Tournament: {army.tournament}
+                    """)
+            else:
+                jsonFile.write(army_as_string)

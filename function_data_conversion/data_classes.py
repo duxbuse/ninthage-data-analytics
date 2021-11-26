@@ -53,6 +53,14 @@ class UnitEntry():
 
 
 @dataclass
+class Round():
+    opponent: UUID
+    result: int
+    secondary_points: int
+    round_number: int
+
+
+@dataclass
 class ArmyEntry():
     """class to hold entire army list
     """
@@ -64,9 +72,11 @@ class ArmyEntry():
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
     event_size: Optional[int] = None
+    tourney_keeper_id: Optional[int] = -1
     reported_total_points: Optional[int] = -1
     calculated_total_points: Optional[int] = None
     validated: bool = False
+    round_performance: list[Round] = field(default_factory=list)
     army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)
 
