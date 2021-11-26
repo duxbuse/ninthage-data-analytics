@@ -105,8 +105,7 @@ class new_recruit_parser():
                     # if there was no quantity number then the regex match for group 1 is '' so we need to hardcode that as 1
                     quantity = int(quantitySearch.group(
                         1)) if quantitySearch.group(1) else 1
-                    splitLine = [x.strip(' .')
-                                 for x in quantitySearch.group(2).split(', ')]
+                    splitLine = [x for x in quantitySearch.group(2).split(', ')]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:
                         unit_upgrades = splitLine[1:]

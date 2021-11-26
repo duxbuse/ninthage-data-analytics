@@ -69,7 +69,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     for line in lines:
         # look for list starting
         found_army_name = [
-            army.value for army in Army_names if army.value in line]
+            army.value for army in Army_names if army.value == line]
         if found_army_name:
             if active_block:  # found a new list but haven't ended the old list yet.
                 # remove the last line from the old block as its the player name of the new active_block
@@ -86,7 +86,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
             active_block.append(line)
 
             # look for list ending
-            if Is_int(line) and 4480 < int(line) <= 4500:
+            if Is_int(line) and 2000 <= int(line) <= 4500:
                 armyblocks.append(active_block)
                 active_block = []
 
@@ -102,7 +102,7 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army.tournament = tournament_name
     army.calculate_total_points()
 
-    army.list_placing = -1  # TODO: actually figure this out
+    army.list_placing = -1  # TODO: actually figure this out  
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
     army.tourney_keeper_id = -1  # TODO: actually figure this out
