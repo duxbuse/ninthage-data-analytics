@@ -13,7 +13,8 @@ from parser_protocol import Parser
 from tourney_keeper import (
     Get_tournament_by_name,
     Get_games_for_tournament,
-    Get_active_players
+    Get_active_players,
+    Get_players_names_from_games
 )
 from data_classes import (
     ArmyEntry,
@@ -105,7 +106,7 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army.list_placing = -1  # TODO: actually figure this out  
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
-    army.tourney_keeper_id = -1  # TODO: actually figure this out
+    army.tourney_keeper_id = tk_info.player_list[army.player_name]
     return army
 
 
@@ -122,6 +123,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         event_date = datetime.strptime(
             tourney_keeper_info.get("Start"), '%Y-%m-%yT%H:%M:%S').replace(tzinfo=timezone.utc)
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
+        player_list = Get_players_names_from_games(tournament_games)
 
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
 
@@ -132,7 +134,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         #     For file {tournament_name}
         #     """)
 
-        return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_count=player_count)
+        return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_list=player_list, player_count=player_count)
     return Tk_info()
 
 
@@ -147,8 +149,8 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         player1_result = int(game.get("Player1Result"))
         player2_result = int(game.get("Player2Result"))
 
-        player1_secondary = int(0)  # TODO: need to figure this out
-        player2_secondary = int(0)  # TODO: need to figure this out
+        player1_secondary = int(game.get("Player1SecondaryResult"))
+        player2_secondary = int(game.get("Player2SecondaryResult"))
 
         player1_round = Round(opponent=player2_uuid, result=player1_result,
                               secondary_points=player1_secondary, round_number=round_number)

@@ -1,7 +1,6 @@
 from pathlib import Path
 import jsons
-from typing import List, Tuple
-from uuid import UUID
+from typing import List
 from docx import Document
 
 from parser_protocol import Parser
@@ -47,26 +46,6 @@ def Is_int(n) -> bool:
         return False
     else:
         return float(n).is_integer()
-
-
-def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
-    army1_uuid = None
-    army2_uuid = None
-    for army in list_of_armies:
-        if army.tourney_keeper_id == TKID_1:
-            army1_uuid = army.army_uuid
-        elif army.tourney_keeper_id == TKID_2:
-            army2_uuid = army.army_uuid
-
-    if not army1_uuid:
-        raise ValueError(f"""
-            TKID_1:{TKID_1} could not be found in file {list_of_armies[0].tournament}
-        """)
-    if not army2_uuid:
-        raise ValueError(f"""
-            TKID_2:{TKID_2} could not be found in file {list_of_armies[0].tournament}
-        """)
-    return (army1_uuid, army2_uuid)
 
 
 def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntry]) -> None:

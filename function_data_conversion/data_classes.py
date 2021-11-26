@@ -47,6 +47,7 @@ class Tk_info():
     event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
     event_type: Optional[Event_types] = Event_types.SINGLES
     game_list: Optional[dict] = field(default_factory=dict)
+    player_list: Optional[dict] = field(default_factory=dict) #player_name: tkId
     player_count: Optional[int] = None
 
 
