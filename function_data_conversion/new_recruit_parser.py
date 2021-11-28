@@ -105,7 +105,8 @@ class new_recruit_parser():
                     # if there was no quantity number then the regex match for group 1 is '' so we need to hardcode that as 1
                     quantity = int(quantitySearch.group(
                         1)) if quantitySearch.group(1) else 1
-                    splitLine = [x for x in quantitySearch.group(2).split(', ')]
+                    non_nested_upgrades = self.break_nested_upgrades(quantitySearch.group(2))
+                    splitLine = [x for x in non_nested_upgrades.split(', ')]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:
                         unit_upgrades = splitLine[1:]
@@ -116,3 +117,15 @@ class new_recruit_parser():
                         points=unit_points, quantity=quantity, name=unit_name, upgrades=unit_upgrades))
 
         return output
+
+    def break_nested_upgrades(self, unit_upgrades: str) -> str:
+        """Resolving nested upgrades that are contained inside ()
+        More details https://github.com/duxbuse/ninthage-data-analytics/issues/12
+
+        Args:
+            unit_upgrades (str): "340 - Marshal, Battle Standard Bearer (Aether Icon, Aether Icon), Shield, Paired Weapons (Shield Breaker), Blacksteel, Great Tactician"
+
+        Returns:
+            str: "340 - Marshal, Battle Standard Bearer, Aether Icon, Aether Icon, Shield, Paired Weapons, Shield Breaker, Blacksteel, Great Tactician"
+        """
+        return unit_upgrades.replace(" (", ", ").replace(")", "")
