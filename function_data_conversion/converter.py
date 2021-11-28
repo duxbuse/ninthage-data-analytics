@@ -109,13 +109,14 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
 
-    #fuzzy match name from lists file and tourney keeper
-    close_matches = [tk_info.player_list[key] for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
-    if len(close_matches) == 1 and len(close_matches[0]) == 1:
-        army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get("TournamentPlayerId")
-        army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
-    else:
-        raise ValueError(f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
+    if tk_info.player_list:
+        #fuzzy match name from lists file and tourney keeper
+        close_matches = [tk_info.player_list[key] for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
+        if len(close_matches) == 1 and len(close_matches[0]) == 1:
+            army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get("TournamentPlayerId")
+            army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
+        else:
+            raise ValueError(f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
     return army
 
 
@@ -176,15 +177,19 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
 if __name__ == "__main__":
     """Used for testing locally
     """
+    import os
+
     # range(1,6)
     # [2]
-    for i in [2]:
+    # Brisvegas Battles 3
 
-        filePath = Path(f"data/Brisvegas Battles 3.docx")
+    for file in os.listdir("data"):
+        if file.endswith(".docx"):
+            filePath = Path(os.path.join("data", file))
 
-        print(f"Input filepath = {filePath}")
-        list_of_armies = Convert_docx_to_list(filePath)
-        new_path = filePath.parent / (filePath.stem + ".json")
+            print(f"Input filepath = {filePath}")
+            list_of_armies = Convert_docx_to_list(filePath)
+            new_path = filePath.parent / ("json/" + filePath.stem + ".json")
 
-        Write_army_lists_to_json_file(new_path, list_of_armies)
-        print(f"Data written to {new_path}")
+            Write_army_lists_to_json_file(new_path, list_of_armies)
+            print(f"Data written to {new_path}")
