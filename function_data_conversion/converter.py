@@ -1,11 +1,12 @@
 from typing import List
 from pathlib import Path
 from datetime import datetime, timezone
+from fuzzywuzzy import fuzz
+
 
 from utility_functions import(
     Docx_to_line_list,
     DetectParser,
-    Convert2_TKid_to_uuid,
     Is_int,
     Write_army_lists_to_json_file
 )
@@ -14,7 +15,8 @@ from tourney_keeper import (
     Get_tournament_by_name,
     Get_games_for_tournament,
     Get_active_players,
-    Get_players_names_from_games
+    Get_players_names_from_games,
+    Convert2_TKid_to_uuid
 )
 from data_classes import (
     ArmyEntry,
@@ -106,7 +108,14 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army.list_placing = -1  # TODO: actually figure this out  
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
-    army.tourney_keeper_id = tk_info.player_list[army.player_name]
+
+    #fuzzy match name from lists file and tourney keeper
+    close_matches = [tk_info.player_list[key] for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
+    if len(close_matches) == 1 and len(close_matches[0]) == 1:
+        army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get("TournamentPlayerId")
+        army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
+    else:
+        raise ValueError(f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
     return army
 
 
@@ -157,7 +166,7 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         player2_round = Round(opponent=player1_uuid, result=player2_result,
                               secondary_points=player2_secondary, round_number=round_number)
 
-        for army in list_of_armies:
+        for army in list_of_armies: #TODO: instead of list of armies it should be a dict of armies with the uuid as the key
             if army.army_uuid == player1_uuid:
                 army.round_performance.append(player1_round)
             elif army.army_uuid == player2_uuid:

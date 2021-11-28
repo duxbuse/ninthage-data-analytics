@@ -1,3 +1,5 @@
 python-docx
 jsons
 google-cloud-storage
+fuzzywuzzy
+python-Levenshtein

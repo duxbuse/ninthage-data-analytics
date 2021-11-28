@@ -83,6 +83,14 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
 
 
 def Get_players_names_from_games(games: dict) -> dict:
+    """receives a list of Tourney keeper games it then returns a mapping of player name to tourneykeeper id
+
+    Args:
+        games (dict): list of tourney keeper games
+
+    Returns:
+        dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
+    """
     # interate over all games and produce list of unique player ids
     unique_player_tkIds = set()
     for game in games:
@@ -94,32 +102,33 @@ def Get_players_names_from_games(games: dict) -> dict:
     for Id in unique_player_tkIds:
         player_details = Get_Player_Army_Details(Id)
         player_name = player_details.get("PlayerName")
-        output[player_name] = Id
+        tk_player_id = player_details.get("PlayerId")
+        output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
 
     return output
         
-
-# def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
-#     army1_uuid = None
-#     army2_uuid = None
-
-#     player1_details = Get_Player_Army_Details(TKID_1)
-#     player1_name = player1_details.get("PlayerName")
-#     player2_details = Get_Player_Army_Details(TKID_2)
-#     player2_name = player2_details.get("PlayerName")
-
+# def convert_tournamentId_to_uuid(tkid: int, list_of_armies: List[ArmyEntry]) -> Union[UUID, None]:
 #     for army in list_of_armies:
-#         if player1_name == army.player_name:
-#             army1_uuid = army.army_uuid
-#         elif player2_name == army.player_name:
-#             army2_uuid = army.army_uuid
+#         if tkid == army.tourney_keeper_TournamentPlayerId:
+#             return army.army_uuid
+#     return None
 
-#     if not army1_uuid:
-#         raise ValueError(f"""
-#             TK_player_name:{player1_name} could not be found in file {list_of_armies[0].tournament}
-#         """)
-#     if not army2_uuid:
-#         raise ValueError(f"""
-#             TK_player_name:{player2_name} could not be found in file {list_of_armies[0].tournament}
-#         """)
-#     return (army1_uuid, army2_uuid)
+def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
+    army1_uuid = None
+    army2_uuid = None
+
+    for army in list_of_armies:
+        if TKID_1 == army.tourney_keeper_TournamentPlayerId:
+            army1_uuid = army.army_uuid
+        elif TKID_2 == army.tourney_keeper_TournamentPlayerId:
+            army2_uuid = army.army_uuid
+
+    if not army1_uuid:
+        raise ValueError(f"""
+            tourney_keeper_TournamentPlayerId:{TKID_1} could not be found in file {list_of_armies[0].tournament}
+        """)
+    if not army2_uuid:
+        raise ValueError(f"""
+            tourney_keeper_TournamentPlayerId:{TKID_2} could not be found in file {list_of_armies[0].tournament}
+        """)
+    return (army1_uuid, army2_uuid)

@@ -47,7 +47,7 @@ class Tk_info():
     event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
     event_type: Optional[Event_types] = Event_types.SINGLES
     game_list: Optional[dict] = field(default_factory=dict)
-    player_list: Optional[dict] = field(default_factory=dict) #player_name: tkId
+    player_list: Optional[dict] = field(default_factory=dict) #output from Get_players_names_from_games()
     player_count: Optional[int] = None
 
 
@@ -82,7 +82,8 @@ class ArmyEntry():
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
     event_size: Optional[int] = None
-    tourney_keeper_id: Optional[int] = -1
+    tourney_keeper_TournamentPlayerId: Optional[int] = -1
+    tourney_keeper_PlayerId: Optional[int] = -1
     reported_total_points: Optional[int] = -1
     calculated_total_points: Optional[int] = None
     validated: bool = False
