@@ -47,7 +47,7 @@ class new_recruit_parser():
         return None
 
     def detect_total_points(self, line) -> Union[int, None]:
-        if self.Is_int(line) and 4480 < int(line) <= 4500:
+        if self.Is_int(line) and 2000 <= int(line) <= 4500:
             return int(line)
         return None
 
