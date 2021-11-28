@@ -1,18 +1,21 @@
-import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
 import json
 from uuid import UUID
 from data_classes import (
-    ArmyEntry
+    ArmyEntry,
+    Tk_info,
+    Event_types,
+    Round
 )
 
 def get_recent_tournaments() -> List:
     output = []
     
-    now = datetime.datetime.now(datetime.timezone.utc)
-    year_ago = now - datetime.timedelta(days=1.5*365) #hard coded to look a year and half backwards
+    now = datetime.now(timezone.utc)
+    year_ago = now - timedelta(days=1.5*365) #hard coded to look a year and half backwards
 
     now_str = quote(now.isoformat(timespec='seconds') + 'Z', safe='')
     year_ago_str = quote(year_ago.isoformat(timespec='seconds') + 'Z', safe='')
@@ -101,9 +104,12 @@ def Get_players_names_from_games(games: dict) -> dict:
     output = {}
     for Id in unique_player_tkIds:
         player_details = Get_Player_Army_Details(Id)
-        player_name = player_details.get("PlayerName")
-        tk_player_id = player_details.get("PlayerId")
-        output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
+        if player_details:
+            player_name = player_details.get("PlayerName")
+            tk_player_id = player_details.get("PlayerId")
+            output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
+        else:
+            print(f"name: {player_name}, is not found on TK")
 
     return output
         
@@ -132,3 +138,56 @@ def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEnt
             tourney_keeper_TournamentPlayerId:{TKID_2} could not be found in file {list_of_armies[0].tournament}
         """)
     return (army1_uuid, army2_uuid)
+
+
+def load_tk_info(tournament_name: str) -> Tk_info:
+    # Pull in data from tourney keeper
+    tourney_keeper_info = Get_tournament_by_name(tournament_name)
+    if tourney_keeper_info:
+        # set event type
+        if tourney_keeper_info.get("IsTeamTournament"):
+            event_type = Event_types.TEAMS
+        else:
+            event_type = Event_types.SINGLES
+
+        event_date = datetime.strptime(
+            tourney_keeper_info.get("Start"), '%Y-%m-%yT%H:%M:%S').replace(tzinfo=timezone.utc)
+        tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
+        player_list = Get_players_names_from_games(tournament_games)
+
+        player_count = Get_active_players(tourney_keeper_info.get("Id"))
+
+        # # check to make sure player counts match on both the file and TK
+        # if player_count and player_count != len(armyblocks):
+        #     raise ValueError(f"""
+        #     TourneyKeeper player count:{player_count} != len(armyblocks):{len(armyblocks)}
+        #     For file {tournament_name}
+        #     """)
+
+        return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_list=player_list, player_count=player_count)
+    return Tk_info()
+
+def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry]) -> None:
+    # extract TK game results if avaliable
+    for game in tournament_games:
+        (player1_uuid, player2_uuid) = Convert2_TKid_to_uuid(
+            game.get("Player1Id"), game.get("Player2Id"), list_of_armies)
+
+        round_number = int(game.get("Round"))
+
+        player1_result = int(game.get("Player1Result"))
+        player2_result = int(game.get("Player2Result"))
+
+        player1_secondary = int(game.get("Player1SecondaryResult"))
+        player2_secondary = int(game.get("Player2SecondaryResult"))
+
+        player1_round = Round(opponent=player2_uuid, result=player1_result,
+                              secondary_points=player1_secondary, round_number=round_number)
+        player2_round = Round(opponent=player1_uuid, result=player2_result,
+                              secondary_points=player2_secondary, round_number=round_number)
+
+        for army in list_of_armies: #TODO: instead of list of armies it should be a dict of armies with the uuid as the key
+            if army.army_uuid == player1_uuid:
+                army.round_performance.append(player1_round)
+            elif army.army_uuid == player2_uuid:
+                army.round_performance.append(player2_round)

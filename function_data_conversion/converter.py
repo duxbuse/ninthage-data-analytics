@@ -12,17 +12,12 @@ from utility_functions import(
 )
 from parser_protocol import Parser
 from tourney_keeper import (
-    Get_tournament_by_name,
-    Get_games_for_tournament,
-    Get_active_players,
-    Get_players_names_from_games,
-    Convert2_TKid_to_uuid
+    load_tk_info,
+    append_tk_game_data
 )
 from data_classes import (
     ArmyEntry,
-    Event_types,
     Army_names,
-    Round,
     Tk_info
 )
 
@@ -120,71 +115,18 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     return army
 
 
-def load_tk_info(tournament_name: str) -> Tk_info:
-    # Pull in data from tourney keeper
-    tourney_keeper_info = Get_tournament_by_name(tournament_name)
-    if tourney_keeper_info:
-        # set event type
-        if tourney_keeper_info.get("IsTeamTournament"):
-            event_type = Event_types.TEAMS
-        else:
-            event_type = Event_types.SINGLES
-
-        event_date = datetime.strptime(
-            tourney_keeper_info.get("Start"), '%Y-%m-%yT%H:%M:%S').replace(tzinfo=timezone.utc)
-        tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
-        player_list = Get_players_names_from_games(tournament_games)
-
-        player_count = Get_active_players(tourney_keeper_info.get("Id"))
-
-        # # check to make sure player counts match on both the file and TK
-        # if player_count and player_count != len(armyblocks):
-        #     raise ValueError(f"""
-        #     TourneyKeeper player count:{player_count} != len(armyblocks):{len(armyblocks)}
-        #     For file {tournament_name}
-        #     """)
-
-        return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_list=player_list, player_count=player_count)
-    return Tk_info()
-
-
-def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry]) -> None:
-    # extract TK game results if avaliable
-    for game in tournament_games:
-        (player1_uuid, player2_uuid) = Convert2_TKid_to_uuid(
-            game.get("Player1Id"), game.get("Player2Id"), list_of_armies)
-
-        round_number = int(game.get("Round"))
-
-        player1_result = int(game.get("Player1Result"))
-        player2_result = int(game.get("Player2Result"))
-
-        player1_secondary = int(game.get("Player1SecondaryResult"))
-        player2_secondary = int(game.get("Player2SecondaryResult"))
-
-        player1_round = Round(opponent=player2_uuid, result=player1_result,
-                              secondary_points=player1_secondary, round_number=round_number)
-        player2_round = Round(opponent=player1_uuid, result=player2_result,
-                              secondary_points=player2_secondary, round_number=round_number)
-
-        for army in list_of_armies: #TODO: instead of list of armies it should be a dict of armies with the uuid as the key
-            if army.army_uuid == player1_uuid:
-                army.round_performance.append(player1_round)
-            elif army.army_uuid == player2_uuid:
-                army.round_performance.append(player2_round)
-
-
 if __name__ == "__main__":
     """Used for testing locally
     """
     import os
 
     # range(1,6)
-    # [2]
-    # Brisvegas Battles 3
+    # "Round 1"
+    # "Brisvegas Battles 3"
+    specific_file = "Brisvegas Battles 3"
 
     for file in os.listdir("data"):
-        if file.endswith(".docx"):
+        if file.endswith(".docx") and specific_file and file.startswith(specific_file):
             filePath = Path(os.path.join("data", file))
 
             print(f"Input filepath = {filePath}")
