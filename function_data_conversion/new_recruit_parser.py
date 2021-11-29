@@ -15,6 +15,13 @@ class new_recruit_parser():
             return float(n).is_integer()
 
     def validate(self, lines: List[str]) -> bool:
+        """
+            TODO: Known issues:
+            if some units are on the same line we can still read it in but validation will fail
+            
+        """
+
+
         url = "https://www.newrecruit.eu/api/listcheck"
 
         # flatten lines into single string
@@ -39,7 +46,7 @@ class new_recruit_parser():
             return True
 
         print(f"""
-            Validation failed because: {response.json}
+            Validation failed because: {response.text}
         """)
         return False
 
@@ -61,7 +68,7 @@ class new_recruit_parser():
             if line == lines[-1]:  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:
-                    new_army.reported_total_points = total_points
+                    new_army.reported_total_army_points = total_points
                 else:
                     # line is 1 or more unit entries
                     new_units = self.parse_unit_line(line)

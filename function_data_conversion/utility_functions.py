@@ -59,6 +59,7 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
 
         for army in list_of_armies:
             army_as_string = jsons.dumps(army) + '\n'
+            army_as_string = army_as_string.replace('"round_performance": []', '"round_performance": [{}]')
             if "null" in army_as_string:
                 jsonFile.close
                 raise ValueError(f"""
