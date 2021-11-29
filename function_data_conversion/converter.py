@@ -18,7 +18,8 @@ from tourney_keeper import (
 from data_classes import (
     ArmyEntry,
     Army_names,
-    Tk_info
+    Tk_info,
+    Round
 )
 
 
@@ -51,6 +52,11 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
+    else:
+        #need to add empty round() object so total object fits bigquery schema
+        for army in army_list:
+            if not army.round_performance:
+                army.round_performance.append(Round(opponent=army.army_uuid))#empty round who references itself
 
     return army_list
 
@@ -134,7 +140,7 @@ if __name__ == "__main__":
     # and file.startswith("Round 2")
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Round 2"):
             file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 

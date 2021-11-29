@@ -65,9 +65,9 @@ class UnitEntry():
 @dataclass
 class Round():
     opponent: UUID
-    result: int
-    secondary_points: int
-    round_number: int
+    result: Optional[int] = -1
+    secondary_points: Optional[int] = -1
+    round_number: Optional[int] = -1
 
 
 @dataclass
