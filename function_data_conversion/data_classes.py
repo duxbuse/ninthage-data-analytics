@@ -47,9 +47,9 @@ class Tk_info():
     event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
     event_type: Optional[Event_types] = Event_types.SINGLES
     game_list: Optional[dict] = field(default_factory=dict)
-    player_list: Optional[dict] = field(default_factory=dict) #output from Get_players_names_from_games()
+    # output from Get_players_names_from_games()
+    player_list: Optional[dict] = field(default_factory=dict)
     player_count: Optional[int] = None
-
 
 
 @dataclass
@@ -80,26 +80,35 @@ class ArmyEntry():
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None
     event_type: Optional[Event_types] = None
-    list_placing: Optional[int] = None
+    list_placing: Optional[int] = -1
     event_size: Optional[int] = None
     tourney_keeper_TournamentPlayerId: Optional[int] = -1
     tourney_keeper_PlayerId: Optional[int] = -1
-    reported_total_points: Optional[int] = -1
-    calculated_total_points: Optional[int] = None
+    calculated_total_tournament_points: Optional[int] = -1
+    calculated_total_tournament_secondary_points: Optional[int] = -1
+    reported_total_army_points: Optional[int] = -1
+    calculated_total_army_points: Optional[int] = None
     validated: bool = False
     round_performance: list[Round] = field(default_factory=list)
     army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)
 
     def calculate_total_points(self) -> None:
-        self.calculated_total_points = sum([x.points for x in self.units])
-        if self.reported_total_points != -1 and self.calculated_total_points != self.reported_total_points:
+        self.calculated_total_army_points = sum([x.points for x in self.units])
+        if self.reported_total_army_points != -1 and self.calculated_total_army_points != self.reported_total_army_points:
             raise ValueError(f"""
-            Mismatch between reported:{self.reported_total_points} and calculated:{self.calculated_total_points}.
+            Mismatch between reported:{self.reported_total_army_points} and calculated:{self.calculated_total_army_points}.
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
             """)
+
+    def calculate_total_tournament_points(self) -> None:
+        if self.round_performance:
+            self.calculated_total_tournament_points = sum(
+                [x.result for x in self.round_performance])
+            self.calculated_total_tournament_secondary_points = sum(
+                [x.secondary_points for x in self.round_performance])
 
     def add_unit(self, unit: UnitEntry) -> None:
         self.units.append(unit)

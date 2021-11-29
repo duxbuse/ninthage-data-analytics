@@ -2,6 +2,10 @@
 A better way for the project to ingest tournament results
 
 
+## Requirements for performance metrics from TourneyKeeper
+
+The name of the tournament must exactly match the name of an event on TourneyKeeper.
+Additionally the player names in the list document must also match the player names in TourneyKeeper
 ## Expected file format for ingestion
 
 To be read we require a .docx word document.
@@ -9,11 +13,11 @@ The title of the document is the tournament aka "bigbellybash.docx" -> tournamen
 
 Then the document itself is a list of legal 9thage army lists in new recruit format but with the following requirements
 ```
-`name`
+`name` ***Ideally matches TK name***
 
-`army`
+`army` ***Must be valid 9thAge Army name***
 
-`list`
+`list` **Currently only newrecruit format is supported***
 
 `total points` ***optional***
 ```

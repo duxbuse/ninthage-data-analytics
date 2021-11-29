@@ -12,11 +12,13 @@ from data_classes import (
     Round
 )
 
+
 def get_recent_tournaments() -> List:
     output = []
-    
+
     now = datetime.now(timezone.utc)
-    year_ago = now - timedelta(days=1.5*365) #hard coded to look a year and half backwards
+    # hard coded to look a year and half backwards
+    year_ago = now - timedelta(days=1.5*365)
 
     now_str = quote(now.isoformat(timespec='seconds') + 'Z', safe='')
     year_ago_str = quote(year_ago.isoformat(timespec='seconds') + 'Z', safe='')
@@ -24,7 +26,9 @@ def get_recent_tournaments() -> List:
     url = f"https://tourneykeeper.net/WebAPI/Tournament/GetTournaments?from={year_ago_str}&to={now_str}"
 
     try:
-        response = requests.get(url, headers={"Accept":"application/json", "User-Agent": ""}, timeout=2) #need to blank the user agent as the default is automatically blocked
+        # need to blank the user agent as the default is automatically blocked
+        response = requests.get(
+            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return []
     if response.status_code != 200:
@@ -38,12 +42,15 @@ def get_recent_tournaments() -> List:
             output.append(tournament)
     return output
 
+
 def Get_active_players(tourney_id: int) -> Union[int, None]:
     url = f"https://tourneykeeper.net/WebAPI/Tournament/GetActivePlayers"
-    headers={"Accept":"application/json", "User-Agent": "", "Content-Type": "application/json"} #need to blank the user agent as the default is automatically blocked
-    
+    # need to blank the user agent as the default is automatically blocked
+    headers = {"Accept": "application/json",
+               "User-Agent": "", "Content-Type": "application/json"}
+
     try:
-        response = requests.post(url, json={"Id": tourney_id}, headers=headers) 
+        response = requests.post(url, json={"Id": tourney_id}, headers=headers)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -52,10 +59,13 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     data = int(message)
     return data
 
+
 def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/Game/GetGamesForTournament?tournamentId={tourney_id}"
     try:
-        response = requests.get(url, headers={"Accept":"application/json", "User-Agent": ""}) #need to blank the user agent as the default is automatically blocked
+        # need to blank the user agent as the default is automatically blocked
+        response = requests.get(
+            url, headers={"Accept": "application/json", "User-Agent": ""})
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -68,15 +78,19 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
 def Get_tournament_by_name(tournament_name: str):
     recent_tournaments = get_recent_tournaments()
     for tournament in recent_tournaments:
-        if fuzz.token_sort_ratio(tournament_name, tournament.get("Name")) == 100: # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
-            #we have found the tournament
+        # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
+        if fuzz.token_sort_ratio(tournament_name, tournament.get("Name")) == 100:
+            # we have found the tournament
             return tournament
     return None
+
 
 def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/TournamentPlayer/GetPlayerArmyDetails?tournamentPlayerId={tournamentPlayerId}"
     try:
-        response = requests.get(url, headers={"Accept":"application/json", "User-Agent": ""}) #need to blank the user agent as the default is automatically blocked
+        # need to blank the user agent as the default is automatically blocked
+        response = requests.get(
+            url, headers={"Accept": "application/json", "User-Agent": ""})
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -108,17 +122,13 @@ def Get_players_names_from_games(games: dict) -> dict:
         if player_details:
             player_name = player_details.get("PlayerName")
             tk_player_id = player_details.get("PlayerId")
-            output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
+            output[player_name] = [
+                {"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
         else:
             print(f"name: {player_name}, is not found on TK")
 
     return output
-        
-# def convert_tournamentId_to_uuid(tkid: int, list_of_armies: List[ArmyEntry]) -> Union[UUID, None]:
-#     for army in list_of_armies:
-#         if tkid == army.tourney_keeper_TournamentPlayerId:
-#             return army.army_uuid
-#     return None
+
 
 def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
     army1_uuid = None
@@ -153,7 +163,8 @@ def load_tk_info(tournament_name: str) -> Tk_info:
 
         event_date = datetime.strptime(
             tourney_keeper_info.get("Start"), '%Y-%m-%yT%H:%M:%S').replace(tzinfo=timezone.utc)
-        tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
+        tournament_games = Get_games_for_tournament(
+            tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
 
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
@@ -167,6 +178,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
 
         return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_list=player_list, player_count=player_count)
     return Tk_info()
+
 
 def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry]) -> None:
     # extract TK game results if avaliable
@@ -187,8 +199,18 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         player2_round = Round(opponent=player1_uuid, result=player2_result,
                               secondary_points=player2_secondary, round_number=round_number)
 
-        for army in list_of_armies: #TODO: instead of list of armies it should be a dict of armies with the uuid as the key
+        for army in list_of_armies:  # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
             if army.army_uuid == player1_uuid:
                 army.round_performance.append(player1_round)
             elif army.army_uuid == player2_uuid:
                 army.round_performance.append(player2_round)
+
+    # Calculate who won
+    for army in list_of_armies:
+        army.calculate_total_tournament_points()
+
+    # sort armies based on performace then set the placing based on that order
+    list_of_armies.sort(key=lambda x: (x.calculated_total_tournament_points,
+                        x.calculated_total_tournament_secondary_points), reverse=True)
+    for index, army in enumerate(list_of_armies):
+        army.list_placing = index + 1  # have to account for 0 index lists

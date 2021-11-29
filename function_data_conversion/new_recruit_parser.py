@@ -31,13 +31,16 @@ class new_recruit_parser():
         request_data = {"list": flattened_list}
 
         try:
-            response = requests.post(url, data=request_data, timeout=2)
+            response = requests.post(url, data=request_data, timeout=1)
         except requests.exceptions.ReadTimeout as err:
             return False
 
         if response.status_code == 200 and response.text == "[]":
             return True
 
+        print(f"""
+            Validation failed because: {response.json}
+        """)
         return False
 
     def detect_army_name(self, line) -> Union[Army_names, None]:
@@ -105,7 +108,8 @@ class new_recruit_parser():
                     # if there was no quantity number then the regex match for group 1 is '' so we need to hardcode that as 1
                     quantity = int(quantitySearch.group(
                         1)) if quantitySearch.group(1) else 1
-                    non_nested_upgrades = self.break_nested_upgrades(quantitySearch.group(2))
+                    non_nested_upgrades = self.break_nested_upgrades(
+                        quantitySearch.group(2))
                     splitLine = [x for x in non_nested_upgrades.split(', ')]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:

@@ -66,7 +66,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     previousLine = str
     for line in lines:
         # look for list starting
-        found_army_name = [ 
+        found_army_name = [
             army.value for army in Army_names if fuzz.token_sort_ratio(army.value, line) > 75]
         if found_army_name:
             if active_block:  # found a new list but haven't ended the old list yet.
@@ -102,18 +102,21 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army.tournament = tournament_name
     army.calculate_total_points()
 
-    army.list_placing = -1  # TODO: actually figure this out  
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
 
     if tk_info.player_list:
-        #fuzzy match name from lists file and tourney keeper
-        close_matches = [tk_info.player_list[key] for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
+        # fuzzy match name from lists file and tourney keeper
+        close_matches = [tk_info.player_list[key]
+                         for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
         if len(close_matches) == 1 and len(close_matches[0]) == 1:
-            army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get("TournamentPlayerId")
+            army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get(
+                "TournamentPlayerId")
             army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
         else:
-            raise ValueError(f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
+            raise ValueError(
+                f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
+
     return army
 
 
@@ -124,12 +127,11 @@ if __name__ == "__main__":
     from time import perf_counter
 
     t1_start = perf_counter()
-    
+
     # range(1,6)
     # "Round 1"
     # "Brisvegas Battles 3"
     # and file.startswith("Round 2")
-
 
     for file in os.listdir("data"):
         if file.endswith(".docx") and not file.startswith("~$"):
@@ -142,6 +144,7 @@ if __name__ == "__main__":
 
             Write_army_lists_to_json_file(new_path, list_of_armies)
             file_stop = perf_counter()
-            print(f"Data written to {new_path} in {round(file_stop - file_start)} seconds")
+            print(
+                f"Data written to {new_path} in {round(file_stop - file_start)} seconds")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")
