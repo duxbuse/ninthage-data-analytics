@@ -4,6 +4,7 @@ import requests
 from urllib.parse import quote
 import json
 from uuid import UUID
+from fuzzywuzzy import fuzz
 from data_classes import (
     ArmyEntry,
     Tk_info,
@@ -67,7 +68,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
 def Get_tournament_by_name(tournament_name: str):
     recent_tournaments = get_recent_tournaments()
     for tournament in recent_tournaments:
-        if tournament_name in tournament.get("Name"):
+        if fuzz.token_sort_ratio(tournament_name, tournament.get("Name")) == 100: # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
             #we have found the tournament
             return tournament
     return None

@@ -66,8 +66,8 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     previousLine = str
     for line in lines:
         # look for list starting
-        found_army_name = [
-            army.value for army in Army_names if army.value == line]
+        found_army_name = [ 
+            army.value for army in Army_names if fuzz.token_sort_ratio(army.value, line) > 75]
         if found_army_name:
             if active_block:  # found a new list but haven't ended the old list yet.
                 # remove the last line from the old block as its the player name of the new active_block
@@ -87,6 +87,8 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
             if Is_int(line) and 2000 <= int(line) <= 4500:
                 armyblocks.append(active_block)
                 active_block = []
+            elif line == lines[-1]:
+                armyblocks.append(active_block)
 
         previousLine = line
     return armyblocks
@@ -119,14 +121,19 @@ if __name__ == "__main__":
     """Used for testing locally
     """
     import os
+    from time import perf_counter
 
+    t1_start = perf_counter()
+    
     # range(1,6)
     # "Round 1"
     # "Brisvegas Battles 3"
-    specific_file = "Brisvegas Battles 3"
+    # and file.startswith("Round 2")
+
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and specific_file and file.startswith(specific_file):
+        if file.endswith(".docx") and not file.startswith("~$"):
+            file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 
             print(f"Input filepath = {filePath}")
@@ -134,4 +141,7 @@ if __name__ == "__main__":
             new_path = filePath.parent / ("json/" + filePath.stem + ".json")
 
             Write_army_lists_to_json_file(new_path, list_of_armies)
-            print(f"Data written to {new_path}")
+            file_stop = perf_counter()
+            print(f"Data written to {new_path} in {round(file_stop - file_start)} seconds")
+    t1_stop = perf_counter()
+    print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")

@@ -95,7 +95,7 @@ class ArmyEntry():
         self.calculated_total_points = sum([x.points for x in self.units])
         if self.reported_total_points != -1 and self.calculated_total_points != self.reported_total_points:
             raise ValueError(f"""
-            Mismatch between 'reported':{self.reported_total_points} and 'calculated':{self.calculated_total_points}.
+            Mismatch between reported:{self.reported_total_points} and calculated:{self.calculated_total_points}.
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
