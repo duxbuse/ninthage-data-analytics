@@ -1,0 +1,17 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function_discord_bot
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_discord_bot
+  - --region=${_REGION}
+  - --source=./function_discord_bot/
+  - --trigger-http
+  - --runtime=python39
