@@ -1,7 +1,7 @@
 # import os
 import json
 from flask.wrappers import Request, Response
-from flask import abort
+from flask import abort, jsonify
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
@@ -27,12 +27,20 @@ def function_discord_bot(request: Request):
     # Handle valid requests
     if request.json["type"] == 1:
         return reply_to_ping()
-
+    else:
+        return jsonify({
+            "type": 4,
+            "data": {
+                "tts": False,
+                "content": "Congrats on sending your command!",
+                "embeds": [],
+                "allowed_mentions": { "parse": [] }
+            }
+        })
 
 
 def reply_to_ping():
-    js = json.dumps({"type": 1})
-    return Response(js, status=200, mimetype='application/json') 
+    return jsonify({"type": 1})
 
 
 
