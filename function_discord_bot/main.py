@@ -1,5 +1,3 @@
-# import os
-import json
 from flask.wrappers import Request, Response
 from flask import abort, jsonify
 from nacl.signing import VerifyKey
@@ -32,11 +30,18 @@ def function_discord_bot(request: Request):
             "type": 4,
             "data": {
                 "tts": False,
-                "content": "Congrats on sending your command!",
+                "content": validate_list(request),
                 "embeds": [],
                 "allowed_mentions": { "parse": [] }
             }
         })
+
+
+def validate_list(request: Request):
+    data = request.json["data"]
+    message_id = data["target_id"]
+
+    return data["resolved"]["messages"][message_id]["attachments"]
 
 
 def reply_to_ping():
@@ -45,17 +50,33 @@ def reply_to_ping():
 
 
 if __name__ == "__main__":
+    # Register bot slash commands
+    import os
     from dotenv import load_dotenv
+    import requests
 
     load_dotenv()
 
     
-    # TOKEN = os.getenv('DISCORD_TOKEN')
+    TOKEN = os.getenv('DISCORD_TOKEN')
+    APP_ID = os.getenv('DISCORD_APP_ID')
 
-    # client = discord.Client()
+    url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
+    headers = {
+        "Authorization": f"Bot {TOKEN}",
+        "Accept":"application/json",
+        "User-Agent": "",
+        "Content-Type": "application/json"
+    }   
 
-    # @client.event
-    # async def on_ready():
-    #     print(f'{client.user} has connected to Discord!')
+    # This is an example CHAT_INPUT or Slash Command, with a type of 1
+    json = {
+    "name": "validate",
+    "type": 3
+}
 
-    # client.run(TOKEN)
+    r = requests.post(url, headers=headers, json=json)
+
+    print(f"upload status code: {r.status_code}")
+    if r.status_code != 200:
+        print(f"{r.text}")
