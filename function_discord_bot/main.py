@@ -1,7 +1,7 @@
 from os import getenv
 from flask.wrappers import Request
 import requests
-from flask import abort, jsonify
+from flask import jsonify
 from security_headers import check_security_headers
 from discord_command_upload import upload_file
 from discord_command_validate import validate
