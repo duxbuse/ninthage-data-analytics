@@ -12,7 +12,7 @@ def function_data_ingestion(data: str= "{}", context: str="{}") -> None:
     print(f"context = {context}")
 
     project = "ninthage-data-analytics"
-    location = "us-central1"
+    location = "us-west1"
     workflow = "workflow_parse_lists"
 
     # Set up API clients.

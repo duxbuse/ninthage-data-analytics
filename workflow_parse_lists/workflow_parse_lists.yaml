@@ -5,7 +5,7 @@ main:
         - workflow_function_data_conversion:
             call: http.post
             args:
-                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
+                url: https://us-west1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
                 headers:
                     Content-type: application/json
                 body:
@@ -17,7 +17,7 @@ main:
         - workflow_function_upload_data_into_bigquery:
             call: http.post
             args:
-                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_upload_data_into_bigquery
+                url: https://us-west1-ninthage-data-analytics.cloudfunctions.net/function_upload_data_into_bigquery
                 headers:
                     Content-type: application/json
                 body:
