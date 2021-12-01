@@ -45,14 +45,15 @@ def validate_list(request: Request):
     message_id = data["target_id"]
     attachments = data["resolved"]["messages"][message_id]["attachments"]
     uploaded_files = []
+    upload_bucket = "tournament-lists"
     print(f"All attachments: {attachments}")
+    
     for attachment in attachments:
         print(f"current attachment: {attachment}")
         url = attachment["url"]
         filename = attachment["filename"]
 
         download_file_path = f"/tmp/{filename}"
-        upload_bucket = "tournament-lists"
 
         r = requests.get(url, allow_redirects=True)
         open(download_file_path, 'wb').write(r.content)
@@ -99,7 +100,6 @@ if __name__ == "__main__":
         "Content-Type": "application/json"
     }
 
-    # This is an example CHAT_INPUT or Slash Command, with a type of 1
     json = {
         "name": "validate",
         "type": 3
