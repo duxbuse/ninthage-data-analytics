@@ -43,19 +43,23 @@ def function_discord_bot(request: Request):
 def validate_list(request: Request):
     data = request.json["data"]
     message_id = data["target_id"]
-    attachment = data["resolved"]["messages"][message_id]["attachments"]
-    url = attachment["url"]
-    filename = attachment["filename"]
+    attachments = data["resolved"]["messages"][message_id]["attachments"]
+    uploaded_files = []
+    for attachment in attachments:
+        url = attachment["url"]
+        filename = attachment["filename"]
 
-    download_file_path = f"/tmp/{filename}"
-    upload_bucket = "tournament-lists"
+        download_file_path = f"/tmp/{filename}"
+        upload_bucket = "tournament-lists"
 
-    r = requests.get(url, allow_redirects=True)
-    open(download_file_path, 'wb').write(r.content)
+        r = requests.get(url, allow_redirects=True)
+        open(download_file_path, 'wb').write(r.content)
 
-    upload_blob(upload_bucket, download_file_path, filename)
-    rmdir("/tmp")
-    return f"File: {filename} uploaded to bucket: {upload_bucket}"
+        upload_blob(upload_bucket, download_file_path, filename)
+        uploaded_files.append(filename)
+        rmdir("/tmp")
+
+    return f"File/s: {uploaded_files} uploaded to bucket: {upload_bucket}"
 
 
 def reply_to_ping():
