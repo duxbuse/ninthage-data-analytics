@@ -2,6 +2,8 @@
 from flask.wrappers import Request
 from google.cloud import storage
 import requests
+from pathlib import Path
+
 from os import remove
 
 
@@ -23,8 +25,8 @@ def upload_file(request: Request):
         r = requests.get(url, allow_redirects=True)
         open(download_file_path, 'wb').write(r.content)
 
-        # removing `_` from file name
-        proper_name = filename.replace("_", " ")
+        # removing `_` from file name as well as "/tmp/"
+        proper_name = Path(filename.replace("_", " ")).name
 
         upload_blob(upload_bucket, download_file_path, proper_name)
         uploaded_files.append(filename)
