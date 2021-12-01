@@ -29,40 +29,44 @@ def function_discord_bot(request: Request):
     if request.json["type"] == 1:
         return reply_to_ping()
     else:
+        print(f"DEBUG: {request.json}")
         return jsonify({
             "type": 4,
             "data": {
                 "tts": False,
-                "content": validate_list(request),
+                "content": upload_file(request),
                 "embeds": [],
                 "allowed_mentions": {"parse": []}
             }
         })
 
 
-def validate_list(request: Request):
+def upload_file(request: Request):
     data = request.json["data"]
     message_id = data["target_id"]
     attachments = data["resolved"]["messages"][message_id]["attachments"]
     uploaded_files = []
     upload_bucket = "tournament-lists"
     print(f"All attachments: {attachments}")
-    
+
     for attachment in attachments:
         print(f"current attachment: {attachment}")
-        url = attachment["url"]
-        filename = attachment["filename"]
+        url: str = attachment["url"]
+        filename: str = attachment["filename"]
 
         download_file_path = f"/tmp/{filename}"
 
         r = requests.get(url, allow_redirects=True)
         open(download_file_path, 'wb').write(r.content)
 
-        upload_blob(upload_bucket, download_file_path, filename)
+        # removing `_` from file name
+        proper_name = filename.replace("_", " ")
+
+        upload_blob(upload_bucket, download_file_path, proper_name)
         uploaded_files.append(filename)
         remove(download_file_path)
 
-    return f"File/s: {uploaded_files} uploaded to bucket: {upload_bucket}"
+    return f"Files: {uploaded_files} uploaded."
 
 
 def reply_to_ping():
@@ -100,13 +104,20 @@ if __name__ == "__main__":
         "Content-Type": "application/json"
     }
 
-    json = {
-        "name": "validate",
+    json = [
+        {
+        "name": "upload",
         "type": 3
-    }
+        },
+        {
+        "name": "verify",
+        "type": 3
+        }
+    ]
 
-    r = requests.post(url, headers=headers, json=json)
+    for message_command in json:
+        r = requests.post(url, headers=headers, json=message_command)
 
-    print(f"upload status code: {r.status_code}")
-    if r.status_code != 200:
-        print(f"{r.text}")
+        print(f"upload status code: {r.status_code}")
+        if r.status_code != 200 or r.status_code != 201:
+            print(f"{r.text}")
