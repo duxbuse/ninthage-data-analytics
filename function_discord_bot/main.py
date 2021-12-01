@@ -45,7 +45,9 @@ def validate_list(request: Request):
     message_id = data["target_id"]
     attachments = data["resolved"]["messages"][message_id]["attachments"]
     uploaded_files = []
+    print(f"All attachments: {attachments}")
     for attachment in attachments:
+        print(f"current attachment: {attachment}")
         url = attachment["url"]
         filename = attachment["filename"]
 
