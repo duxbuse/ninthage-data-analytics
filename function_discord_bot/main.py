@@ -26,11 +26,13 @@ def function_discord_bot(request: Request):
     if request.json["type"] == 1:
         return reply_to_ping()
     else:
+        attachments = validate_list(request)
+        print(f"DEBUG: attachments: {attachments}")
         return jsonify({
             "type": 4,
             "data": {
                 "tts": False,
-                "content": validate_list(request),
+                "content": "check da logs",
                 "embeds": [],
                 "allowed_mentions": { "parse": [] }
             }
