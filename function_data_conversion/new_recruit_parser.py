@@ -14,7 +14,7 @@ class new_recruit_parser():
         else:
             return float(n).is_integer()
 
-    def validate(self, lines: List[str]) -> bool:
+    def validate(self, lines: List[str]) -> str:
         """
             TODO: Known issues:
             if some units are on the same line we can still read it in but validation will fail
@@ -40,20 +40,14 @@ class new_recruit_parser():
         try:
             response = requests.post(url, data=request_data, timeout=1)
         except requests.exceptions.ReadTimeout as err:
-            return False
+            return err
 
-        if response.status_code == 200 and response.text == "[]":
-            return True
+        return response.text
 
-        print(f"""
-            Validation failed because: {response.text}
-        """)
-        return False
-
-    def detect_army_name(self, line) -> Union[Army_names, None]:
-        army_name = [army.value for army in Army_names if army.value in line]
+    def detect_army_name(self, line) -> Union[str, None]:
+        army_name = Army_names.get(line)
         if army_name:
-            return army_name[0]
+            return army_name
         return None
 
     def detect_total_points(self, line) -> Union[int, None]:
@@ -89,14 +83,16 @@ class new_recruit_parser():
             if army_name:
                 new_army.army = army_name
 
-        new_army.validated = self.validate(lines)
+        validation_errors = self.validate(lines)
+        new_army.validated = not validation_errors
+        new_army.validation_errors = validation_errors
 
         return new_army
 
     def parse_unit_line(self, line: str) -> List[UnitEntry]:
         output = []
 
-        split_line_points_entry = r'(\d{2,4})(?: - | )(.+?)(?=\d{2,4}|$)'
+        split_line_points_entry = r'(\d{2,4})(?: - | –| )(.+?)(?=\d{2,4}|$)'
         pointsSearch = re.findall(split_line_points_entry, line)
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately
@@ -117,17 +113,36 @@ class new_recruit_parser():
                         1)) if quantitySearch.group(1) else 1
                     non_nested_upgrades = self.break_nested_upgrades(
                         quantitySearch.group(2))
-                    splitLine = [x for x in non_nested_upgrades.split(', ')]
+                    splitLine = [x.strip() for x in non_nested_upgrades.split(', ')]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:
                         unit_upgrades = splitLine[1:]
                     else:
                         unit_upgrades = []
 
+                    unit_upgrades = self.expand_short_hand(unit_upgrades)
                     output.append(UnitEntry(
                         points=unit_points, quantity=quantity, name=unit_name, upgrades=unit_upgrades))
 
         return output
+
+    def expand_short_hand(self, unit_upgrades: list[str]) -> list[str]:
+
+        new_unit_upgrades = unit_upgrades
+        for index, upgrade in enumerate(unit_upgrades):
+            # m -> musician
+            regex = r'^(m|M|muso)$'
+            new_unit_upgrades[index] = re.sub(regex, 'Musician', upgrade)
+            # s -> standard bearer
+            regex = r'^(s|S|standard)$'
+            new_unit_upgrades[index] = re.sub(regex, 'Standard Bearer', upgrade)
+            # c -> champion
+            regex = r'^(c|C|champ)$'
+            new_unit_upgrades[index] = re.sub(regex, 'Champion', upgrade)
+            # bsb -> battle standard bearer
+            regex = r'^(bsb|BSB)$'
+            new_unit_upgrades[index] = re.sub(regex, 'Battle Standard Bearer', upgrade)
+        return new_unit_upgrades
 
     def break_nested_upgrades(self, unit_upgrades: str) -> str:
         """Resolving nested upgrades that are contained inside ()

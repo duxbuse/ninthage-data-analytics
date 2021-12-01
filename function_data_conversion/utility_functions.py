@@ -20,7 +20,7 @@ def Docx_to_line_list(docxFile) -> List[str]:
     for i in range(len(par)):
         text = par[i].text.strip(' .')
         text = ' '.join(text.split())  # remove weird unicode spaces \xa0
-        if len(text) > 2:  # hard coded ignore short lines, need to allow for people whos names are "tom" so must be 3+
+        if len(text) >= 2:  # hard coded ignore short lines need to handle army short names aka "BH"
             lines.append(text)
     return lines
 
