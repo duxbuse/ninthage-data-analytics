@@ -1,3 +1,4 @@
+from os import rmdir, getenv
 from flask.wrappers import Request, Response
 import requests
 from flask import abort, jsonify
@@ -53,7 +54,7 @@ def validate_list(request: Request):
     open(download_file_path, 'wb').write(r.content)
 
     upload_blob(upload_bucket, download_file_path, filename)
-
+    rmdir("/tmp")
     return f"File: {filename} uploaded to bucket: {upload_bucket}"
 
 
@@ -73,16 +74,16 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
         destination_blob_name,
         bucket_name))
 
+
 if __name__ == "__main__":
     # Register bot slash commands
-    import os
     from dotenv import load_dotenv
     import requests
 
     load_dotenv()
 
-    TOKEN = os.getenv('DISCORD_TOKEN')
-    APP_ID = os.getenv('DISCORD_APP_ID')
+    TOKEN = getenv('DISCORD_TOKEN')
+    APP_ID = getenv('DISCORD_APP_ID')
 
     url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
     headers = {
