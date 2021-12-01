@@ -4,7 +4,7 @@ from google.cloud import storage
 from google.api_core.exceptions import BadRequest
 from flask.wrappers import Request
 import json
-from os import rmdir
+from os import remove
 
 
 from google.cloud.storage.blob import Blob
@@ -69,7 +69,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
 
         print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
-        rmdir("/tmp")
+        remove(file_path)
     return "its over"
 
 if __name__ == "__main__":

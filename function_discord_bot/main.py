@@ -1,4 +1,4 @@
-from os import rmdir, getenv
+from os import remove, getenv
 from flask.wrappers import Request, Response
 import requests
 from flask import abort, jsonify
@@ -59,7 +59,7 @@ def validate_list(request: Request):
 
         upload_blob(upload_bucket, download_file_path, filename)
         uploaded_files.append(filename)
-        rmdir("/tmp")
+        remove(download_file_path)
 
     return f"File/s: {uploaded_files} uploaded to bucket: {upload_bucket}"
 
