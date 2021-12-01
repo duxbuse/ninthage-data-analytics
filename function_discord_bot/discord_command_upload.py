@@ -11,10 +11,10 @@ def upload_file(request: Request):
     attachments = data["resolved"]["messages"][message_id]["attachments"]
     uploaded_files = []
     upload_bucket = "tournament-lists"
-    print(f"All attachments: {attachments}")
+    print(f"DEBUG: All attachments: {attachments}")
 
     for attachment in attachments:
-        print(f"current attachment: {attachment}")
+        print(f"DEBUG: Current attachment: {attachment}")
         url: str = attachment["url"]
         filename: str = attachment["filename"]
 
