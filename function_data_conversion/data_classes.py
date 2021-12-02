@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Union
 from uuid import UUID, uuid4
 from enum import Enum, unique, auto
 
@@ -96,11 +96,11 @@ class UnitEntry():
 
 @dataclass
 class Round():
-    opponent: UUID
+    opponent: Optional[Union[UUID, int]] = -1
     result: Optional[int] = -1
     secondary_points: Optional[int] = -1
     round_number: Optional[int] = -1
-    game_uuid: Optional[UUID] = None
+    game_uuid: Optional[Union[UUID, int]] = -1 #I know this is a type issue, but when there is no TK data to load we need a non 'None' default
 
 
 @dataclass

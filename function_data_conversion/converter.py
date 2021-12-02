@@ -56,7 +56,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
         #need to add empty round() object so total object fits bigquery schema
         for army in army_list:
             if not army.round_performance:
-                army.round_performance.append(Round(opponent=army.army_uuid))#empty round who references itself
+                army.round_performance.append(Round())#empty round who references itself
 
     return army_list
 
@@ -137,9 +137,11 @@ if __name__ == "__main__":
     # "Round 1"
     # "Brisvegas Battles 3"
     # and file.startswith("Round 2")
+    # GTC singles
+    # testtesttesttestsetsetset
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Brisvegas Battles 3.docx"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("GTC singles.docx"):
             file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 

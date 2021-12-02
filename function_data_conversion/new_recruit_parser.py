@@ -92,8 +92,8 @@ class new_recruit_parser():
     def parse_unit_line(self, line: str) -> List[UnitEntry]:
         output = []
 
-        split_line_points_entry = r'(\d{2,4})(?: - | –| )(.+?)(?=\d{2,4}|$)'
-        pointsSearch = re.findall(split_line_points_entry, line)
+        split_line_points_entry = r'(\d{2,4}?)(?: ?[-–] ?)(.+?)(?=\d{2,4}|$)'
+        pointsSearch = re.findall(split_line_points_entry, line.lower()) #ensure its all lowercase to prevent casing issues
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately
 
@@ -111,8 +111,8 @@ class new_recruit_parser():
                     # if there was no quantity number then the regex match for group 1 is '' so we need to hardcode that as 1
                     quantity = int(quantitySearch.group(
                         1)) if quantitySearch.group(1) else 1
-                    non_nested_upgrades = self.break_nested_upgrades(
-                        quantitySearch.group(2))
+                    cleaned_upgrades = self.clear_superfluous_data(quantitySearch.group(2))
+                    non_nested_upgrades = self.break_nested_upgrades(cleaned_upgrades)
                     splitLine = [x.strip() for x in non_nested_upgrades.split(', ')]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:
@@ -126,6 +126,21 @@ class new_recruit_parser():
 
         return output
 
+    def clear_superfluous_data(self, unit_upgrades: str) -> str:
+        """getting rid of things we don't want to store
+
+        Args:
+            unit_upgrades (str): [description]
+
+        Returns:
+            str: cleaned string
+        """
+        # removing "(4+)|4+" from "Crossbow (4+)|Crossbow 4+"
+        regex = r' ?(\(\d\+\)|\d\+)'
+        unit_upgrades = re.sub(regex, '', unit_upgrades)
+        return unit_upgrades
+
+
     def expand_short_hand(self, unit_upgrades: list[str]) -> list[str]:
 
         new_unit_upgrades = unit_upgrades
@@ -133,15 +148,25 @@ class new_recruit_parser():
             # m -> musician
             regex = r'^(m|M|muso)$'
             new_unit_upgrades[index] = re.sub(regex, 'Musician', upgrade)
+
             # s -> standard bearer
             regex = r'^(s|S|standard)$'
             new_unit_upgrades[index] = re.sub(regex, 'Standard Bearer', upgrade)
+
             # c -> champion
             regex = r'^(c|C|champ)$'
             new_unit_upgrades[index] = re.sub(regex, 'Champion', upgrade)
+
             # bsb -> battle standard bearer
             regex = r'^(bsb|BSB)$'
             new_unit_upgrades[index] = re.sub(regex, 'Battle Standard Bearer', upgrade)
+
+            # FCG -> champ+muso+standard
+            regex = r'^(fcg|FCG)$'
+            new_unit_upgrades[index] = re.sub(regex, 'Standard Bearer', upgrade)
+            new_unit_upgrades.append('Musician')
+            new_unit_upgrades.append('Champion')
+            
         return new_unit_upgrades
 
     def break_nested_upgrades(self, unit_upgrades: str) -> str:
