@@ -19,53 +19,53 @@ class Event_types(Enum):
 
 
 Army_names = {
-    "BEAST_HERDS": "Beast Herds",
+    "BEAST HERDS": "Beast Herds",
     "BH": "Beast Herds",
 
-    "DREAD_ELVES": "Dread Elves",
+    "DREAD ELVES": "Dread Elves",
     "DE": "Dread Elves",
 
-    "DWARVEN_HOLDS": "Dwarven Holds",
+    "DWARVEN HOLDS": "Dwarven Holds",
     "DH": "Dwarven Holds",
 
-    "DAEMON_LEGIONS": "Daemon Legions",
+    "DAEMON LEGIONS": "Daemon Legions",
     "DL": "Daemon Legions",
 
-    "EMPIRE_OF_SONNSTAHL": "Empire of Sonnstahl",
+    "EMPIRE OF SONNSTAHL": "Empire of Sonnstahl",
     "EOS": "Empire of Sonnstahl",
 
-    "HIGHBORN_ELVES": "Highborn Elves",
+    "HIGHBORN ELVES": "Highborn Elves",
     "HBE": "Highborn Elves",
 
-    "INFERNAL_DWARVES": "Infernal Dwarves",
+    "INFERNAL DWARVES": "Infernal Dwarves",
     "ID": "Infernal Dwarves",
 
-    "KINGDOM_OF_EQUITAINE": "Kingdom of Equitaine",
+    "KINGDOM OF EQUITAINE": "Kingdom of Equitaine",
     "KOE": "Kingdom of Equitaine",
 
-    "OGRE_KHANS": "Ogre Khans",
+    "OGRE KHANS": "Ogre Khans",
     "OK": "Ogre Khans",
 
-    "ORCS_AND_GOBLINS": "Orcs and Goblins",
+    "ORCS AND GOBLINS": "Orcs and Goblins",
     "ONG": "Orcs and Goblins",
     "O&G": "Orcs and Goblins",
 
-    "SAURIAN_ANCIENTS": "Saurian Ancients",
+    "SAURIAN ANCIENTS": "Saurian Ancients",
     "SA": "Saurian Ancients",
 
-    "SYLVAN_ELVES": "Sylvan Elves",
+    "SYLVAN ELVES": "Sylvan Elves",
     "SE": "Sylvan Elves",
 
-    "UNDYING_DYNASTES": "Undying Dynasties",
+    "UNDYING DYNASTES": "Undying Dynasties",
     "UD": "Undying Dynasties",
 
-    "VAMPIRE_COVENANT": "Vampire Covenant",
+    "VAMPIRE COVENANT": "Vampire Covenant",
     "VC": "Vampire Covenant",
 
-    "VERMIN_SWARM": "Vermin Swarm",
+    "VERMIN SWARM": "Vermin Swarm",
     "VS": "Vermin Swarm",
 
-    "WARRIORS_OF_THE_DARK_GODS": "Warriors of the Dark Gods",
+    "WARRIORS OF THE DARK GODS": "Warriors of the Dark Gods",
     "WDG": "Warriors of the Dark Gods",
 
     "ASKLANDERS": "Åsklanders",

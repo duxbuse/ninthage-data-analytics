@@ -44,8 +44,8 @@ class new_recruit_parser():
 
         return response.text
 
-    def detect_army_name(self, line) -> Union[str, None]:
-        army_name = Army_names.get(line)
+    def detect_army_name(self, line: str) -> Union[str, None]:
+        army_name = Army_names.get(line.upper())
         if army_name:
             return army_name
         return None

@@ -50,7 +50,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
                "User-Agent": "", "Content-Type": "application/json"}
 
     try:
-        response = requests.post(url, json={"Id": tourney_id}, headers=headers)
+        response = requests.post(url, json={"Id": tourney_id}, headers=headers,  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -65,7 +65,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""})
+            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -90,7 +90,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""})
+            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:

@@ -72,7 +72,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     previousLine = str
     for line in lines:
         # look for list starting
-        found_army_name = Army_names.get(line)
+        found_army_name = Army_names.get(line.upper())
         if found_army_name:
             if active_block:  # found a new list but haven't ended the old list yet.
                 # remove the last line from the old block as its the player name of the new active_block
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     # and file.startswith("Round 2")
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("test.docx"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Brisvegas Battles 3.docx"):
             file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 
