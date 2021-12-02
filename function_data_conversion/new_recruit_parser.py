@@ -38,11 +38,11 @@ class new_recruit_parser():
         request_data = {"list": flattened_list}
 
         try:
-            response = requests.post(url, data=request_data, timeout=1)
+            response = requests.post(url, data=request_data, timeout=2)
         except requests.exceptions.ReadTimeout as err:
-            return err
+            return err.strerror
 
-        return response.text
+        return response.json()
 
     def detect_army_name(self, line: str) -> Union[str, None]:
         army_name = Army_names.get(line.upper())
@@ -141,31 +141,33 @@ class new_recruit_parser():
         return unit_upgrades
 
 
+
     def expand_short_hand(self, unit_upgrades: list[str]) -> list[str]:
 
-        new_unit_upgrades = unit_upgrades
+        new_unit_upgrades = unit_upgrades[:] #Need to take a slice as then it is not linked to the original object, to avoid infinite loop
         for index, upgrade in enumerate(unit_upgrades):
             # m -> musician
             regex = r'^(m|M|muso)$'
-            new_unit_upgrades[index] = re.sub(regex, 'Musician', upgrade)
+            new_unit_upgrades[index] = re.sub(regex, 'musician', upgrade)
 
             # s -> standard bearer
             regex = r'^(s|S|standard)$'
-            new_unit_upgrades[index] = re.sub(regex, 'Standard Bearer', upgrade)
+            new_unit_upgrades[index] = re.sub(regex, 'standard bearer', upgrade)
 
             # c -> champion
             regex = r'^(c|C|champ)$'
-            new_unit_upgrades[index] = re.sub(regex, 'Champion', upgrade)
+            new_unit_upgrades[index] = re.sub(regex, 'champion', upgrade)
 
             # bsb -> battle standard bearer
             regex = r'^(bsb|BSB)$'
-            new_unit_upgrades[index] = re.sub(regex, 'Battle Standard Bearer', upgrade)
+            new_unit_upgrades[index] = re.sub(regex, 'battle standard bearer', upgrade)
 
             # FCG -> champ+muso+standard
             regex = r'^(fcg|FCG)$'
-            new_unit_upgrades[index] = re.sub(regex, 'Standard Bearer', upgrade)
-            new_unit_upgrades.append('Musician')
-            new_unit_upgrades.append('Champion')
+            if re.match(regex, upgrade):
+                new_unit_upgrades[index] = re.sub(regex, 'standard bearer', upgrade)
+                new_unit_upgrades.append('musician')
+                new_unit_upgrades.append('champion')
             
         return new_unit_upgrades
 
