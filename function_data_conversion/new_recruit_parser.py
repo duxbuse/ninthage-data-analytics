@@ -14,7 +14,7 @@ class new_recruit_parser():
         else:
             return float(n).is_integer()
 
-    def validate(self, lines: List[str]) -> str:
+    def validate(self, lines: List[str]) -> list[str]:
         """
             TODO: Known issues:
             if some units are on the same line we can still read it in but validation will fail
@@ -38,11 +38,17 @@ class new_recruit_parser():
         request_data = {"list": flattened_list}
 
         try:
-            response = requests.post(url, data=request_data, timeout=0.5)
+            response = requests.post(url, data=request_data, timeout=2)
         except requests.exceptions.ReadTimeout as err:
-            return "[]" #non empty string so bigquery doesn't complain
+            return ["Validation Timeout"]
 
-        return response.json()
+        r = response.json()
+        if type(r) == dict:
+            return([r.get("error")])
+        elif type(r) == list:
+            return([x.get("msg") for x in response.json()])
+        else:
+            return ["Unknown Validation error"]
 
     def detect_army_name(self, line: str) -> Union[str, None]:
         army_name = Army_names.get(line.upper())

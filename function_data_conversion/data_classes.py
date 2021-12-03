@@ -122,7 +122,7 @@ class ArmyEntry():
     reported_total_army_points: Optional[int] = -1
     calculated_total_army_points: Optional[int] = None
     validated: bool = False
-    validation_errors: str = '[]'#Non empty string to prevnt issues on big query
+    validation_errors: list[str] = field(default_factory=list)
     round_performance: list[Round] = field(default_factory=list)
     army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)
