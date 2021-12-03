@@ -40,7 +40,7 @@ class new_recruit_parser():
         try:
             response = requests.post(url, data=request_data, timeout=0.5)
         except requests.exceptions.ReadTimeout as err:
-            return " " #non empty string so bigquery doesn't complain
+            return "[]" #non empty string so bigquery doesn't complain
 
         return response.json()
 
