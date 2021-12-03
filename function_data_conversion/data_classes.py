@@ -96,11 +96,11 @@ class UnitEntry():
 
 @dataclass
 class Round():
-    opponent: Optional[Union[UUID, str]] = "-1"
+    opponent: Optional[Union[UUID, str]] = ""
     result: Optional[int] = -1
     secondary_points: Optional[int] = -1
     round_number: Optional[int] = -1
-    game_uuid: Optional[Union[UUID, str]] = "-1" #I know this is a type issue, but when there is no TK data to load we need a non 'None' default
+    game_uuid: Optional[Union[UUID, str]] = "" #I know this is a type issue, but when there is no TK data to load we need a non 'None' default
 
 
 @dataclass
