@@ -62,10 +62,11 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
             if "null" in army_as_string:
                 jsonFile.close
                 raise ValueError(f"""
-                    Invalid List 
+                    Invalid List - null value found in
                     Army: {army.army}
                     Player: {army.player_name}
                     Tournament: {army.tournament}
+                    ArmyString: {army_as_string}
                     """)
             else:
                 jsonFile.write(army_as_string)
