@@ -20,7 +20,7 @@ def Docx_to_line_list(docxFile) -> List[str]:
     for i in range(len(par)):
         text = par[i].text.strip(' .')
         text = ' '.join(text.split())  # remove weird unicode spaces \xa0
-        if len(text) > 2:  # hard coded ignore short lines, need to allow for people whos names are "tom" so must be 3+
+        if len(text) >= 2:  # hard coded ignore short lines need to handle army short names aka "BH"
             lines.append(text)
     return lines
 
@@ -62,10 +62,11 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
             if "null" in army_as_string:
                 jsonFile.close
                 raise ValueError(f"""
-                    Invalid List 
+                    Invalid List - null value found in
                     Army: {army.army}
                     Player: {army.player_name}
                     Tournament: {army.tournament}
+                    ArmyString: {army_as_string}
                     """)
             else:
                 jsonFile.write(army_as_string)

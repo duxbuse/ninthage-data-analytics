@@ -4,15 +4,15 @@ substitutions:
 
 steps:
 
-- id: Deploy function-data-conversion
+- id: Deploy function_discord_bot
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
   - gcloud
   - functions
   - deploy
-  - function_data_conversion
+  - function_discord_bot
   - --region=${_REGION}
-  - --source=./function_data_conversion/
+  - --source=./function_discord_bot/
   - --trigger-http
+  - --allow-unauthenticated
   - --runtime=python39
-  - --timeout=120

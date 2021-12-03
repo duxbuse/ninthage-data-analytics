@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Union
 from uuid import UUID, uuid4
 from enum import Enum, unique, auto
 
@@ -18,29 +18,61 @@ class Event_types(Enum):
     TEAMS = auto()
 
 
-@unique
-class Army_names(Enum):
-    BEAST_HERDS = "Beast Herds"
-    DREAD_ELVES = "Dread Elves"
-    DWARVEN_HOLDS = "Dwarven Holds"
-    DAEMON_LEGIONS = "Daemon Legions"
-    EMPIRE_OF_SONNSTAHL = "Empire of Sonnstahl"
-    HIGHBORN_ELVES = "Highborn Elves"
-    INFERNAL_DWARVES = "Infernal Dwarves"
-    KINGDOM_OF_EQUITAINE = "Kingdom of Equitaine"
-    OGRE_KHANS = "Ogre Khans"
-    ORCS_AND_GOBLINS = "Orcs and Goblins"
-    SAURIAN_ANCIENTS = "Saurian Ancients"
-    SYLVAN_ELVES = "Sylvan Elves"
-    UNDYING_DYNASTES = "Undying Dynasties"
-    VAMPIRE_COVENANT = "Vampire Covenant"
-    VERMIN_SWARM = "Vermin Swarm"
-    WARRIORS_OF_THE_DARK_GODS = "Warriors of the Dark Gods"
-    ASKLANDERS = "Åsklanders"
-    CULTISTS = "Cultists"
-    HOBGOLBINS = "Hobgolbins"
-    MAKHAR = "Makhar"
+Army_names = {
+    "BEAST HERDS": "Beast Herds",
+    "BH": "Beast Herds",
 
+    "DREAD ELVES": "Dread Elves",
+    "DE": "Dread Elves",
+
+    "DWARVEN HOLDS": "Dwarven Holds",
+    "DH": "Dwarven Holds",
+
+    "DAEMON LEGIONS": "Daemon Legions",
+    "DL": "Daemon Legions",
+
+    "EMPIRE OF SONNSTAHL": "Empire of Sonnstahl",
+    "EOS": "Empire of Sonnstahl",
+
+    "HIGHBORN ELVES": "Highborn Elves",
+    "HBE": "Highborn Elves",
+
+    "INFERNAL DWARVES": "Infernal Dwarves",
+    "ID": "Infernal Dwarves",
+
+    "KINGDOM OF EQUITAINE": "Kingdom of Equitaine",
+    "KOE": "Kingdom of Equitaine",
+
+    "OGRE KHANS": "Ogre Khans",
+    "OK": "Ogre Khans",
+
+    "ORCS AND GOBLINS": "Orcs and Goblins",
+    "ONG": "Orcs and Goblins",
+    "O&G": "Orcs and Goblins",
+
+    "SAURIAN ANCIENTS": "Saurian Ancients",
+    "SA": "Saurian Ancients",
+
+    "SYLVAN ELVES": "Sylvan Elves",
+    "SE": "Sylvan Elves",
+
+    "UNDYING DYNASTES": "Undying Dynasties",
+    "UD": "Undying Dynasties",
+
+    "VAMPIRE COVENANT": "Vampire Covenant",
+    "VC": "Vampire Covenant",
+
+    "VERMIN SWARM": "Vermin Swarm",
+    "VS": "Vermin Swarm",
+
+    "WARRIORS OF THE DARK GODS": "Warriors of the Dark Gods",
+    "WDG": "Warriors of the Dark Gods",
+
+    "ASKLANDERS": "Åsklanders",
+    "CULTISTS": "Cultists",
+    "HOBGOLBINS": "Hobgolbins",
+    "MAKHAR": "Makhar"
+}
 
 @dataclass
 class Tk_info():
@@ -64,10 +96,11 @@ class UnitEntry():
 
 @dataclass
 class Round():
-    opponent: UUID
+    opponent: Optional[Union[UUID, str]] = ""
     result: Optional[int] = -1
     secondary_points: Optional[int] = -1
     round_number: Optional[int] = -1
+    game_uuid: Optional[Union[UUID, str]] = "" #I know this is a type issue, but when there is no TK data to load we need a non 'None' default
 
 
 @dataclass
@@ -75,7 +108,7 @@ class ArmyEntry():
     """class to hold entire army list
     """
     player_name: Optional[str] = None  # bob
-    army: Optional[Army_names] = None  # Vampire Covenant
+    army: Optional[str] = None  # Vampire Covenant
     tournament: Optional[str] = None  # brawler bash 2021
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None
@@ -89,6 +122,7 @@ class ArmyEntry():
     reported_total_army_points: Optional[int] = -1
     calculated_total_army_points: Optional[int] = None
     validated: bool = False
+    validation_errors: list[str] = field(default_factory=list)
     round_performance: list[Round] = field(default_factory=list)
     army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)

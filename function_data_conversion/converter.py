@@ -56,7 +56,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
         #need to add empty round() object so total object fits bigquery schema
         for army in army_list:
             if not army.round_performance:
-                army.round_performance.append(Round(opponent=army.army_uuid))#empty round who references itself
+                army.round_performance.append(Round())#empty round who references itself
 
     return army_list
 
@@ -72,8 +72,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     previousLine = str
     for line in lines:
         # look for list starting
-        found_army_name = [
-            army.value for army in Army_names if fuzz.token_sort_ratio(army.value, line) > 75]
+        found_army_name = Army_names.get(line.upper())
         if found_army_name:
             if active_block:  # found a new list but haven't ended the old list yet.
                 # remove the last line from the old block as its the player name of the new active_block
@@ -138,9 +137,11 @@ if __name__ == "__main__":
     # "Round 1"
     # "Brisvegas Battles 3"
     # and file.startswith("Round 2")
+    # GTC singles
+    # testtesttesttestsetsetset
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Round 2"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("testtesttesttestsetsetset"):
             file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 
@@ -151,6 +152,6 @@ if __name__ == "__main__":
             Write_army_lists_to_json_file(new_path, list_of_armies)
             file_stop = perf_counter()
             print(
-                f"Data written to {new_path} in {round(file_stop - file_start)} seconds")
+                f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")

@@ -3,7 +3,7 @@ from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
 import json
-from uuid import UUID
+from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import (
     ArmyEntry,
@@ -50,7 +50,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
                "User-Agent": "", "Content-Type": "application/json"}
 
     try:
-        response = requests.post(url, json={"Id": tourney_id}, headers=headers)
+        response = requests.post(url, json={"Id": tourney_id}, headers=headers,  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -65,7 +65,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""})
+            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -90,7 +90,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""})
+            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
@@ -187,6 +187,7 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
             game.get("Player1Id"), game.get("Player2Id"), list_of_armies)
 
         round_number = int(game.get("Round"))
+        game_uuid = uuid4()
 
         player1_result = int(game.get("Player1Result"))
         player2_result = int(game.get("Player2Result"))
@@ -195,9 +196,9 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         player2_secondary = int(game.get("Player2SecondaryResult"))
 
         player1_round = Round(opponent=player2_uuid, result=player1_result,
-                              secondary_points=player1_secondary, round_number=round_number)
+                              secondary_points=player1_secondary, round_number=round_number, game_uuid=game_uuid)
         player2_round = Round(opponent=player1_uuid, result=player2_result,
-                              secondary_points=player2_secondary, round_number=round_number)
+                              secondary_points=player2_secondary, round_number=round_number, game_uuid=game_uuid)
 
         for army in list_of_armies:  # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
             if army.army_uuid == player1_uuid:

@@ -2,6 +2,7 @@ from google.cloud import storage
 from pathlib import Path
 from typing import Union
 from google.cloud.storage.blob import Blob
+from os import remove
 
 import jsons
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
@@ -60,7 +61,8 @@ def function_data_conversion(request) -> str:
 
         upload_blob(upload_bucket, converted_filename, upload_filename)
         print(f"Uploaded {upload_filename} to {upload_bucket}")
-
+        remove(download_file_path)
+        remove(converted_filename)
         return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename})
 
     return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."})
