@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # testtesttesttestsetsetset
 
     for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Round 2"):
             file_start = perf_counter()
             filePath = Path(os.path.join("data", file))
 

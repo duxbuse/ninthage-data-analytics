@@ -38,9 +38,9 @@ class new_recruit_parser():
         request_data = {"list": flattened_list}
 
         try:
-            response = requests.post(url, data=request_data, timeout=2)
+            response = requests.post(url, data=request_data, timeout=0.5)
         except requests.exceptions.ReadTimeout as err:
-            return err.strerror
+            return ""
 
         return response.json()
 
@@ -83,7 +83,7 @@ class new_recruit_parser():
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(lines)
+        validation_errors = self.validate(lines) #TODO: if this timesout then we get a Null object
         new_army.validated = not validation_errors
         new_army.validation_errors = validation_errors
 
