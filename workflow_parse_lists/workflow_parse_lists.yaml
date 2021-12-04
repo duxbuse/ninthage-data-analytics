@@ -27,7 +27,6 @@ main:
                                 data: ${e}
                             auth:
                                 type: OIDC
-                        return: ${"workflow_function_data_conversion failed; " + e}
 
         - workflow_function_upload_data_into_bigquery:
             call: http.post
