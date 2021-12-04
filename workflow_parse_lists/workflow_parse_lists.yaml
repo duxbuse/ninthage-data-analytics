@@ -17,16 +17,17 @@ main:
             except:
                 as: e
                 steps:
-                    call: http.post
-                    args:
-                        url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
-                        headers:
-                            Content-type: application/json
-                        body:
-                            data: ${e}
-                        auth:
-                            type: OIDC
-                    return: ${"workflow_function_data_conversion failed; " + e}
+                    - workflow_function_discord_error_reporting:
+                        call: http.post
+                        args:
+                            url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
+                            headers:
+                                Content-type: application/json
+                            body:
+                                data: ${e}
+                            auth:
+                                type: OIDC
+                        return: ${"workflow_function_data_conversion failed; " + e}
 
         - workflow_function_upload_data_into_bigquery:
             call: http.post
