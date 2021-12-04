@@ -16,4 +16,4 @@ steps:
   - --source=./function_discord_error_reporting/
   - --trigger-http
   - --runtime=python39
-  - --set-secrets "DISCORD_WEBHOOK_TOKEN=DISCORD_WEBHOOK_TOKEN:latest,DISCORD_WEBHOOK_ID=DISCORD_WEBHOOK_ID:latest"
+  - --set-secrets="DISCORD_WEBHOOK_TOKEN=DISCORD_WEBHOOK_TOKEN:latest,DISCORD_WEBHOOK_ID=DISCORD_WEBHOOK_ID:latest"
