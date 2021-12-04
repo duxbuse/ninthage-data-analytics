@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    TOKEN = getenv('DISCORD_TOKEN')
+    TOKEN = getenv('DISCORD_APP_TOKEN')
     APP_ID = getenv('DISCORD_APP_ID')
 
     url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
