@@ -1,0 +1,20 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function_discord_success_reporting
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - beta
+  - functions
+  - deploy
+  - function_discord_success_reporting
+  - --region=${_REGION}
+  - --source=./function_discord_success_reporting/
+  - --trigger-http
+  - --runtime=python39
+  - --update-secrets=DISCORD_WEBHOOK_TOKEN=DISCORD_WEBHOOK_TOKEN:latest
+  - --update-secrets=DISCORD_WEBHOOK_ID=DISCORD_WEBHOOK_ID:latest

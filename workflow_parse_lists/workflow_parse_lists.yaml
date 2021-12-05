@@ -38,6 +38,19 @@ main:
                     json_file: ${json_file}
                 auth:
                     type: OIDC
-                    
+                result: upload_result
+
+        - workflow_function_discord_success_reporting:
+            call: http.post
+            args:
+                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_success_reporting
+                headers:
+                    Content-type: application/json
+                body:
+                    data: ${upload_result}
+                auth:
+                    type: OIDC
+
+        
         - returnOutput:
-            return: ${input.name + " successfully uploaded into bigquery"}
+            return: ${upload_result"}

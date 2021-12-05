@@ -2,16 +2,21 @@ from os import getenv
 import requests
 from flask.wrappers import Request
 from dotenv import load_dotenv
+import json
 
 
 
-def function_discord_error_reporting(request:Request) -> requests.Response:
+
+def function_discord_success_reporting(request:Request) -> requests.Response:
     load_dotenv()
 
-    print(f"{request.json=}")
+    request_body = json.loads(request.json["data"]["body"])
+
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
-    FILE_NAME = "FILE_NAME_ABC123"
+    FILE_NAME = request_body['file_name']
+    LIST_NUMBER = request_body['list_number']
+    OUTPUT_TABLE = request_body['output_table']
 
     url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
     headers = {
@@ -28,38 +33,13 @@ def function_discord_error_reporting(request:Request) -> requests.Response:
             "author": {
             "name": FILE_NAME,
             },
-            "title": "Errors:",
+            "title": "Success:",
             "description": "",
-            "color": 15224675,
+            "color": 5236872,
             "fields": [
                 {
-                "name": "Core % not met",
-                "value": "only `15%` not `20%`",
-                "inline": True
-                },
-                {
-                "name": "Unit: wizard",
-                "value": "Unknown item: `big wand energy`",
-                "inline": True
-                },
-                {
-                "name": "Unit: spearmen",
-                "value": "Incorrect price `200` should be `$2.50`",
-                "inline": True
-                },
-                {
-                "name": "Core % not met",
-                "value": "only `15%` not `20%`",
-                "inline": True
-                },
-                {
-                "name": "Unit: wizard",
-                "value": "Unknown item: `big wand energy`",
-                "inline": True
-                },
-                {
-                "name": "Unit: spearmen",
-                "value": "Incorrect price `200` should be `$2.50`",
+                "name": f"File {FILE_NAME} successfully parsed",
+                "value": "Lists read = {LIST_NUMBER}\nTK info Loaded|Notfound\nPassed Validation = xxx/{LIST_NUMBER}\nOutput Table = {OUTPUT_TABLE}",
                 "inline": True
                 },
                 {
@@ -80,4 +60,4 @@ def function_discord_error_reporting(request:Request) -> requests.Response:
 
 if __name__ == "__main__":
     request_obj = Request.from_values(json="test")
-    function_discord_error_reporting(request_obj)
+    function_discord_success_reporting(request_obj)

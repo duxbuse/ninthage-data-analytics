@@ -34,10 +34,10 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
         dataset_id = 'all_lists'
         table_id = 'tournament_lists'
         if is_remote:
-            downloaded_docx_blob = download_blob(bucket_name, filename)
+            downloaded_json_blob = download_blob(bucket_name, filename)
             file_path = f"/tmp/{filename}"
-            if downloaded_docx_blob:
-                downloaded_docx_blob.download_to_filename(file_path)
+            if downloaded_json_blob:
+                downloaded_json_blob.download_to_filename(file_path)
             else:
                 raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
         else:
@@ -70,7 +70,11 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
         print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
         remove(file_path)
-    return "its over"
+
+        
+
+        return json.dumps({"list_number": job.output_rows, "filename": filename, "output_table": f"{dataset_id}:{table_id}"})
+    return "Do nothing cause no file was parsed"
 
 if __name__ == "__main__":
     import sys
