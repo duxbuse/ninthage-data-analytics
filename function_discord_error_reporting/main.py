@@ -8,7 +8,7 @@ import json
 
 def function_discord_error_reporting(request:Request) -> requests.Response:
     load_dotenv()
-    request_body = json.loads(request.json["data"]["body"])
+    request_body = json.loads(request.json["error"]["body"])
     error = request_body["message"]
 
 
