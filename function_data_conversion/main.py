@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Union
 from google.cloud.storage.blob import Blob
 from os import remove
+import requests
 
 import jsons
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
@@ -29,8 +30,7 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
         destination_blob_name,
         bucket_name))
 
-# TODO: Need to catch all exceptions and return them so that we have the reason to pass to the discord chat
-def function_data_conversion(request) -> str:
+def function_data_conversion(request) -> tuple[str, int]:
     """Google Cloud Function that upon invocation downloads a .docx file and converts it into newline delimetered .json
 
     Args:
@@ -63,11 +63,11 @@ def function_data_conversion(request) -> str:
             print(f"Uploaded {upload_filename} to {upload_bucket}")
             remove(download_file_path)
             remove(converted_filename)
-            return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename})
+            return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename}), 200
         except ValueError as e:
-            return jsons.dumps({"message": e})
+            return jsons.dumps({"message": e}), 400
 
-    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."})
+    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."}), 400
 
 if __name__ == "__main__":
     # function_data_conversion()
