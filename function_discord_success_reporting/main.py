@@ -39,7 +39,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
             "fields": [
                 {
                 "name": f"File {FILE_NAME} successfully parsed",
-                "value": "Lists read = {LIST_NUMBER}\nTK info Loaded|Notfound\nPassed Validation = xxx/{LIST_NUMBER}\nOutput Table = {OUTPUT_TABLE}",
+                "value": f"Lists read = {LIST_NUMBER}\nTK info Loaded|Notfound\nPassed Validation = xxx/{LIST_NUMBER}\nOutput Table = {OUTPUT_TABLE}",
                 "inline": True
                 },
                 {
