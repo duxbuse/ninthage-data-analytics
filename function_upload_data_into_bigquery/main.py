@@ -73,7 +73,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
         
 
-        return json.dumps({"list_number": job.output_rows, "filename": filename, "output_table": f"{dataset_id}:{table_id}"})
+        return json.dumps({"list_number": job.output_rows, "file_name": filename, "output_table": f"{dataset_id}:{table_id}"})
     return "Do nothing cause no file was parsed"
 
 if __name__ == "__main__":
