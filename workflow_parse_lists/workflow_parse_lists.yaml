@@ -53,4 +53,4 @@ main:
 
         
         - returnOutput:
-            return: ${upload_result"}
+            return: ${upload_result}
