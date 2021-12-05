@@ -1,6 +1,7 @@
 from os import getenv
 import requests
 from flask.wrappers import Request
+from pathlib import Path
 from dotenv import load_dotenv
 import json
 
@@ -14,7 +15,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
 
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
-    FILE_NAME = request_body['file_name']
+    FILE_NAME = Path(request_body['file_name']).stem + ".docx"
     LIST_NUMBER = request_body['list_number']
     OUTPUT_TABLE = request_body['output_table']
 
@@ -38,7 +39,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
             "color": 5236872,
             "fields": [
                 {
-                "name": f"File {FILE_NAME} successfully parsed",
+                "name": f"Additional Info",
                 "value": f"Lists read = {LIST_NUMBER}\nTK info Loaded|Notfound\nPassed Validation = xxx/{LIST_NUMBER}\nOutput Table = {OUTPUT_TABLE}",
                 "inline": True
                 },
