@@ -14,6 +14,9 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
 
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
+    FILE_NAME = request_body['file_name']
+    LIST_NUMBER = request_body['list_number']
+    OUTPUT_TABLE = request_body['output_table']
 
     url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
     headers = {
@@ -28,15 +31,15 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
         "content": "",
         "embeds": [{
             "author": {
-            "name": "TODO:",
+            "name": FILE_NAME,
             },
             "title": "Success:",
             "description": "",
             "color": 5236872,
             "fields": [
                 {
-                "name": f"WENT WELL",
-                "value": request_body["message"],
+                "name": f"File {FILE_NAME} successfully parsed",
+                "value": "Lists read = {LIST_NUMBER}\nTK info Loaded|Notfound\nPassed Validation = xxx/{LIST_NUMBER}\nOutput Table = {OUTPUT_TABLE}",
                 "inline": True
                 },
                 {
