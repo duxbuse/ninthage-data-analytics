@@ -38,7 +38,7 @@ main:
                     json_file: ${json_file}
                 auth:
                     type: OIDC
-                result: upload_result
+            result: upload_result
 
         - workflow_function_discord_success_reporting:
             call: http.post

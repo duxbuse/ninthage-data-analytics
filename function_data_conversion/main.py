@@ -29,7 +29,7 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
         destination_blob_name,
         bucket_name))
 
-
+# TODO: Need to catch all exceptions and return them so that we have the reason to pass to the discord chat
 def function_data_conversion(request) -> str:
     """Google Cloud Function that upon invocation downloads a .docx file and converts it into newline delimetered .json
 
