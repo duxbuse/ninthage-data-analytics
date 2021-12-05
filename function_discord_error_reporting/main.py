@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 
 
 
-def function_discord_error_reporting(request:Request) -> None:
+def function_discord_error_reporting(request:Request) -> int:
     load_dotenv()
 
-    print(f"{request=}")
+    print(f"{request.json=}")
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
     FILE_NAME = "FILE_NAME_ABC123"
@@ -76,6 +76,7 @@ def function_discord_error_reporting(request:Request) -> None:
     if r.status_code != 200 or r.status_code != 201:
         print(f"{r.text}")
 
+    return r.status_code
 
 if __name__ == "__main__":
     request_obj = Request.from_values(json="test")
