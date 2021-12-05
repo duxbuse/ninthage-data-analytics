@@ -27,7 +27,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
     }
 
     # For help on this https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
-    json = {
+    json_message = {
         "content": "",
         "embeds": [{
             "author": {
@@ -50,7 +50,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
         }]
     }
 
-    r = requests.post(url, headers=headers, json=json)
+    r = requests.post(url, headers=headers, json=json_message)
 
     print(f"upload status code: {r.status_code}")
     if r.status_code != 200 or r.status_code != 201:
