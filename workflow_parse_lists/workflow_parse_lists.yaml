@@ -24,7 +24,8 @@ main:
                             headers:
                                 Content-type: application/json
                             body:
-                                data: ${e}
+                                error: ${e}
+                                data: ${json_file}
                             auth:
                                 type: OIDC
 

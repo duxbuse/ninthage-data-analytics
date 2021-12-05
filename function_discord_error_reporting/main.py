@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 
 def function_discord_error_reporting(request:Request) -> requests.Response:
     load_dotenv()
+    request_body = json.loads(request.json["data"]["body"])
+    error = request_body["message"]
+
 
     print(f"{request.json=}")
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
@@ -33,33 +36,8 @@ def function_discord_error_reporting(request:Request) -> requests.Response:
             "color": 15224675,
             "fields": [
                 {
-                "name": "Core % not met",
-                "value": "only `15%` not `20%`",
-                "inline": True
-                },
-                {
-                "name": "Unit: wizard",
-                "value": "Unknown item: `big wand energy`",
-                "inline": True
-                },
-                {
-                "name": "Unit: spearmen",
-                "value": "Incorrect price `200` should be `$2.50`",
-                "inline": True
-                },
-                {
-                "name": "Core % not met",
-                "value": "only `15%` not `20%`",
-                "inline": True
-                },
-                {
-                "name": "Unit: wizard",
-                "value": "Unknown item: `big wand energy`",
-                "inline": True
-                },
-                {
-                "name": "Unit: spearmen",
-                "value": "Incorrect price `200` should be `$2.50`",
+                "name": "Value Error",
+                "value": error,
                 "inline": True
                 },
                 {
