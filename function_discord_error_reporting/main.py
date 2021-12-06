@@ -6,7 +6,7 @@ import json
 
 
 
-def function_discord_error_reporting(request:Request) -> requests.Response:
+def function_discord_error_reporting(request:Request):
     load_dotenv()
     request_body = json.loads(request.json["error"]["body"])
     error = request_body["message"]
@@ -51,11 +51,12 @@ def function_discord_error_reporting(request:Request) -> requests.Response:
 
     r = requests.post(url, headers=headers, json=json_message)
 
-    print(f"upload status code: {r.status_code}")
+    print(f"discord status code: {r.status_code}")
     if r.status_code != 200 or r.status_code != 201:
-        print(f"{r.text}")
+        print(f"{r.json=}")
+        return r.text, r.status_code
 
-    return r
+    return "reported to discord", 200
 
 if __name__ == "__main__":
     request_obj = Request.from_values(json="test")
