@@ -19,7 +19,7 @@ def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
 
 
 
-def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> str:
+def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> tuple[str, int]:
 
     assert request is not None
     
@@ -28,16 +28,16 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
     if not "message" in request_body:
 
-        filename = request_body["filename"]
+        filename = request_body["file_name"]
         bucket_name = request_body["bucket_name"]
         client = bigquery.Client()
         dataset_id = 'all_lists'
         table_id = 'tournament_lists'
         if is_remote:
-            downloaded_docx_blob = download_blob(bucket_name, filename)
+            downloaded_json_blob = download_blob(bucket_name, filename)
             file_path = f"/tmp/{filename}"
-            if downloaded_docx_blob:
-                downloaded_docx_blob.download_to_filename(file_path)
+            if downloaded_json_blob:
+                downloaded_json_blob.download_to_filename(file_path)
             else:
                 raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
         else:
@@ -64,13 +64,16 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
             print("Upload job failed:")
             for err in job.errors:
                     print(err)
-            raise
-
+            return json.dumps({"message": job.errors}), 400
 
 
         print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
         remove(file_path)
-    return "its over"
+
+        
+
+        return json.dumps({"list_number": job.output_rows, "file_name": filename, "output_table": f"{dataset_id}:{table_id}"}), 200
+    return "Do nothing cause no file was parsed", 200
 
 if __name__ == "__main__":
     import sys

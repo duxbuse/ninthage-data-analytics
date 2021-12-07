@@ -3,27 +3,70 @@ main:
     params: [input]
     steps:
         - workflow_function_data_conversion:
-            call: http.post
-            args:
-                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
-                headers:
-                    Content-type: application/json
-                body:
-                    data: ${input}
-                auth:
-                    type: OIDC
-            result: json_file
+              try:
+                  call: http.post
+                  args:
+                      url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
+                      headers:
+                          Content-type: application/json
+                      body:
+                          data: ${input}
+                      auth:
+                          type: OIDC
+                  result: json_file
+              except:
+                  as: e
+                  steps:
+                      - workflow_function_discord_error_reporting_for_data_conversion:
+                            call: http.post
+                            args:
+                                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
+                                headers:
+                                    Content-type: application/json
+                                body:
+                                    error: ${e}
+                                    data: ${input}
+                                auth:
+                                    type: OIDC
 
         - workflow_function_upload_data_into_bigquery:
-            call: http.post
-            args:
-                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_upload_data_into_bigquery
-                headers:
-                    Content-type: application/json
-                body:
-                    json_file: ${json_file}
-                auth:
-                    type: OIDC
-                    
+              try:
+                  call: http.post
+                  args:
+                      url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_upload_data_into_bigquery
+                      headers:
+                          Content-type: application/json
+                      body:
+                          json_file: ${json_file}
+                      auth:
+                          type: OIDC
+                  result: upload_result
+              except:
+                  as: e
+                  steps:
+                      - workflow_function_discord_error_reporting_for_upload_data_into_bigquery:
+                            call: http.post
+                            args:
+                                url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
+                                headers:
+                                    Content-type: application/json
+                                body:
+                                    error: ${e}
+                                    data: ${input}
+                                auth:
+                                    type: OIDC
+
+        - workflow_function_discord_success_reporting:
+              call: http.post
+              args:
+                  url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_success_reporting
+                  headers:
+                      Content-type: application/json
+                  body:
+                      data: ${upload_result}
+                      army_info: ${json_file}
+                  auth:
+                      type: OIDC
+
         - returnOutput:
-            return: ${input.name + " successfully uploaded into bigquery"}
+              return: ${upload_result}

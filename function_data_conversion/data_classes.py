@@ -78,10 +78,12 @@ Army_names = {
 class Tk_info():
     event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
     event_type: Optional[Event_types] = Event_types.SINGLES
+    event_id: Optional[int] = None
     game_list: Optional[dict] = field(default_factory=dict)
     # output from Get_players_names_from_games()
     player_list: Optional[dict] = field(default_factory=dict)
     player_count: Optional[int] = None
+    players_per_team: Optional[int] = 1
 
 
 @dataclass

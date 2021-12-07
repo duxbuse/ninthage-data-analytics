@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Union
 from google.cloud.storage.blob import Blob
 from os import remove
+import requests
 
 import jsons
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
@@ -29,8 +30,7 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
         destination_blob_name,
         bucket_name))
 
-
-def function_data_conversion(request) -> str:
+def function_data_conversion(request) -> tuple[str, int]:
     """Google Cloud Function that upon invocation downloads a .docx file and converts it into newline delimetered .json
 
     Args:
@@ -46,26 +46,32 @@ def function_data_conversion(request) -> str:
 
     # only convert .docx files, because the json versions are also put back into the bucket there is another trigger
     if Path(file_name).suffix == ".docx":
+        try:
+            downloaded_docx_blob = download_blob(bucket_name, file_name)
+            download_file_path = f"/tmp/{file_name}"
+            downloaded_docx_blob.download_to_filename(download_file_path)
+            print(f"Downloaded {file_name} from {bucket_name} to {download_file_path}")
 
-        downloaded_docx_blob = download_blob(bucket_name, file_name)
-        download_file_path = f"/tmp/{file_name}"
-        downloaded_docx_blob.download_to_filename(download_file_path)
-        print(f"Downloaded {file_name} from {bucket_name} to {download_file_path}")
+            list_of_armies = Convert_docx_to_list(download_file_path)
+            loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
+            validation_count = sum(1 for i in list_of_armies if i.validated)
 
-        list_of_armies = Convert_docx_to_list(download_file_path)
 
-        upload_filename = Path(download_file_path).stem + ".json"
-        converted_filename = str(Path(download_file_path).parent / upload_filename)
-        Write_army_lists_to_json_file(converted_filename, list_of_armies)
-        print(f"Converted {download_file_path} to {converted_filename}")
+            upload_filename = Path(download_file_path).stem + ".json"
+            converted_filename = str(Path(download_file_path).parent / upload_filename)
+            Write_army_lists_to_json_file(converted_filename, list_of_armies)
+            print(f"Converted {download_file_path} to {converted_filename}")
 
-        upload_blob(upload_bucket, converted_filename, upload_filename)
-        print(f"Uploaded {upload_filename} to {upload_bucket}")
-        remove(download_file_path)
-        remove(converted_filename)
-        return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename})
+            upload_blob(upload_bucket, converted_filename, upload_filename)
+            print(f"Uploaded {upload_filename} to {upload_bucket}")
+            remove(download_file_path)
+            remove(converted_filename)
+            return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count)
+            return jsons.dumps(return_dict), 200
+        except ValueError as e:
+            return jsons.dumps({"message": e}), 400
 
-    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."})
+    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."}), 400
 
 if __name__ == "__main__":
     # function_data_conversion()
