@@ -13,7 +13,7 @@ def function_discord_error_reporting(request:Request):
     errors:List[str] = request_body["message"]["args"]
 
 
-    print(f"{error=}")
+    print(f"{errors=}")
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
     FILE_NAME = "FILE_NAME_ABC123"
@@ -32,7 +32,7 @@ def function_discord_error_reporting(request:Request):
                 "name": "\u200B",
                 "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
                 }
-    fields = all_errors + [footer]
+    fields = [*all_errors , footer]
 
     # For help on this https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
     json_message = {
