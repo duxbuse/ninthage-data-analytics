@@ -8,7 +8,7 @@ import json
 
 
 
-def function_discord_success_reporting(request:Request) -> requests.Response:
+def function_discord_success_reporting(request:Request):
     load_dotenv()
 
     request_body = json.loads(request.json["data"]["body"])
@@ -61,7 +61,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
     if r.status_code != 200 or r.status_code != 201:
         print(f"{r.text}")
 
-    return r
+    return "reported to discord", 200
 
 if __name__ == "__main__":
     request_obj = Request.from_values(json="test")

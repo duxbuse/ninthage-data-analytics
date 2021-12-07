@@ -31,8 +31,8 @@ def function_discord_bot(request: Request):
 
 registered_commands = {
         "upload" : upload_file,
-        "validate" : validate,
-        "list_events": list_events
+        # "validate" : validate,
+        # "list_events": list_events
     }
 
 if __name__ == "__main__":
