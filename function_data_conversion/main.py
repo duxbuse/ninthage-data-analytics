@@ -53,6 +53,9 @@ def function_data_conversion(request) -> tuple[str, int]:
             print(f"Downloaded {file_name} from {bucket_name} to {download_file_path}")
 
             list_of_armies = Convert_docx_to_list(download_file_path)
+            loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
+            validation_count = sum(1 for i in list_of_armies if i.validated)
+
 
             upload_filename = Path(download_file_path).stem + ".json"
             converted_filename = str(Path(download_file_path).parent / upload_filename)
@@ -63,7 +66,8 @@ def function_data_conversion(request) -> tuple[str, int]:
             print(f"Uploaded {upload_filename} to {upload_bucket}")
             remove(download_file_path)
             remove(converted_filename)
-            return jsons.dumps({"bucket_name": upload_bucket,  "filename": upload_filename}), 200
+            return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count)
+            return jsons.dumps(return_dict), 200
         except ValueError as e:
             return jsons.dumps({"message": e}), 400
 

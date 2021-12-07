@@ -19,6 +19,10 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
     LIST_NUMBER = request_body['list_number']
     OUTPUT_TABLE = request_body['output_table']
 
+    army_info = json.loads(request.json["army_info"]["body"])
+    LOADED_TK_INFO = army_info['loaded_tk_info']
+    VALIDATION_COUNT = army_info['validation_count']
+
     url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
     headers = {
         "Authorization": f"Bot {TOKEN}",
@@ -40,7 +44,7 @@ def function_discord_success_reporting(request:Request) -> requests.Response:
             "fields": [
                 {
                 "name": f"Additional Info",
-                "value": f"Lists read = `{LIST_NUMBER}`\nTK info `Loaded|Notfound`\nPassed Validation = `xxx`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
+                "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPassed Validation = `{VALIDATION_COUNT}`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
                 "inline": True
                 },
                 {

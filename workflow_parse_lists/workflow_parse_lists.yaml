@@ -64,6 +64,7 @@ main:
                       Content-type: application/json
                   body:
                       data: ${upload_result}
+                      army_info: ${json_file}
                   auth:
                       type: OIDC
 
