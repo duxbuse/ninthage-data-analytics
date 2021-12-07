@@ -41,9 +41,9 @@ def function_discord_error_reporting(request:Request):
         "content": "",
         "embeds": [{
             "author": {
-            "name": "Errors:",
+            "name": FILE_NAME,
             },
-            "title": FILE_NAME,
+            "title": "Errors:",
             "description": "",
             "color": 15224675,
             "fields": fields
