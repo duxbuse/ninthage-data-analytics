@@ -75,7 +75,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     return data
 
 
-def Get_tournament_by_name(tournament_name: str):
+def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
     for tournament in recent_tournaments:
         # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
@@ -169,6 +169,9 @@ def load_tk_info(tournament_name: str) -> Tk_info:
 
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
 
+        event_id = tourney_keeper_info.get("Id")
+        players_per_team = tourney_keeper_info.get("PlayersPrTeam")
+
         # # check to make sure player counts match on both the file and TK
         # if player_count and player_count != len(armyblocks):
         #     raise ValueError(f"""
@@ -176,7 +179,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         #     For file {tournament_name}
         #     """)
 
-        return Tk_info(event_date=event_date, event_type=event_type, game_list=tournament_games, player_list=player_list, player_count=player_count)
+        return Tk_info(event_date=event_date, event_type=event_type, event_id=event_id, game_list=tournament_games, player_list=player_list, player_count=player_count, players_per_team=players_per_team)
     return Tk_info()
 
 

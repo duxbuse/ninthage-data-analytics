@@ -120,7 +120,7 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
             army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
         else:
             raise ValueError(
-                f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]} for file: \"{tournament_name}\"")
+                f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})")
 
     return army
 
