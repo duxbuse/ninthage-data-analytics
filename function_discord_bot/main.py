@@ -5,6 +5,7 @@ from flask import jsonify
 from security_headers import check_security_headers
 from discord_command_upload import upload_file
 from discord_command_validate import validate
+from discord_command_list_events import list_events
 
 
 
@@ -30,7 +31,8 @@ def function_discord_bot(request: Request):
 
 registered_commands = {
         "upload" : upload_file,
-        "validate" : validate
+        "validate" : validate,
+        "list_events": list_events
     }
 
 if __name__ == "__main__":

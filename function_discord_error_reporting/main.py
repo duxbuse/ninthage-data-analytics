@@ -9,10 +9,10 @@ import json
 
 def function_discord_error_reporting(request:Request):
     load_dotenv()
+    print(f"{request.json=}")
     request_body = json.loads(request.json["error"]["body"])
     errors:List[str] = request_body["message"]["args"]
     data = request.json["data"]
-    print(f"request.json = {data}")
     FILE_NAME = data["name"]
 
 

@@ -28,7 +28,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
     if not "message" in request_body:
 
-        filename = request_body["filename"]
+        filename = request_body["file_name"]
         bucket_name = request_body["bucket_name"]
         client = bigquery.Client()
         dataset_id = 'all_lists'
@@ -64,7 +64,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
             print("Upload job failed:")
             for err in job.errors:
                     print(err)
-            raise
+            raise ValueError(job.errors)
 
 
 
