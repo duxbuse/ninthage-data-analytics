@@ -9,7 +9,7 @@ import json
 def function_discord_error_reporting(request:Request):
     load_dotenv()
     request_body = json.loads(request.json["error"]["body"])
-    error = request_body["message"]
+    # error = request_body["message"]
 
 
     print(f"{request.json=}")
@@ -38,7 +38,7 @@ def function_discord_error_reporting(request:Request):
             "fields": [
                 {
                 "name": "Value Error",
-                "value": error,
+                "value": request_body,
                 "inline": True
                 },
                 {
