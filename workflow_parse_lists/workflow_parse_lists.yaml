@@ -25,6 +25,7 @@ main:
                                 Content-type: application/json
                             body:
                                 error: ${e}
+                                data: ${input}
                             auth:
                                 type: OIDC
 

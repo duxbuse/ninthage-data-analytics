@@ -11,12 +11,14 @@ def function_discord_error_reporting(request:Request):
     load_dotenv()
     request_body = json.loads(request.json["error"]["body"])
     errors:List[str] = request_body["message"]["args"]
+    data = request.json["data"]
+    print(f"request.json = {data}")
+    FILE_NAME = data["name"]
 
 
     print(f"{errors=}")
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
-    FILE_NAME = "FILE_NAME_ABC123"
 
     url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
     headers = {
@@ -51,8 +53,7 @@ def function_discord_error_reporting(request:Request):
     r = requests.post(url, headers=headers, json=json_message)
 
     print(f"discord status code: {r.status_code}")
-    if r.status_code != 200 or r.status_code != 201:
-        print(f"{r.json()=}")
+    if r.status_code != 200 or r.status_code != 204:
         return r.text, r.status_code
 
     return "reported to discord", 200
