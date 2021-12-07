@@ -1,4 +1,5 @@
 from os import getenv
+from typing import List
 import requests
 from flask.wrappers import Request
 from dotenv import load_dotenv
@@ -9,10 +10,10 @@ import json
 def function_discord_error_reporting(request:Request):
     load_dotenv()
     request_body = json.loads(request.json["error"]["body"])
-    # error = request_body["message"]
+    errors:List[str] = request_body["message"]["args"]
 
 
-    print(f"{request.json=}")
+    print(f"{error=}")
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
     FILE_NAME = "FILE_NAME_ABC123"
@@ -25,6 +26,14 @@ def function_discord_error_reporting(request:Request):
         "Content-Type": "application/json"
     }
 
+
+    all_errors = [dict(name="Value Error", value=x, inline=True) for x in errors]
+    footer = {
+                "name": "\u200B",
+                "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
+                }
+    fields = all_errors + [footer]
+
     # For help on this https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
     json_message = {
         "content": "",
@@ -35,17 +44,7 @@ def function_discord_error_reporting(request:Request):
             "title": "Errors:",
             "description": "",
             "color": 15224675,
-            "fields": [
-                {
-                "name": "Value Error",
-                "value": request_body,
-                "inline": True
-                },
-                {
-                "name": "\u200B",
-                "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
-                }
-            ]
+            "fields": fields
         }]
     }
 
