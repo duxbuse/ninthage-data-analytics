@@ -48,6 +48,14 @@ Vampire Covenant
 
 Also supported is the `20x Skeletons` in addition to `20 Skeletons`
 
+## Common fixes
+
+Often lists look like this:
+![example-bad-file](architecture/example-bad-file.png)
+
+But easy fixes make it look like this:
+![example-fixed-file](architecture/example-fixed-file.png)
+
 ## Architecture
 
 ![Architecture Diagram](architecture/arch-diagram.drawio.svg)

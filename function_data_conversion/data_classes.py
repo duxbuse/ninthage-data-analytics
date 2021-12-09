@@ -71,8 +71,11 @@ Army_names = {
     "WOTDG": "Warriors of the Dark Gods",
 
     "ASKLANDERS": "Åsklanders",
+
     "CULTISTS": "Cultists",
-    "HOBGOLBINS": "Hobgolbins",
+
+    "HOBGOBLINS": "Hobgoblins",
+
     "MAKHAR": "Makhar"
 }
 

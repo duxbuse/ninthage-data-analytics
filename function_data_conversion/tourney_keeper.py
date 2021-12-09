@@ -34,13 +34,16 @@ def get_recent_tournaments() -> List:
     if response.status_code != 200:
         return []
     message = response.json()["Message"]
-    data = json.loads(message)
+    success = response.json()['Success']
+    if success:
+        data = json.loads(message)
 
-    # remove other game systems
-    for tournament in data["Tournaments"]:
-        if tournament.get("GameSystem") == "The 9th Age":
-            output.append(tournament)
-    return output
+        # remove other game systems
+        for tournament in data["Tournaments"]:
+            if tournament.get("GameSystem") == "The 9th Age":
+                output.append(tournament)
+        return output
+    return []
 
 
 def Get_active_players(tourney_id: int) -> Union[int, None]:
@@ -56,8 +59,11 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     if response.status_code != 200:
         return None
     message = response.json()["Message"]
-    data = int(message)
-    return data
+    success = response.json()['Success']
+    if success:
+        data = int(message)
+        return data
+    return None
 
 
 def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
@@ -67,12 +73,16 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
         response = requests.get(
             url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
     except requests.exceptions.ReadTimeout as err:
+        print("This is timing out")
         return None
     if response.status_code != 200:
         return None
     message = response.json()["Message"]
-    data = json.loads(message)["Games"]
-    return data
+    success = response.json()['Success']
+    if success:
+        data = json.loads(message)["Games"]
+        return data
+    return None
 
 
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
@@ -95,9 +105,12 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
         return None
     if response.status_code != 200:
         return None
-    message = response.json()["Message"]
-    data = json.loads(message)
-    return data
+    success = response.json()['Success']
+    if success:
+        message = response.json()["Message"]
+        data = json.loads(message)
+        return data
+    return None
 
 
 def Get_players_names_from_games(games: dict) -> dict:
@@ -125,7 +138,7 @@ def Get_players_names_from_games(games: dict) -> dict:
             output[player_name] = [
                 {"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
         else:
-            print(f"name: {player_name}, is not found on TK")
+            print(f"Id: {Id}, is not found on TK")
 
     return output
 
