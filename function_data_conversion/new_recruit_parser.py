@@ -144,6 +144,14 @@ class new_recruit_parser():
         # removing "(4+)|4+" from "Crossbow (4+)|Crossbow 4+"
         regex = r' ?(\(\d\+\)|\d\+)'
         unit_upgrades = re.sub(regex, '', unit_upgrades)
+        
+        # removing [xxpts]
+        regex = r' ?(\[\d+ ?pts\]|\d+ ?pts)'
+        unit_upgrades = re.sub(regex, '', unit_upgrades)
+
+        #Clear out some guff encoding
+        unit_upgrades = unit_upgrades.replace("&#39;","'")
+        
         return unit_upgrades
 
 
@@ -169,7 +177,7 @@ class new_recruit_parser():
             new_unit_upgrades[index] = re.sub(regex, 'battle standard bearer', upgrade)
 
             # FCG -> champ+muso+standard
-            regex = r'^(fcg|FCG)$'
+            regex = r'^(fcg|FCG|gmc|GMC)$'
             if re.match(regex, upgrade):
                 new_unit_upgrades[index] = re.sub(regex, 'standard bearer', upgrade)
                 new_unit_upgrades.append('musician')

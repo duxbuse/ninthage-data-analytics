@@ -6,7 +6,10 @@ ninthage-data-analytics-323758ae3de4.json
 #exporation work
 parser-exploration/
 
-# test data
+# Word temporary
+~$*.doc*
+
+# Test data
 data/
 
 # Byte-compiled / optimized / DLL files

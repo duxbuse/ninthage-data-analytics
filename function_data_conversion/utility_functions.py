@@ -10,18 +10,18 @@ from data_classes import (
     ArmyEntry
 )
 
-
 def Docx_to_line_list(docxFile) -> List[str]:
     doc = Document(docxFile)
 
     lines = []  # ALL the text in the file, separated by lines
 
     par = doc.paragraphs
-    for i in range(len(par)):
-        text = par[i].text.strip(' .')
-        text = ' '.join(text.split())  # remove weird unicode spaces \xa0
-        if len(text) >= 2:  # hard coded ignore short lines need to handle army short names aka "BH"
-            lines.append(text)
+    for line in par:
+        text = line.text.strip(' .') #remove leading and trailing whitespace and .
+        multiple_lines = text.splitlines() #line break and page break characters are split into separate sections
+        for section in multiple_lines:
+            if len(section) >= 2:  # hard coded ignore short lines need to handle army short names aka "BH"
+                lines.append(' '.join(section.split()))  # remove weird unicode spaces \xa0
     return lines
 
 

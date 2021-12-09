@@ -103,7 +103,7 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
     army = parser.parse_block(armyblock)
     army.ingest_date = ingest_date
     army.event_size = event_size
-    army.player_name = armyblock[0]
+    army.player_name = armyblock[0].strip(" -–")
     army.tournament = tournament_name
     army.calculate_total_points()
 
@@ -133,17 +133,20 @@ if __name__ == "__main__":
 
     t1_start = perf_counter()
 
-    # range(1,6)
-    # "Round 1"
+    # To Kill a MoCTing Bird
     # "Brisvegas Battles 3"
     # and file.startswith("Round 2")
     # GTC singles
     # testtesttesttestsetsetset
 
-    for file in os.listdir("data"):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("test"):
+    path = Path("data/2021 data")
+
+
+    os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
+    for file in os.listdir(path):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("VIII Torneo Impriwars.docx"):
             file_start = perf_counter()
-            filePath = Path(os.path.join("data", file))
+            filePath = Path(os.path.join(path, file))
 
             print(f"Input filepath = {filePath}")
             list_of_armies = Convert_docx_to_list(filePath)
@@ -151,7 +154,7 @@ if __name__ == "__main__":
 
             Write_army_lists_to_json_file(new_path, list_of_armies)
             file_stop = perf_counter()
-            print(
-                f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds")
+            print(f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds")
+            print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")
