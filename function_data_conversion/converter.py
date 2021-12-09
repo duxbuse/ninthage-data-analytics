@@ -140,8 +140,9 @@ if __name__ == "__main__":
     # testtesttesttestsetsetset
 
     path = Path("data/2021 data")
-    os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
 
+
+    os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
         if file.endswith(".docx") and not file.startswith("~$") and file.startswith("VIII Torneo Impriwars.docx"):
             file_start = perf_counter()
