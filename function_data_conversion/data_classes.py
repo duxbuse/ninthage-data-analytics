@@ -56,7 +56,7 @@ Army_names = {
     "SYLVAN ELVES": "Sylvan Elves",
     "SE": "Sylvan Elves",
 
-    "UNDYING DYNASTES": "Undying Dynasties",
+    "UNDYING DYNASTIES": "Undying Dynasties",
     "UD": "Undying Dynasties",
 
     "VAMPIRE COVENANT": "Vampire Covenant",

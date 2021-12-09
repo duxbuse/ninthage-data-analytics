@@ -98,7 +98,10 @@ class new_recruit_parser():
     def parse_unit_line(self, line: str) -> List[UnitEntry]:
         output = []
 
-        split_line_points_entry = r'(\d{2,4}?)(?: ?[-–] ?)(.+?)(?=\d{2,4}|$)'
+        # regex explanation don't match "Benji#9781 - Captain" so we need to start with a negative lookbehind due to python being basic, and needing fixed look behinds we need to do each variation separately
+        # Then match number "630 - Death Cult Hierarch" -> "<number> - <unit name>, upgrades"
+        # Sometimes there are unit entries on the same line so we then do a positive lookahead to make sure if there is another unit entry its not captured by the '(.+?)'
+        split_line_points_entry = r'(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[-–] ?)(.+?)(?=\d{2,4}|$)'
         pointsSearch = re.findall(split_line_points_entry, line.lower()) #ensure its all lowercase to prevent casing issues
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately

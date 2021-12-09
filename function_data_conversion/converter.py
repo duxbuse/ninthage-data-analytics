@@ -50,6 +50,11 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
         # save into army list
         army_list.append(army)
 
+
+    if tk_info.player_count and tk_info.player_count != len(army_list):
+        # If we have the player count from TK then we can check that the number of lists we read in matches
+        raise ValueError(f"Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}")
+
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
     else:
@@ -144,7 +149,7 @@ if __name__ == "__main__":
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("VIII Torneo Impriwars.docx"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("To Kill a MoCTing Bird"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
 
