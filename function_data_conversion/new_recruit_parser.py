@@ -61,7 +61,6 @@ class new_recruit_parser():
         # Examples
         # Total Army Cost: 4499 pts 
         # 4498pts
-        line = " Total Army Cost: 4499 pts     "
         cleaned_line = line.lower().replace("total", "").replace("army", "").replace("cost", "").replace("pts", "").replace("points", "")
         table = str.maketrans(dict.fromkeys(string.punctuation))  # OR {key: None for key in string.punctuation}
         cleaned_line = cleaned_line.translate(table) 
@@ -73,9 +72,9 @@ class new_recruit_parser():
 
     def parse_block(self, lines: List[str]) -> ArmyEntry:
         new_army = ArmyEntry()
-        for line in lines:
+        for i, line in enumerate(lines):
 
-            if line == lines[-1]:  # last line is either the points total or last unit entry
+            if i==len(lines)-1:  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:
                     new_army.reported_total_army_points = total_points
