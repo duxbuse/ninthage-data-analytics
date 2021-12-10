@@ -53,6 +53,7 @@ def function_discord_error_reporting(request:Request):
     r = requests.post(url, headers=headers, json=json_message)
 
     print(f"discord status code: {r.status_code}")
+    print(f"discord text: {r.text}")
     if r.status_code != 200 or r.status_code != 204:
         return r.text, r.status_code
 
