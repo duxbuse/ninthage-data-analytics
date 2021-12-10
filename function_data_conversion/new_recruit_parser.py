@@ -2,6 +2,7 @@ from typing import List, Union
 import re
 import requests
 from data_classes import ArmyEntry, UnitEntry, Army_names
+import string
 
 
 class new_recruit_parser():
@@ -57,8 +58,17 @@ class new_recruit_parser():
         return None
 
     def detect_total_points(self, line) -> Union[int, None]:
-        if self.Is_int(line) and 2000 <= int(line) <= 4500:
-            return int(line)
+        # Examples
+        # Total Army Cost: 4499 pts 
+        # 4498pts
+        line = " Total Army Cost: 4499 pts     "
+        cleaned_line = line.lower().replace("total", "").replace("army", "").replace("cost", "").replace("pts", "").replace("points", "")
+        table = str.maketrans(dict.fromkeys(string.punctuation))  # OR {key: None for key in string.punctuation}
+        cleaned_line = cleaned_line.translate(table) 
+        cleaned_line = cleaned_line.strip()
+        # simple case where its just the number
+        if self.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
+            return int(cleaned_line)
         return None
 
     def parse_block(self, lines: List[str]) -> ArmyEntry:
