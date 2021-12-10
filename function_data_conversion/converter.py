@@ -75,7 +75,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     active_block = []
     armyblocks = []
     previousLine = str
-    for line in lines:
+    for i, line in enumerate(lines):
         # look for list starting
         found_army_name = Army_names.get(line.upper())
         if found_army_name:
@@ -97,7 +97,7 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
             if Is_int(line) and 2000 <= int(line) <= 4500:
                 armyblocks.append(active_block)
                 active_block = []
-            elif line == lines[-1]:
+            elif i==len(lines)-1:
                 armyblocks.append(active_block)
 
         previousLine = line
@@ -144,12 +144,12 @@ if __name__ == "__main__":
     # GTC singles
     # testtesttesttestsetsetset
 
-    path = Path("data/2021 data")
+    path = Path("data")
 
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("To Kill a MoCTing Bird"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Cossacks Raid - Single.docx"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
 
