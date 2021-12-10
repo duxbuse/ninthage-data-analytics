@@ -32,7 +32,7 @@ def upload_file(request: Request):
         uploaded_files.append(filename)
         remove(download_file_path)
 
-    return f"Files: {uploaded_files} uploaded."
+    return f"Files: {uploaded_files} successfully received, please await parsing results."
 
 
 

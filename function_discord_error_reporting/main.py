@@ -50,6 +50,8 @@ def function_discord_error_reporting(request:Request):
         }]
     }
 
+    print(f"{json_message=}")
+
     r = requests.post(url, headers=headers, json=json_message)
 
     print(f"discord status code: {r.status_code}")
