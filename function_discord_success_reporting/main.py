@@ -22,6 +22,7 @@ def function_discord_success_reporting(request:Request):
     OUTPUT_TABLE = request_body['output_table']
 
     army_info = request.json["army_info"]["body"]
+    print(f"{army_info=}")
     LOADED_TK_INFO = army_info['loaded_tk_info']
     VALIDATION_COUNT = army_info['validation_count']
     VALIDATION_ERRORS = army_info['validation_errors']
