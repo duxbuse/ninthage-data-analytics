@@ -34,6 +34,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
         dataset_id = 'all_lists'
         table_id = 'tournament_lists'
 
+        # Running on gcp 
         if is_remote:
             client = bigquery.Client()
             downloaded_json_blob = download_blob(bucket_name, filename)
@@ -42,6 +43,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
                 downloaded_json_blob.download_to_filename(file_path)
             else:
                 raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
+        # running locally
         else:
             from google.oauth2 import service_account
             file_path = f"data/{filename}"
