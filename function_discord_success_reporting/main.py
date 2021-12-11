@@ -3,6 +3,7 @@ import requests
 from flask.wrappers import Request
 from pathlib import Path
 from dotenv import load_dotenv
+from math import ceil
 import json
 
 
@@ -33,7 +34,9 @@ def function_discord_success_reporting(request:Request):
     }
 
 
-    all_errors = [dict(name=x["player_name"], value=x["validation_errors"], inline=True) for x in VALIDATION_ERRORS]
+    # https://discordjs.guide/popular-topics/embeds.html#editing-the-embedded-message-content
+    # The sum of all characters from all embed structures in a message must not exceed 6000 characters TODO: figure out how to handle this
+    all_errors = [dict(name=x["player_name"], value=truncate_field(x["validation_errors"]), inline=True) for x in VALIDATION_ERRORS]
     header = {
                 "name": f"Additional Info",
                 "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPassed Validation = `{VALIDATION_COUNT}`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
@@ -43,7 +46,8 @@ def function_discord_success_reporting(request:Request):
                 "name": "\u200B",
                 "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
                 }
-    fields = [header, *all_errors , footer]
+    # limit len(fields) to 25 as that is a discord limit
+    fields = [header, *all_errors[:23] , footer]
 
 
     # For help on this https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
@@ -64,9 +68,23 @@ def function_discord_success_reporting(request:Request):
 
     print(f"upload status code: {r.status_code}")
     if r.status_code != 200 or r.status_code != 201:
-        print(f"{r.text}")
+        print(f"{r.text=}")
 
-    return "reported to discord", 200
+    return r.text, r.status_code
+
+def truncate_field(value: str) -> str:
+    DISCORD_EMBED_FIELD_VALUE = 1024
+    # message will exceed discords limits
+    if len(value) > DISCORD_EMBED_FIELD_VALUE:
+        chars_to_remove = len(value) - DISCORD_EMBED_FIELD_VALUE
+        truncation_warning = " [...] "
+        half_of_chars = ceil((chars_to_remove + len(truncation_warning)) / 2) 
+        midpoint = ceil(len(value) / 2)
+        new_value = value[:midpoint-half_of_chars] + truncation_warning + value[midpoint+half_of_chars:]
+        return new_value
+    return value
+
+
 
 if __name__ == "__main__":
     json_message = {'data': {'body': ""}}
