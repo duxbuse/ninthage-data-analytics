@@ -24,7 +24,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
     assert request is not None
     
-    request_body = json.loads(request.json)["json_file"]["body"]
+    request_body = request.json["json_file"]["body"]
     print(f"request.json = {request_body}")
 
     if not "message" in request_body:
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     filename = "Round 2.json"
     request_payload = {'json_file': {'body': {'bucket_name': 'tournament-lists-json', 'file_name': filename}} }
 
-    request_obj = Request.from_values(json=json.dumps(request_payload))
+    request_obj = Request.from_values(json=request_payload)
 
     print(f"request_payload = {request_payload}")
     status = function_upload_data_into_bigquery(request=request_obj, is_remote=False)
