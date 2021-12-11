@@ -35,7 +35,6 @@ def function_discord_success_reporting(request:Request):
 
 
     # https://discordjs.guide/popular-topics/embeds.html#editing-the-embedded-message-content
-    # The sum of all characters from all embed structures in a message must not exceed 6000 characters TODO: figure out how to handle this
     all_errors = [dict(name=x["player_name"], value=truncate_field(x["validation_errors"]), inline=True) for x in VALIDATION_ERRORS]
     header = {
                 "name": f"Additional Info",
@@ -86,7 +85,7 @@ def truncate_field(value: str) -> str:
 
 def truncate_message(message: dict):
     DISCORD_EMBED_TOTAL_LENGTH = 6000
-    while len(json.dumps(message["embeds"])) > DISCORD_EMBED_TOTAL_LENGTH:
+    while len(json.dumps(message)) > DISCORD_EMBED_TOTAL_LENGTH:
         # Drop the last non footer field until passing the discord requirements
         message["embeds"][0]["fields"] = message["embeds"][0]["fields"][:-2] + message["embeds"][0]["fields"][-1]
 
