@@ -69,7 +69,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
             return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count)
             return return_dict, 200
         except ValueError as e:
-            return {"message": str(e)}, 400
+            return {"message": [str(e)]}, 400 #TODO: this list should be multiple errors
 
     return {"message": "Uploaded file was not of extension '.docx' so is being ignored."}, 400
 

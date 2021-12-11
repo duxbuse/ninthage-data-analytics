@@ -20,7 +20,7 @@ def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
 
 
 
-def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> tuple[str, int]:
+def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> tuple[dict, int]:
 
     assert request is not None
     
@@ -85,7 +85,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
             print("Upload job failed:")
             for err in job.errors:
                     print(err)
-            return json.dumps({"message": job.errors}), 400
+            return {"message": job.errors}, 400
 
 
         print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
@@ -93,7 +93,7 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
         
 
-        return json.dumps({"list_number": job.output_rows, "file_name": filename, "output_table": f"{dataset_id}:{table_id}"}), 200
+        return {"list_number": job.output_rows, "file_name": filename, "output_table": f"{dataset_id}:{table_id}"}, 200
     return "Do nothing cause no file was parsed", 200
 
 if __name__ == "__main__":
