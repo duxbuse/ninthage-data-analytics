@@ -67,7 +67,7 @@ def function_discord_success_reporting(request:Request):
 
     print(f"upload status code: {r.status_code}")
     if r.status_code != 200 or r.status_code != 201:
-        print(f"{r.text=}")
+        print(f"{json_message=}")
 
     return r.text, r.status_code
 
