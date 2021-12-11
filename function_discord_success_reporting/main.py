@@ -63,7 +63,7 @@ def function_discord_success_reporting(request:Request):
             "fields": fields
         }]
     }
-
+    truncate_message(json_message)
     r = requests.post(url, headers=headers, json=json_message)
 
     print(f"upload status code: {r.status_code}")
@@ -84,6 +84,11 @@ def truncate_field(value: str) -> str:
         return new_value
     return value
 
+def truncate_message(message: dict):
+    DISCORD_EMBED_TOTAL_LENGTH = 6000
+    while len(json.dumps(message["embeds"])) > DISCORD_EMBED_TOTAL_LENGTH:
+        # Drop the last non footer field until passing the discord requirements
+        message["embeds"][0]["fields"] = message["embeds"][0]["fields"][:-2] + message["embeds"][0]["fields"][-1]
 
 
 if __name__ == "__main__":
