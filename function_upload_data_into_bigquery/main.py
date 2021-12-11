@@ -4,6 +4,7 @@ from google.cloud import storage
 from google.api_core.exceptions import BadRequest
 from flask.wrappers import Request
 import json
+from pathlib import Path
 from os import remove
 
 
@@ -23,17 +24,18 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
     assert request is not None
     
-    request_body = json.loads(request.json["json_file"]["body"])
+    request_body = json.loads(request.json)["json_file"]["body"]
     print(f"request.json = {request_body}")
 
     if not "message" in request_body:
 
         filename = request_body["file_name"]
         bucket_name = request_body["bucket_name"]
-        client = bigquery.Client()
         dataset_id = 'all_lists'
         table_id = 'tournament_lists'
+
         if is_remote:
+            client = bigquery.Client()
             downloaded_json_blob = download_blob(bucket_name, filename)
             file_path = f"/tmp/{filename}"
             if downloaded_json_blob:
@@ -41,9 +43,26 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
             else:
                 raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
         else:
+            from google.oauth2 import service_account
             file_path = f"data/{filename}"
+            key_path = "ninthage-data-analytics-3eeb86b69c3a.json"
+            credentials = service_account.Credentials.from_service_account_file(key_path)
+            client = bigquery.Client(credentials=credentials)
 
+        # Clear data that we are overwritting
+        tournament_name = Path(filename).stem
+        query_string = f"""
+        DELETE
+        FROM `ninthage-data-analytics.all_lists.tournament_lists`
+        WHERE `tournament` = "{tournament_name}"
+        """
 
+        delete_result = client.query(query_string).result()
+
+        if not isinstance(delete_result, bigquery.table._EmptyRowIterator):
+            raise ValueError(f"Delete failed for {tournament_name}")
+
+        # Save new data
         dataset_ref = client.dataset(dataset_id)
         table_ref = dataset_ref.table(table_id)
         job_config = bigquery.LoadJobConfig()
@@ -76,13 +95,10 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
     return "Do nothing cause no file was parsed", 200
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        request_payload = {'json_file': {'body': sys.argv[1]} }
-    else:
-        request_payload = {'json_file': {'body': '{"bucket_name": "tournament-lists-json", "filename": "Round 1.json"}'} }
+    filename = "Round 2.json"
+    request_payload = {'json_file': {'body': {'bucket_name': 'tournament-lists-json', 'file_name': filename}} }
 
-    request_obj = Request.from_values(json=request_payload)
+    request_obj = Request.from_values(json=json.dumps(request_payload))
 
     print(f"request_payload = {request_payload}")
     status = function_upload_data_into_bigquery(request=request_obj, is_remote=False)
