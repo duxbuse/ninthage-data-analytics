@@ -11,7 +11,7 @@ import json
 def function_discord_success_reporting(request:Request):
     load_dotenv()
 
-    request_body = json.loads(request.json["data"]["body"])
+    request_body = request.json["data"]["body"]
 
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
@@ -19,7 +19,7 @@ def function_discord_success_reporting(request:Request):
     LIST_NUMBER = request_body['list_number']
     OUTPUT_TABLE = request_body['output_table']
 
-    army_info = json.loads(request.json["army_info"]["body"])
+    army_info = request.json["army_info"]["body"]
     LOADED_TK_INFO = army_info['loaded_tk_info']
     VALIDATION_COUNT = army_info['validation_count']
 
@@ -64,5 +64,6 @@ def function_discord_success_reporting(request:Request):
     return "reported to discord", 200
 
 if __name__ == "__main__":
-    request_obj = Request.from_values(json="test")
+    json_message = {'data': {'body': ""}}
+    request_obj = Request.from_values(json="json_message")
     function_discord_success_reporting(request_obj)

@@ -11,8 +11,8 @@ from math import ceil
 def function_discord_error_reporting(request:Request):
     load_dotenv()
     print(f"{request.json=}")
-    request_body = json.loads(request.json["error"]["body"])
-    errors:List[str] = request_body["message"]["args"]
+    request_body = request.json["error"]["body"]
+    errors:List[str] = request_body["message"]
     data = request.json["data"]
     FILE_NAME = data["name"]
 

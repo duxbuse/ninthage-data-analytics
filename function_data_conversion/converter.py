@@ -117,12 +117,15 @@ def parse_army_block(parser: Parser, armyblock: List[str], tournament_name: str,
 
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
-        close_matches = [tk_info.player_list[key]
-                         for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 75]
-        if len(close_matches) == 1 and len(close_matches[0]) == 1:
-            army.tourney_keeper_TournamentPlayerId = close_matches[0][0].get(
+        close_matches = [(tk_info.player_list[key][0], fuzz.token_sort_ratio(key, army.player_name))
+                         for key in tk_info.player_list if fuzz.token_sort_ratio(key, army.player_name) > 50]
+        if len(close_matches) > 0:
+            sorted_by_fuzz_ratio = sorted(close_matches, key=lambda tup: tup[1], reverse=True)
+            army.tourney_keeper_TournamentPlayerId = sorted_by_fuzz_ratio[0][0].get(
                 "TournamentPlayerId")
             army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
+            if len(close_matches) > 1:
+                print(f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}")
         else:
             raise ValueError(
                 f"player: \"{army.player_name}\" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})")
@@ -149,7 +152,7 @@ if __name__ == "__main__":
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("Cossacks Raid - Single.docx"):
+        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("ETC 2021 Novi Sad Serbia.docx"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
 

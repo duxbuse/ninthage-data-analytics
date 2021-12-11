@@ -30,7 +30,7 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
         destination_blob_name,
         bucket_name))
 
-def function_data_conversion(request) -> tuple[str, int]:
+def function_data_conversion(request) -> tuple[dict, int]:
     """Google Cloud Function that upon invocation downloads a .docx file and converts it into newline delimetered .json
 
     Args:
@@ -67,11 +67,11 @@ def function_data_conversion(request) -> tuple[str, int]:
             remove(download_file_path)
             remove(converted_filename)
             return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count)
-            return jsons.dumps(return_dict), 200
+            return return_dict, 200
         except ValueError as e:
-            return jsons.dumps({"message": e}), 400
+            return {"message": [str(e)]}, 400 #TODO: this list should be multiple errors
 
-    return jsons.dumps({"message": "Uploaded file was not of extension '.docx' so is being ignored."}), 400
+    return {"message": "Uploaded file was not of extension '.docx' so is being ignored."}, 400
 
 if __name__ == "__main__":
     # function_data_conversion()
