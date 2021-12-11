@@ -22,6 +22,7 @@ def function_discord_success_reporting(request:Request):
     army_info = request.json["army_info"]["body"]
     LOADED_TK_INFO = army_info['loaded_tk_info']
     VALIDATION_COUNT = army_info['validation_count']
+    VALIDATION_ERRORS = army_info['validation_errors']
 
     url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
     headers = {
@@ -30,6 +31,20 @@ def function_discord_success_reporting(request:Request):
         "User-Agent": "",
         "Content-Type": "application/json"
     }
+
+
+    all_errors = [dict(name=x["player_name"], value=x["validation_errors"], inline=True) for x in VALIDATION_ERRORS]
+    header = {
+                "name": f"Additional Info",
+                "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPassed Validation = `{VALIDATION_COUNT}`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
+                "inline": True
+            }
+    footer = {
+                "name": "\u200B",
+                "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
+                }
+    fields = [header, *all_errors , footer]
+
 
     # For help on this https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
     json_message = {
@@ -41,17 +56,7 @@ def function_discord_success_reporting(request:Request):
             "title": "Success:",
             "description": "",
             "color": 5236872,
-            "fields": [
-                {
-                "name": f"Additional Info",
-                "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPassed Validation = `{VALIDATION_COUNT}`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
-                "inline": True
-                },
-                {
-                "name": "\u200B",
-                "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!"
-                }
-            ]
+            "fields": fields
         }]
     }
 
