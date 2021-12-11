@@ -13,6 +13,7 @@ def function_discord_success_reporting(request:Request):
     load_dotenv()
 
     request_body = request.json["data"]["body"]
+    print(f"{request_body=}")
 
     TOKEN = getenv('DISCORD_WEBHOOK_TOKEN')
     WEBHOOK_ID = getenv('DISCORD_WEBHOOK_ID')
