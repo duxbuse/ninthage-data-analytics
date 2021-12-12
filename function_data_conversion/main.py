@@ -55,6 +55,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
             list_of_armies = Convert_docx_to_list(download_file_path)
             loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
             validation_count = sum(1 for i in list_of_armies if i.validated)
+            validation_errors = [{"player_name": x.player_name, "validation_errors": x.validation_errors} for x in list_of_armies if len(x.validation_errors) > 0]
 
 
             upload_filename = Path(download_file_path).stem + ".json"
@@ -66,7 +67,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
             print(f"Uploaded {upload_filename} to {upload_bucket}")
             remove(download_file_path)
             remove(converted_filename)
-            return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count)
+            return_dict = dict(bucket_name=upload_bucket, file_name=upload_filename, loaded_tk_info=loaded_tk_info, validation_count=validation_count, validation_errors=validation_errors)
             return return_dict, 200
         except ValueError as e:
             return {"message": [str(e)]}, 400 #TODO: this list should be multiple errors
