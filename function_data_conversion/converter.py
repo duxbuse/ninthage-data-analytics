@@ -21,6 +21,7 @@ from data_classes import (
     Tk_info,
     Round
 )
+from ninth_builder import format_army_block
 
 
 def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
@@ -42,6 +43,10 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
+        #format block
+        formated_block = format_army_block(armyblock)
+        if formated_block:
+            armyblock = formated_block
         # Select which parser to use
         parser_selected = DetectParser(armyblock)
         # parse block into army object
