@@ -44,7 +44,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
     for armyblock in armyblocks:
         #format block
-        formated_block = False
+        formated_block = format_army_block(armyblock)
         if formated_block:
             armyblock = formated_block
         # Select which parser to use
