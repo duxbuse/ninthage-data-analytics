@@ -76,7 +76,7 @@ def truncate_field_values(values: list[str]) -> str:
 
     DISCORD_EMBED_FIELD_VALUE = 1024
     current_total = sum(len(x) for x in values)
-    while current_total > DISCORD_EMBED_FIELD_VALUE:
+    while current_total > DISCORD_EMBED_FIELD_VALUE+len(values): #len(values) represents the extra `\n` that will be appended
         last_value = values.pop()
         current_total -= len(last_value)
     return '\n'.join(values)
