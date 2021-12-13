@@ -22,7 +22,7 @@ def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
 
 def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> tuple[dict, int]:
 
-    assert request is not None
+    print(f"{request.json=}")
     
     request_body = request.json["json_file"]["body"]
     print(f"request.json = {request_body}")
