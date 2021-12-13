@@ -40,12 +40,18 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
     armyblocks = split_lines_into_blocks(lines)
     tk_info = load_tk_info(filename)
+    # check to make sure player counts match on both the file and TK
+    if tk_info.player_count and tk_info.player_count != len(armyblocks):
+        raise ValueError(f"""
+        TourneyKeeper player count:{tk_info.player_count} != len(armyblocks):{len(armyblocks)}
+        For file {docxFilePath}
+        """)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
         #format block
         formated_block = format_army_block(armyblock)
-        if formated_block:
+        if formated_block and False: #TODO: formatter is broken currently
             armyblock = formated_block
         # Select which parser to use
         parser_selected = DetectParser(armyblock)
@@ -152,12 +158,12 @@ if __name__ == "__main__":
     # GTC singles
     # testtesttesttestsetsetset
 
-    path = Path("data")
+    path = Path("data/2021 data")
 
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
-        if file.endswith(".docx") and not file.startswith("~$") and file.startswith("ETC 2021 Novi Sad Serbia.docx"):
+        if file.endswith(".docx") and not file.startswith("~$"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
 

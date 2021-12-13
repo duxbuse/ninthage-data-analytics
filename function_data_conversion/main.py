@@ -64,6 +64,9 @@ def function_data_conversion(request) -> tuple[dict, int]:
                         Path(download_file_path).stem, tournament.get("Name"))
                     if ratio > 80:
                         possible_tk_names.append((tournament, ratio))
+            else:
+                possible_tk_names = [Path(download_file_path).stem]
+
             validation_count = sum(1 for i in list_of_armies if i.validated)
             validation_errors = [{"player_name": x.player_name, "validation_errors": x.validation_errors}
                                  for x in list_of_armies if len(x.validation_errors) > 0]

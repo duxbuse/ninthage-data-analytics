@@ -185,7 +185,7 @@ class new_recruit_parser():
             new_unit_upgrades[index] = re.sub(regex, 'champion', upgrade)
 
             # bsb -> battle standard bearer
-            regex = r'^(bsb|BSB)$'
+            regex = r'^(bsb|BSB|Battlestandard|battlestandard)$'
             new_unit_upgrades[index] = re.sub(regex, 'battle standard bearer', upgrade)
 
             # FCG -> champ+muso+standard

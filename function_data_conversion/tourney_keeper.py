@@ -185,13 +185,6 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
 
-        # # check to make sure player counts match on both the file and TK
-        # if player_count and player_count != len(armyblocks):
-        #     raise ValueError(f"""
-        #     TourneyKeeper player count:{player_count} != len(armyblocks):{len(armyblocks)}
-        #     For file {tournament_name}
-        #     """)
-
         return Tk_info(event_date=event_date, event_type=event_type, event_id=event_id, game_list=tournament_games, player_list=player_list, player_count=player_count, players_per_team=players_per_team)
     return Tk_info()
 
