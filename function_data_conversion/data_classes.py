@@ -86,7 +86,7 @@ class Tk_info():
     event_id: Optional[int] = None
     game_list: Optional[dict] = field(default_factory=dict)
     # output from Get_players_names_from_games()
-    player_list: Optional[dict] = field(default_factory=dict)
+    player_list: Optional[dict] = field(default_factory=dict) #dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
     player_count: Optional[int] = None
     players_per_team: Optional[int] = 1
 

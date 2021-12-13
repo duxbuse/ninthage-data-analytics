@@ -85,7 +85,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
                                possible_tk_names=possible_tk_names, validation_count=validation_count, validation_errors=validation_errors)
             return return_dict, 200
         except ValueError as e:
-            # TODO: this list should be multiple errors
+            # TODO: this list should be multiple errors to make fixing them all quicker
             return {"message": [str(e)]}, 400
 
     return {"message": "Uploaded file was not of extension '.docx' so is being ignored."}, 400

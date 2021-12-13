@@ -40,12 +40,6 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
     armyblocks = split_lines_into_blocks(lines)
     tk_info = load_tk_info(filename)
-    # check to make sure player counts match on both the file and TK
-    if tk_info.player_count and tk_info.player_count != len(armyblocks):
-        raise ValueError(f"""
-        TourneyKeeper player count:{tk_info.player_count} != len(armyblocks):{len(armyblocks)}
-        For file {docxFilePath}
-        """)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
@@ -63,8 +57,12 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
 
     if tk_info.player_count and tk_info.player_count != len(army_list):
-        # If we have the player count from TK then we can check that the number of lists we read in matches
-        raise ValueError(f"Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}")
+        # If we have the player count from TK then we can check that the number of lists we read in are equal
+        raise ValueError(f"""
+        Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}
+        Players read from file: {[x.player_name for x in army_list]}
+        Players read from TK: {tk_info.player_list.keys()}
+        """)
 
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
@@ -154,9 +152,9 @@ if __name__ == "__main__":
 
     # To Kill a MoCTing Bird
     # "Brisvegas Battles 3"
-    # and file.startswith("Round 2")
+    # and file.startswith("WTC Nations Cup Online 2021.docx")
     # GTC singles
-    # testtesttesttestsetsetset
+    # data\2021 data\WTC Nations Cup Online 2021.docx
 
     path = Path("data/2021 data")
 
