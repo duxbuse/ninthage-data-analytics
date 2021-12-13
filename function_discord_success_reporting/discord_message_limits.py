@@ -12,13 +12,8 @@ def truncate_field_values(values: list[str]) -> str:
 
 def truncate_message(message: dict):
     DISCORD_EMBED_TOTAL_LENGTH = 6000
-    current_total = character_total(message)
-    while current_total > DISCORD_EMBED_TOTAL_LENGTH:
-        # reduce the character count by what is about to be removed
-        current_total -= len(json.dumps(message["embeds"][0]["fields"][-2]["name"]))
-        current_total -= len(json.dumps(message["embeds"][0]["fields"][-2]["value"]))
-        # Drop the last non footer field until passing the discord requirements
-        message["embeds"][0]["fields"] = [*message["embeds"][0]["fields"][:-3], message["embeds"][0]["fields"][-1]]
+    while character_total(message) > DISCORD_EMBED_TOTAL_LENGTH:
+        message["embeds"][0]["fields"].pop(-2) #take the second last item as the last is the footter and we want to leave that
 
 def character_total(message: dict) -> int:
     embed = message["embeds"][0]
