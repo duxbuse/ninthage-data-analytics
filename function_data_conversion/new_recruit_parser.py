@@ -21,7 +21,8 @@ class new_recruit_parser():
             if some units are on the same line we can still read it in but validation will fail
             
         """
-
+        if len(lines) < 6: #minimum is name, army, and 4 units
+            raise ValueError(f"Army Block has to few lines for validation.\n{lines=}")
 
         url = "https://www.newrecruit.eu/api/listcheck"
 
