@@ -91,7 +91,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
             )
             return return_dict, 200
         except Multi_Error as e:
-            return {"message": e.errors}, 400
+            return {"message": [str(x) for x in e.errors]}, 400
 
     return {
         "message": "Uploaded file was not of extension '.docx' so is being ignored."
