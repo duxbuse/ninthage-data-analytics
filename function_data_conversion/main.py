@@ -6,6 +6,7 @@ from fuzzywuzzy import fuzz
 from os import remove
 from converter import Convert_docx_to_list, Write_army_lists_to_json_file
 from tourney_keeper import get_recent_tournaments
+from multi_error import Multi_Error
 
 
 def download_blob(bucket_name, blob_name) -> Union[Blob, None]:
@@ -89,9 +90,8 @@ def function_data_conversion(request) -> tuple[dict, int]:
                 validation_errors=validation_errors,
             )
             return return_dict, 200
-        except ValueError as e:
-            # TODO: this list should be multiple errors to make fixing them all quicker
-            return {"message": [str(e)]}, 400
+        except Multi_Error as e:
+            return {"message": e.errors}, 400
 
     return {
         "message": "Uploaded file was not of extension '.docx' so is being ignored."

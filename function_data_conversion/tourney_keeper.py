@@ -140,7 +140,9 @@ def Get_players_names_from_games(games: dict) -> dict:
             tk_player_id = player_details.get("PlayerId")
             output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
         else:
-            print(f"Id: {Id}, is not found on TK")
+            print(
+                f"Id: {Id} from {unique_player_tkIds}, is not found on TK"
+            )  # TODO: there is always a 0 id for some reason
 
     return output
 

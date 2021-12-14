@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from http400 import handle_400
 from http408 import handle_408
 from http_error_catch_all import handle_error
-from truncate_message import truncate_message
+from discord_message_limits import truncate_message
 
 
 def function_discord_error_reporting(request: Request):
@@ -55,7 +55,7 @@ def function_discord_error_reporting(request: Request):
         "Content-Type": "application/json",
     }
 
-    r = requests.post(url, headers=headers, json=truncate_message(truncated_message))
+    r = requests.post(url, headers=headers, json=truncated_message)
 
     print(f"discord status code: {r.status_code}")
     print(f"discord text: {r.text}")

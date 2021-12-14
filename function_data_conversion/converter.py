@@ -2,8 +2,7 @@ from typing import List
 from pathlib import Path
 from datetime import datetime, timezone
 from fuzzywuzzy import fuzz
-
-
+from multi_error import Multi_Error
 from utility_functions import (
     Docx_to_line_list,
     DetectParser,
@@ -26,6 +25,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
         List: list of ArmyEntry objects representing all lists in the .docx file
     """
     lines = Docx_to_line_list(docxFilePath)
+    errors = []
     filename = Path(docxFilePath).stem
 
     army_list: List[ArmyEntry] = []
@@ -35,33 +35,41 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
-        # format block
-        formated_block = format_army_block(armyblock)
-        if formated_block:
-            armyblock = formated_block
-        # Select which parser to use
-        parser_selected = DetectParser(armyblock)
-        # parse block into army object
-        army = parse_army_block(
-            parser=parser_selected,
-            armyblock=armyblock,
-            tournament_name=filename,
-            event_size=len(armyblocks),
-            ingest_date=ingest_date,
-            tk_info=tk_info,
-        )
-        # save into army list
-        army_list.append(army)
+        try:
+            # format block
+            formated_block = format_army_block(armyblock)
+            if formated_block:
+                armyblock = formated_block
+            # Select which parser to use
+            parser_selected = DetectParser(armyblock)
+            # parse block into army object
+            army = parse_army_block(
+                parser=parser_selected,
+                armyblock=armyblock,
+                tournament_name=filename,
+                event_size=len(armyblocks),
+                ingest_date=ingest_date,
+                tk_info=tk_info,
+            )
+            # save into army list
+            army_list.append(army)
+        except ValueError as e:
+            errors.append(e)
 
     if tk_info.player_count and tk_info.player_count != len(army_list):
         # If we have the player count from TK then we can check that the number of lists we read in are equal
-        raise ValueError(
-            f"""
+        errors.append(
+            ValueError(
+                f"""
         Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}
         Players read from file: {[x.player_name for x in army_list]}
         Players read from TK: {tk_info.player_list.keys()}
         """
+            )
         )
+
+    if errors:
+        raise Multi_Error(errors)
 
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
@@ -147,7 +155,9 @@ def parse_army_block(
                 "TournamentPlayerId"
             )
             army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
-            if len(close_matches) > 1:
+            if (
+                len(close_matches) > 1 and sorted_by_fuzz_ratio[0][1] != 100
+            ):  # only report when there are a few options and the top pick isnt 100
                 print(
                     f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
