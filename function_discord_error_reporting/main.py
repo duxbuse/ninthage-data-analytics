@@ -32,6 +32,7 @@ def function_discord_error_reporting(request: Request):
     }
 
     error_code: int = request.json["error"]["code"]
+    print(f"{error_code=}")
     if error_code == 400:
         handle_400(request, json_message)
 
@@ -40,6 +41,7 @@ def function_discord_error_reporting(request: Request):
 
     else:
         handle_error(request, json_message)
+    print(f"{json_message=}")
 
     truncated_message = truncate_message(json_message)
     print(f"{truncated_message=}")
