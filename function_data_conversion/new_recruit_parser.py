@@ -22,7 +22,7 @@ class new_recruit_parser():
             
         """
         if len(lines) < 6: #minimum is name, army, and 4 units
-            raise ValueError(f"Army Block has to few lines for validation.\n{lines=}")
+            raise ValueError(f"Army Block has to few lines for validation.\nRequires at minimum name, army, and 4 units\n{lines=}")
 
         url = "https://www.newrecruit.eu/api/listcheck"
 
