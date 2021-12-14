@@ -28,6 +28,8 @@ main:
                     data: ${input}
                   auth:
                     type: OIDC
+
+            - return_error_data_conversion:
                 return: ${e}
 
     - workflow_function_upload_data_into_bigquery:
@@ -56,7 +58,10 @@ main:
                     data: ${input}
                   auth:
                     type: OIDC
+
+            - return_error_big_query:
                 return: ${e}
+
 
     - workflow_function_discord_success_reporting:
         call: http.post
@@ -69,4 +74,7 @@ main:
             army_info: ${json_file}
           auth:
             type: OIDC
+
+    - return_success:
         return: ${upload_result}
+
