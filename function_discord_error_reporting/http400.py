@@ -14,6 +14,8 @@ def handle_400(request: Request, json_message: dict):
         dict(name="Value Error", value=truncate_string(x), inline=True)
         for x in errors[:24]
     ]  # limit on 25 fields, so we take only 24 as there is a footer field
-    json_message["embeds"][0]["fields"].insert(
-        0, *all_errors
-    )  # add all the errors at the beginning before the header
+
+    json_message["embeds"][0]["fields"] = [
+        *all_errors,
+        json_message["embeds"][0]["fields"][0],
+    ]  # add all the errors at the beginning before the header
