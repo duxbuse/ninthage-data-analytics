@@ -53,7 +53,7 @@ class new_recruit_parser():
             return ["Unknown Validation error"]
 
     def detect_army_name(self, line: str) -> Union[str, None]:
-        army_name = Army_names.get(line.upper())
+        army_name = Army_names.get(line.strip().upper())
         if army_name:
             return army_name
         return None

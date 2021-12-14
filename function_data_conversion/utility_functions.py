@@ -2,6 +2,9 @@ from pathlib import Path
 import jsons
 from typing import List
 from docx import Document
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.text.paragraph import Paragraph
+import re
 
 from parser_protocol import Parser
 from data_classes import Parsers
@@ -11,7 +14,11 @@ from data_classes import (
 )
 
 def Docx_to_line_list(docxFile) -> List[str]:
+    #remove hyperlinks as they are treated different to paragraphs especially when that is all that is on the line.
+    # This is explained https://github.com/python-openxml/python-docx/issues/85#issuecomment-917134257
+    Paragraph.text = property(lambda self: GetParagraphText(self))
     doc = Document(docxFile)
+
 
     lines = []  # ALL the text in the file, separated by lines
 
@@ -24,6 +31,23 @@ def Docx_to_line_list(docxFile) -> List[str]:
                 lines.append(' '.join(section.split()))  # remove weird unicode spaces \xa0
     return lines
 
+def GetParagraphText(paragraph):
+
+    def GetTag(element):
+        return "%s:%s" % (element.prefix, re.match("{.*}(.*)", element.tag).group(1))
+
+    text = ''
+    runCount = 0
+    for child in paragraph._p:
+        tag = GetTag(child)
+        if tag == "w:r":
+            text += paragraph.runs[runCount].text
+            runCount += 1
+        if tag == "w:hyperlink":
+            for subChild in child:
+                if GetTag(subChild) == "w:r":
+                    text += subChild.text
+    return text
 
 def DetectParser(armyblock: List[str]) -> Parser:
     # Read through block to determine formatting

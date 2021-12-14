@@ -16,4 +16,5 @@ def format_army_block(army_block:list[str]) -> list[str]:
         return []
 
     message = response.json()["formated"]
-    return message.split("\n")
+    message_list = message.split("\n")
+    return [x.strip() for x in message_list]
