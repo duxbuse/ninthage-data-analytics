@@ -5,12 +5,7 @@ from urllib.parse import quote
 import json
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
-from data_classes import (
-    ArmyEntry,
-    Tk_info,
-    Event_types,
-    Round
-)
+from data_classes import ArmyEntry, Tk_info, Event_types, Round
 
 
 def get_recent_tournaments() -> List:
@@ -18,23 +13,24 @@ def get_recent_tournaments() -> List:
 
     now = datetime.now(timezone.utc)
     # hard coded to look a year and half backwards
-    year_ago = now - timedelta(days=1.5*365)
+    year_ago = now - timedelta(days=1.5 * 365)
 
-    now_str = quote(now.isoformat(timespec='seconds') + 'Z', safe='')
-    year_ago_str = quote(year_ago.isoformat(timespec='seconds') + 'Z', safe='')
+    now_str = quote(now.isoformat(timespec="seconds") + "Z", safe="")
+    year_ago_str = quote(year_ago.isoformat(timespec="seconds") + "Z", safe="")
 
     url = f"https://tourneykeeper.net/WebAPI/Tournament/GetTournaments?from={year_ago_str}&to={now_str}"
 
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2)
+            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+        )
     except requests.exceptions.ReadTimeout as err:
         return []
     if response.status_code != 200:
         return []
     message = response.json()["Message"]
-    success = response.json()['Success']
+    success = response.json()["Success"]
     if success:
         data = json.loads(message)
 
@@ -49,17 +45,22 @@ def get_recent_tournaments() -> List:
 def Get_active_players(tourney_id: int) -> Union[int, None]:
     url = f"https://tourneykeeper.net/WebAPI/Tournament/GetActivePlayers"
     # need to blank the user agent as the default is automatically blocked
-    headers = {"Accept": "application/json",
-               "User-Agent": "", "Content-Type": "application/json"}
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "",
+        "Content-Type": "application/json",
+    }
 
     try:
-        response = requests.post(url, json={"Id": tourney_id}, headers=headers,  timeout=2)
+        response = requests.post(
+            url, json={"Id": tourney_id}, headers=headers, timeout=2
+        )
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
         return None
     message = response.json()["Message"]
-    success = response.json()['Success']
+    success = response.json()["Success"]
     if success:
         data = int(message)
         return data
@@ -71,14 +72,15 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
+            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+        )
     except requests.exceptions.ReadTimeout as err:
         print("This is timing out")
         return None
     if response.status_code != 200:
         return None
     message = response.json()["Message"]
-    success = response.json()['Success']
+    success = response.json()["Success"]
     if success:
         data = json.loads(message)["Games"]
         return data
@@ -100,12 +102,13 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""},  timeout=2)
+            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+        )
     except requests.exceptions.ReadTimeout as err:
         return None
     if response.status_code != 200:
         return None
-    success = response.json()['Success']
+    success = response.json()["Success"]
     if success:
         message = response.json()["Message"]
         data = json.loads(message)
@@ -135,15 +138,16 @@ def Get_players_names_from_games(games: dict) -> dict:
         if player_details:
             player_name = player_details.get("PlayerName")
             tk_player_id = player_details.get("PlayerId")
-            output[player_name] = [
-                {"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
+            output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
         else:
             print(f"Id: {Id}, is not found on TK")
 
     return output
 
 
-def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]) -> Tuple[UUID, UUID]:
+def Convert2_TKid_to_uuid(
+    TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEntry]
+) -> Tuple[UUID, UUID]:
     army1_uuid = None
     army2_uuid = None
 
@@ -154,13 +158,17 @@ def Convert2_TKid_to_uuid(TKID_1: int, TKID_2: int, list_of_armies: List[ArmyEnt
             army2_uuid = army.army_uuid
 
     if not army1_uuid:
-        raise ValueError(f"""
+        raise ValueError(
+            f"""
             tourney_keeper_TournamentPlayerId:{TKID_1} could not be found in file {list_of_armies[0].tournament}
-        """)
+        """
+        )
     if not army2_uuid:
-        raise ValueError(f"""
+        raise ValueError(
+            f"""
             tourney_keeper_TournamentPlayerId:{TKID_2} could not be found in file {list_of_armies[0].tournament}
-        """)
+        """
+        )
     return (army1_uuid, army2_uuid)
 
 
@@ -175,9 +183,9 @@ def load_tk_info(tournament_name: str) -> Tk_info:
             event_type = Event_types.SINGLES
 
         event_date = datetime.strptime(
-            tourney_keeper_info.get("Start"), '%Y-%m-%yT%H:%M:%S').replace(tzinfo=timezone.utc)
-        tournament_games = Get_games_for_tournament(
-            tourney_keeper_info.get("Id"))
+            tourney_keeper_info.get("Start"), "%Y-%m-%yT%H:%M:%S"
+        ).replace(tzinfo=timezone.utc)
+        tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
 
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
@@ -185,15 +193,26 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
 
-        return Tk_info(event_date=event_date, event_type=event_type, event_id=event_id, game_list=tournament_games, player_list=player_list, player_count=player_count, players_per_team=players_per_team)
+        return Tk_info(
+            event_date=event_date,
+            event_type=event_type,
+            event_id=event_id,
+            game_list=tournament_games,
+            player_list=player_list,
+            player_count=player_count,
+            players_per_team=players_per_team,
+        )
     return Tk_info()
 
 
-def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry]) -> None:
+def append_tk_game_data(
+    tournament_games: dict, list_of_armies: List[ArmyEntry]
+) -> None:
     # extract TK game results if avaliable
     for game in tournament_games:
         (player1_uuid, player2_uuid) = Convert2_TKid_to_uuid(
-            game.get("Player1Id"), game.get("Player2Id"), list_of_armies)
+            game.get("Player1Id"), game.get("Player2Id"), list_of_armies
+        )
 
         round_number = int(game.get("Round"))
         game_uuid = uuid4()
@@ -204,12 +223,26 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         player1_secondary = int(game.get("Player1SecondaryResult"))
         player2_secondary = int(game.get("Player2SecondaryResult"))
 
-        player1_round = Round(opponent=player2_uuid, result=player1_result,
-                              secondary_points=player1_secondary, round_number=round_number, game_uuid=game_uuid)
-        player2_round = Round(opponent=player1_uuid, result=player2_result,
-                              secondary_points=player2_secondary, round_number=round_number, game_uuid=game_uuid)
+        player1_round = Round(
+            opponent=player2_uuid,
+            result=player1_result,
+            secondary_points=player1_secondary,
+            round_number=round_number,
+            game_uuid=game_uuid,
+        )
+        player2_round = Round(
+            opponent=player1_uuid,
+            result=player2_result,
+            secondary_points=player2_secondary,
+            round_number=round_number,
+            game_uuid=game_uuid,
+        )
 
-        for army in list_of_armies:  # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
+        for (
+            army
+        ) in (
+            list_of_armies
+        ):  # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
             if army.army_uuid == player1_uuid:
                 army.round_performance.append(player1_round)
             elif army.army_uuid == player2_uuid:
@@ -220,7 +253,12 @@ def append_tk_game_data(tournament_games: dict, list_of_armies: List[ArmyEntry])
         army.calculate_total_tournament_points()
 
     # sort armies based on performace then set the placing based on that order
-    list_of_armies.sort(key=lambda x: (x.calculated_total_tournament_points,
-                        x.calculated_total_tournament_secondary_points), reverse=True)
+    list_of_armies.sort(
+        key=lambda x: (
+            x.calculated_total_tournament_points,
+            x.calculated_total_tournament_secondary_points,
+        ),
+        reverse=True,
+    )
     for index, army in enumerate(list_of_armies):
         army.list_placing = index + 1  # have to account for 0 index lists

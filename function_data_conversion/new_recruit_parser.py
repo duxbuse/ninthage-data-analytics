@@ -5,8 +5,7 @@ from data_classes import ArmyEntry, UnitEntry, Army_names
 import string
 
 
-class new_recruit_parser():
-
+class new_recruit_parser:
     def Is_int(self, n) -> bool:
         try:
             float(n)
@@ -17,12 +16,14 @@ class new_recruit_parser():
 
     def validate(self, lines: List[str]) -> list[str]:
         """
-            TODO: Known issues:
-            if some units are on the same line we can still read it in but validation will fail
-            
+        TODO: Known issues:
+        if some units are on the same line we can still read it in but validation will fail
+
         """
-        if len(lines) < 6: #minimum is name, army, and 4 units
-            raise ValueError(f"Army Block has to few lines for validation.\nRequires at minimum name, army, and 4 units\n{lines=}")
+        if len(lines) < 6:  # minimum is name, army, and 4 units
+            raise ValueError(
+                f"Army Block has to few lines for validation.\nRequires at minimum name, army, and 4 units\n{lines=}"
+            )
 
         url = "https://www.newrecruit.eu/api/listcheck"
 
@@ -46,9 +47,9 @@ class new_recruit_parser():
 
         r = response.json()
         if type(r) == dict:
-            return([r.get("error")])
+            return [r.get("error")]
         elif type(r) == list:
-            return([x.get("msg") for x in response.json()])
+            return [x.get("msg") for x in response.json()]
         else:
             return ["Unknown Validation error"]
 
@@ -60,11 +61,20 @@ class new_recruit_parser():
 
     def detect_total_points(self, line) -> Union[int, None]:
         # Examples
-        # Total Army Cost: 4499 pts 
+        # Total Army Cost: 4499 pts
         # 4498pts
-        cleaned_line = line.lower().replace("total", "").replace("army", "").replace("cost", "").replace("pts", "").replace("points", "")
-        table = str.maketrans(dict.fromkeys(string.punctuation))  # OR {key: None for key in string.punctuation}
-        cleaned_line = cleaned_line.translate(table) 
+        cleaned_line = (
+            line.lower()
+            .replace("total", "")
+            .replace("army", "")
+            .replace("cost", "")
+            .replace("pts", "")
+            .replace("points", "")
+        )
+        table = str.maketrans(
+            dict.fromkeys(string.punctuation)
+        )  # OR {key: None for key in string.punctuation}
+        cleaned_line = cleaned_line.translate(table)
         cleaned_line = cleaned_line.strip()
         # simple case where its just the number
         if self.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
@@ -75,7 +85,9 @@ class new_recruit_parser():
         new_army = ArmyEntry()
         for i, line in enumerate(lines):
 
-            if i==len(lines)-1:  # last line is either the points total or last unit entry
+            if (
+                i == len(lines) - 1
+            ):  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:
                     new_army.reported_total_army_points = total_points
@@ -99,7 +111,9 @@ class new_recruit_parser():
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(lines) #TODO: if this timesout then we get a Null object
+        validation_errors = self.validate(
+            lines
+        )  # TODO: if this timesout then we get a Null object
         new_army.validated = not validation_errors
         new_army.validation_errors = validation_errors
 
@@ -111,8 +125,12 @@ class new_recruit_parser():
         # regex explanation don't match "Benji#9781 - Captain" so we need to start with a negative lookbehind due to python being basic, and needing fixed look behinds we need to do each variation separately
         # Then match number "630 - Death Cult Hierarch" -> "<number> - <unit name>, upgrades"
         # Sometimes there are unit entries on the same line so we then do a positive lookahead to make sure if there is another unit entry its not captured by the '(.+?)'
-        split_line_points_entry = r'(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[-– :] ?)(.+?)(?=\d{2,4}|$)'
-        pointsSearch = re.findall(split_line_points_entry, line.lower()) #ensure its all lowercase to prevent casing issues
+        split_line_points_entry = (
+            r"(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[-– :] ?)(.+?)(?=\d{2,4}|$)"
+        )
+        pointsSearch = re.findall(
+            split_line_points_entry, line.lower()
+        )  # ensure its all lowercase to prevent casing issues
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately
 
@@ -121,18 +139,22 @@ class new_recruit_parser():
 
                 if unit_points == -1:
                     raise ValueError(
-                        f"unit points: {unit[0]} must be an integer, in line: {line}")
+                        f"unit points: {unit[0]} must be an integer, in line: {line}"
+                    )
 
                 # break group 2 ("15 knights" | "41x spearmen" | chariot) into unit name and quantity
-                splitOutQuantityRegex = r'(\d{1,2}|)(?:x | |)(.+)'
+                splitOutQuantityRegex = r"(\d{1,2}|)(?:x | |)(.+)"
                 quantitySearch = re.search(splitOutQuantityRegex, unit[1])
                 if quantitySearch:
                     # if there was no quantity number then the regex match for group 1 is '' so we need to hardcode that as 1
-                    quantity = int(quantitySearch.group(
-                        1)) if quantitySearch.group(1) else 1
-                    cleaned_upgrades = self.clear_superfluous_data(quantitySearch.group(2))
+                    quantity = (
+                        int(quantitySearch.group(1)) if quantitySearch.group(1) else 1
+                    )
+                    cleaned_upgrades = self.clear_superfluous_data(
+                        quantitySearch.group(2)
+                    )
                     non_nested_upgrades = self.break_nested_upgrades(cleaned_upgrades)
-                    splitLine = [x.strip() for x in non_nested_upgrades.split(', ')]
+                    splitLine = [x.strip() for x in non_nested_upgrades.split(", ")]
                     unit_name = splitLine[0]
                     if len(splitLine) > 1:
                         unit_upgrades = splitLine[1:]
@@ -140,8 +162,14 @@ class new_recruit_parser():
                         unit_upgrades = []
 
                     unit_upgrades = self.expand_short_hand(unit_upgrades)
-                    output.append(UnitEntry(
-                        points=unit_points, quantity=quantity, name=unit_name, upgrades=unit_upgrades))
+                    output.append(
+                        UnitEntry(
+                            points=unit_points,
+                            quantity=quantity,
+                            name=unit_name,
+                            upgrades=unit_upgrades,
+                        )
+                    )
 
         return output
 
@@ -155,47 +183,47 @@ class new_recruit_parser():
             str: cleaned string
         """
         # removing "(4+)|4+" from "Crossbow (4+)|Crossbow 4+"
-        regex = r' ?(\(\d\+\)|\d\+)'
-        unit_upgrades = re.sub(regex, '', unit_upgrades)
-        
+        regex = r" ?(\(\d\+\)|\d\+)"
+        unit_upgrades = re.sub(regex, "", unit_upgrades)
+
         # removing [xxpts]
-        regex = r' ?(\[\d+ ?pts\]|\d+ ?pts)'
-        unit_upgrades = re.sub(regex, '', unit_upgrades)
+        regex = r" ?(\[\d+ ?pts\]|\d+ ?pts)"
+        unit_upgrades = re.sub(regex, "", unit_upgrades)
 
-        #Clear out some guff encoding
-        unit_upgrades = unit_upgrades.replace("&#39;","'")
-        
+        # Clear out some guff encoding
+        unit_upgrades = unit_upgrades.replace("&#39;", "'")
+
         return unit_upgrades
-
-
 
     def expand_short_hand(self, unit_upgrades: list[str]) -> list[str]:
 
-        new_unit_upgrades = unit_upgrades[:] #Need to take a slice as then it is not linked to the original object, to avoid infinite loop
+        new_unit_upgrades = unit_upgrades[
+            :
+        ]  # Need to take a slice as then it is not linked to the original object, to avoid infinite loop
         for index, upgrade in enumerate(unit_upgrades):
             # m -> musician
-            regex = r'^(m|M|muso)$'
-            new_unit_upgrades[index] = re.sub(regex, 'musician', upgrade)
+            regex = r"^(m|M|muso)$"
+            new_unit_upgrades[index] = re.sub(regex, "musician", upgrade)
 
             # s -> standard bearer
-            regex = r'^(s|S|standard)$'
-            new_unit_upgrades[index] = re.sub(regex, 'standard bearer', upgrade)
+            regex = r"^(s|S|standard)$"
+            new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade)
 
             # c -> champion
-            regex = r'^(c|C|champ)$'
-            new_unit_upgrades[index] = re.sub(regex, 'champion', upgrade)
+            regex = r"^(c|C|champ)$"
+            new_unit_upgrades[index] = re.sub(regex, "champion", upgrade)
 
             # bsb -> battle standard bearer
-            regex = r'^(bsb|BSB|Battlestandard|battlestandard)$'
-            new_unit_upgrades[index] = re.sub(regex, 'battle standard bearer', upgrade)
+            regex = r"^(bsb|BSB|Battlestandard|battlestandard)$"
+            new_unit_upgrades[index] = re.sub(regex, "battle standard bearer", upgrade)
 
             # FCG -> champ+muso+standard
-            regex = r'^(fcg|FCG|gmc|GMC)$'
+            regex = r"^(fcg|FCG|gmc|GMC)$"
             if re.match(regex, upgrade):
-                new_unit_upgrades[index] = re.sub(regex, 'standard bearer', upgrade)
-                new_unit_upgrades.append('musician')
-                new_unit_upgrades.append('champion')
-            
+                new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade)
+                new_unit_upgrades.append("musician")
+                new_unit_upgrades.append("champion")
+
         return new_unit_upgrades
 
     def break_nested_upgrades(self, unit_upgrades: str) -> str:

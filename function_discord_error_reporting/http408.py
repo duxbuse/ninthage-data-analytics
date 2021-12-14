@@ -1,5 +1,7 @@
 from flask.wrappers import Request
-def handle_408(request:Request, json_message:dict):
+
+
+def handle_408(request: Request, json_message: dict):
     message = request.json["error"]["message"]
 
     error_message = dict(name="Timeout Error", value=message, inline=True)

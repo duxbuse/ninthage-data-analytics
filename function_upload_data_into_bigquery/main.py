@@ -3,14 +3,14 @@ from google.cloud import bigquery
 from google.cloud import storage
 from google.api_core.exceptions import BadRequest
 from flask.wrappers import Request
-import json
 from pathlib import Path
 from os import remove
 
 
 from google.cloud.storage.blob import Blob
 
-def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
+
+def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
     """Downloads a file from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
@@ -19,11 +19,12 @@ def download_blob(bucket_name:str, blob_name:str) -> Union[Blob, None]:
     return blob
 
 
-
-def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -> tuple[dict, int]:
+def function_upload_data_into_bigquery(
+    request: Request, is_remote: bool = True
+) -> tuple[dict, int]:
 
     print(f"{request.json=}")
-    
+
     request_body = request.json["json_file"]["body"]
     print(f"request.json = {request_body}")
 
@@ -31,10 +32,10 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
 
         filename = request_body["file_name"]
         bucket_name = request_body["bucket_name"]
-        dataset_id = 'all_lists'
-        table_id = 'tournament_lists'
+        dataset_id = "all_lists"
+        table_id = "tournament_lists"
 
-        # Running on gcp 
+        # Running on gcp
         if is_remote:
             client = bigquery.Client()
             downloaded_json_blob = download_blob(bucket_name, filename)
@@ -42,13 +43,18 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
             if downloaded_json_blob:
                 downloaded_json_blob.download_to_filename(file_path)
             else:
-                raise ValueError(f"Download of file {filename} from {bucket_name} failed.")
+                raise ValueError(
+                    f"Download of file {filename} from {bucket_name} failed."
+                )
         # running locally
         else:
             from google.oauth2 import service_account
+
             file_path = f"data/{filename}"
             key_path = "ninthage-data-analytics-3eeb86b69c3a.json"
-            credentials = service_account.Credentials.from_service_account_file(key_path)
+            credentials = service_account.Credentials.from_service_account_file(
+                key_path
+            )
             client = bigquery.Client(credentials=credentials)
 
         # Clear data that we are overwritting
@@ -84,21 +90,29 @@ def function_upload_data_into_bigquery(request:Request, is_remote:bool = True) -
         except BadRequest:
             print("Upload job failed:")
             for err in job.errors:
-                    print(err)
+                print(err)
             return {"message": job.errors}, 400
 
-
-        print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
+        print(
+            "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id)
+        )
         remove(file_path)
 
-        
+        return {
+            "list_number": job.output_rows,
+            "file_name": filename,
+            "output_table": f"{dataset_id}:{table_id}",
+        }, 200
+    return {"message": "Do nothing cause no file was parsed"}, 204
 
-        return {"list_number": job.output_rows, "file_name": filename, "output_table": f"{dataset_id}:{table_id}"}, 200
-    return "Do nothing cause no file was parsed", 200
 
 if __name__ == "__main__":
     filename = "Round 2.json"
-    request_payload = {'json_file': {'body': {'bucket_name': 'tournament-lists-json', 'file_name': filename}} }
+    request_payload = {
+        "json_file": {
+            "body": {"bucket_name": "tournament-lists-json", "file_name": filename}
+        }
+    }
 
     request_obj = Request.from_values(json=request_payload)
 

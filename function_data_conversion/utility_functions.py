@@ -9,34 +9,39 @@ import re
 from parser_protocol import Parser
 from data_classes import Parsers
 from new_recruit_parser import new_recruit_parser
-from data_classes import (
-    ArmyEntry
-)
+from data_classes import ArmyEntry
+
 
 def Docx_to_line_list(docxFile) -> List[str]:
-    #remove hyperlinks as they are treated different to paragraphs especially when that is all that is on the line.
+    # remove hyperlinks as they are treated different to paragraphs especially when that is all that is on the line.
     # This is explained https://github.com/python-openxml/python-docx/issues/85#issuecomment-917134257
     Paragraph.text = property(lambda self: GetParagraphText(self))
     doc = Document(docxFile)
-
 
     lines = []  # ALL the text in the file, separated by lines
 
     par = doc.paragraphs
     for line in par:
-        text = line.text.strip(' .') #remove leading and trailing whitespace and .
-        multiple_lines = text.splitlines() #line break and page break characters are split into separate sections
+        text = line.text.strip(" .")  # remove leading and trailing whitespace and .
+        multiple_lines = (
+            text.splitlines()
+        )  # line break and page break characters are split into separate sections
         for section in multiple_lines:
-            if len(section) >= 2:  # hard coded ignore short lines need to handle army short names aka "BH"
-                lines.append(' '.join(section.split()))  # remove weird unicode spaces \xa0
+            if (
+                len(section) >= 2
+            ):  # hard coded ignore short lines need to handle army short names aka "BH"
+                lines.append(
+                    " ".join(section.split())
+                )  # remove weird unicode spaces \xa0
     return lines
 
-def GetParagraphText(paragraph):
 
+# For avoiding hyperlinks https://github.com/python-openxml/python-docx/issues/85#issuecomment-917134257
+def GetParagraphText(paragraph):
     def GetTag(element):
         return "%s:%s" % (element.prefix, re.match("{.*}(.*)", element.tag).group(1))
 
-    text = ''
+    text = ""
     runCount = 0
     for child in paragraph._p:
         tag = GetTag(child)
@@ -48,6 +53,7 @@ def GetParagraphText(paragraph):
                 if GetTag(subChild) == "w:r":
                     text += subChild.text
     return text
+
 
 def DetectParser(armyblock: List[str]) -> Parser:
     # Read through block to determine formatting
@@ -72,7 +78,9 @@ def Is_int(n) -> bool:
         return float(n).is_integer()
 
 
-def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntry]) -> None:
+def Write_army_lists_to_json_file(
+    file_path: Path, list_of_armies: List[ArmyEntry]
+) -> None:
     """Takes a list of army lists and a file path and writes the list of armies in json new line delimited to the filepath
 
     Args:
@@ -82,15 +90,17 @@ def Write_army_lists_to_json_file(file_path: Path, list_of_armies: List[ArmyEntr
     with open(file_path, "w") as jsonFile:
 
         for army in list_of_armies:
-            army_as_string = jsons.dumps(army) + '\n'
+            army_as_string = jsons.dumps(army) + "\n"
             if "null" in army_as_string:
                 jsonFile.close
-                raise ValueError(f"""
+                raise ValueError(
+                    f"""
                     Invalid List - null value found in
                     Army: {army.army}
                     Player: {army.player_name}
                     Tournament: {army.tournament}
                     ArmyString: {army_as_string}
-                    """)
+                    """
+                )
             else:
                 jsonFile.write(army_as_string)

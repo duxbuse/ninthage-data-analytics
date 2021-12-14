@@ -8,7 +8,6 @@ from discord_command_validate import validate
 from discord_command_list_events import list_events
 
 
-
 def function_discord_bot(request: Request):
     check_security_headers(request)
 
@@ -19,21 +18,24 @@ def function_discord_bot(request: Request):
         # return message to discord
         command_name = request.json["data"]["name"]
 
-        return jsonify({
-            "type": 4,
-            "data": {
-                "tts": False,
-                "content": registered_commands[command_name](request),
-                "embeds": [],
-                "allowed_mentions": {"parse": []}
+        return jsonify(
+            {
+                "type": 4,
+                "data": {
+                    "tts": False,
+                    "content": registered_commands[command_name](request),
+                    "embeds": [],
+                    "allowed_mentions": {"parse": []},
+                },
             }
-        })
+        )
+
 
 registered_commands = {
-        "upload" : upload_file,
-        # "validate" : validate,
-        # "list_events": list_events
-    }
+    "upload": upload_file,
+    # "validate" : validate,
+    # "list_events": list_events
+}
 
 if __name__ == "__main__":
     # Register message commands as per the list
@@ -42,15 +44,15 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    TOKEN = getenv('DISCORD_APP_TOKEN')
-    APP_ID = getenv('DISCORD_APP_ID')
+    TOKEN = getenv("DISCORD_APP_TOKEN")
+    APP_ID = getenv("DISCORD_APP_ID")
 
     url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
     headers = {
         "Authorization": f"Bot {TOKEN}",
         "Accept": "application/json",
         "User-Agent": "",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
     json = [{"name": x, "type": 3} for x in registered_commands.keys()]
@@ -61,5 +63,3 @@ if __name__ == "__main__":
         print(f"upload status code: {r.status_code}")
         if r.status_code != 200 or r.status_code != 201:
             print(f"{r.text}")
-
-

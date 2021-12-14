@@ -1,4 +1,3 @@
-
 from flask.wrappers import Request
 from google.cloud import storage
 import requests
@@ -23,7 +22,7 @@ def upload_file(request: Request):
         download_file_path = f"/tmp/{filename}"
 
         r = requests.get(url, allow_redirects=True)
-        open(download_file_path, 'wb').write(r.content)
+        open(download_file_path, "wb").write(r.content)
 
         # removing `_` from file name as well as "/tmp/"
         proper_name = Path(filename.replace("_", " ")).name
@@ -32,9 +31,9 @@ def upload_file(request: Request):
         uploaded_files.append(filename)
         remove(download_file_path)
 
-    return f"Files: {uploaded_files} successfully received, please await parsing results."
-
-
+    return (
+        f"Files: {uploaded_files} successfully received, please await parsing results."
+    )
 
 
 def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
@@ -45,6 +44,4 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
 
     blob.upload_from_filename(file_path)
 
-    print('File {} uploaded to {}.'.format(
-        destination_blob_name,
-        bucket_name))
+    print("File {} uploaded to {}.".format(destination_blob_name, bucket_name))

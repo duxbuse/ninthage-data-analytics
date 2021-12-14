@@ -6,7 +6,7 @@ import json
 # name of the function in main.py must equal the trigger name as a default or be set explicitly
 
 
-def function_data_ingestion(data: str= "{}", context: str="{}") -> None:
+def function_data_ingestion(data: str = "{}", context: str = "{}") -> None:
 
     print(f"data = {data}")
     print(f"context = {context}")
@@ -24,8 +24,7 @@ def function_data_ingestion(data: str= "{}", context: str="{}") -> None:
     execution = executions.Execution(argument=json.dumps(data))
 
     # Execute the workflow.
-    response = execution_client.create_execution(
-        parent=parent, execution=execution)
+    response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
 
