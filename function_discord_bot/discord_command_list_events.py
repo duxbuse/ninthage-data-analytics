@@ -1,5 +1,6 @@
 from flask.wrappers import Request
 
+
 def list_events(request: Request):
     """List all the events that are currently loaded in the database
 

@@ -9,4 +9,3 @@ class Parser(Protocol):
     @staticmethod
     def parse_block(lines: List[str]) -> ArmyEntry:
         ...
-

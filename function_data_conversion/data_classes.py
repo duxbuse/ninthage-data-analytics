@@ -21,79 +21,65 @@ class Event_types(Enum):
 Army_names = {
     "BEAST HERDS": "Beast Herds",
     "BH": "Beast Herds",
-
     "DREAD ELVES": "Dread Elves",
     "DE": "Dread Elves",
-
     "DWARVEN HOLDS": "Dwarven Holds",
     "DH": "Dwarven Holds",
-
     "DAEMON LEGIONS": "Daemon Legions",
     "DL": "Daemon Legions",
-
     "EMPIRE OF SONNSTAHL": "Empire of Sonnstahl",
     "EOS": "Empire of Sonnstahl",
-
     "HIGHBORN ELVES": "Highborn Elves",
+    "HE": "Highborn Elves",
     "HBE": "Highborn Elves",
-
     "INFERNAL DWARVES": "Infernal Dwarves",
     "ID": "Infernal Dwarves",
-
     "KINGDOM OF EQUITAINE": "Kingdom of Equitaine",
     "KOE": "Kingdom of Equitaine",
-
     "OGRE KHANS": "Ogre Khans",
     "OK": "Ogre Khans",
-
     "ORCS AND GOBLINS": "Orcs and Goblins",
     "ONG": "Orcs and Goblins",
     "O&G": "Orcs and Goblins",
-
     "SAURIAN ANCIENTS": "Saurian Ancients",
     "SA": "Saurian Ancients",
-
     "SYLVAN ELVES": "Sylvan Elves",
     "SE": "Sylvan Elves",
-
     "UNDYING DYNASTIES": "Undying Dynasties",
     "UD": "Undying Dynasties",
-
     "VAMPIRE COVENANT": "Vampire Covenant",
     "VC": "Vampire Covenant",
-
     "VERMIN SWARM": "Vermin Swarm",
     "VS": "Vermin Swarm",
-
     "WARRIORS OF THE DARK GODS": "Warriors of the Dark Gods",
     "WDG": "Warriors of the Dark Gods",
     "WTDG": "Warriors of the Dark Gods",
     "WOTDG": "Warriors of the Dark Gods",
-
     "ASKLANDERS": "Åsklanders",
-
     "CULTISTS": "Cultists",
-
     "HOBGOBLINS": "Hobgoblins",
-
-    "MAKHAR": "Makhar"
+    "MAKHAR": "Makhar",
 }
 
+
 @dataclass
-class Tk_info():
+class Tk_info:
     event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
     event_type: Optional[Event_types] = Event_types.SINGLES
     event_id: Optional[int] = None
     game_list: Optional[dict] = field(default_factory=dict)
     # output from Get_players_names_from_games()
-    player_list: Optional[dict] = field(default_factory=dict)
+    player_list: Optional[dict] = field(
+        default_factory=dict
+    )  # dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
     player_count: Optional[int] = None
     players_per_team: Optional[int] = 1
 
 
 @dataclass
-class UnitEntry():
+class UnitEntry:
     """Keeping track of a single unit entry as part of a list"""
+
     points: int  # 300
     quantity: int  # 25
     name: str  # spearmen
@@ -102,18 +88,20 @@ class UnitEntry():
 
 
 @dataclass
-class Round():
+class Round:
     opponent: Optional[Union[UUID, str]] = ""
     result: Optional[int] = -1
     secondary_points: Optional[int] = -1
     round_number: Optional[int] = -1
-    game_uuid: Optional[Union[UUID, str]] = "" #I know this is a type issue, but when there is no TK data to load we need a non 'None' default
+    game_uuid: Optional[
+        Union[UUID, str]
+    ] = ""  # I know this is a type issue, but when there is no TK data to load we need a non 'None' default
 
 
 @dataclass
-class ArmyEntry():
-    """class to hold entire army list
-    """
+class ArmyEntry:
+    """class to hold entire army list"""
+
     player_name: Optional[str] = None  # bob
     army: Optional[str] = None  # Vampire Covenant
     tournament: Optional[str] = None  # brawler bash 2021
@@ -136,20 +124,27 @@ class ArmyEntry():
 
     def calculate_total_points(self) -> None:
         self.calculated_total_army_points = sum([x.points for x in self.units])
-        if self.reported_total_army_points != -1 and self.calculated_total_army_points != self.reported_total_army_points:
-            raise ValueError(f"""
+        if (
+            self.reported_total_army_points != -1
+            and self.calculated_total_army_points != self.reported_total_army_points
+        ):
+            raise ValueError(
+                f"""
             Mismatch between reported:{self.reported_total_army_points} and calculated:{self.calculated_total_army_points}.
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
-            """)
+            """
+            )
 
     def calculate_total_tournament_points(self) -> None:
         if self.round_performance:
             self.calculated_total_tournament_points = sum(
-                [x.result for x in self.round_performance])
+                [x.result for x in self.round_performance]
+            )
             self.calculated_total_tournament_secondary_points = sum(
-                [x.secondary_points for x in self.round_performance])
+                [x.secondary_points for x in self.round_performance]
+            )
 
     def add_unit(self, unit: UnitEntry) -> None:
         self.units.append(unit)
