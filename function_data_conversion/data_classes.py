@@ -96,6 +96,7 @@ class Round:
     game_uuid: Optional[
         Union[UUID, str]
     ] = ""  # I know this is a type issue, but when there is no TK data to load we need a non 'None' default
+    # TODO: we should also have map, objective, deployment, who won secondary
 
 
 @dataclass
