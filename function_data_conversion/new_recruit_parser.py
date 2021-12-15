@@ -42,7 +42,7 @@ class new_recruit_parser:
 
         try:
             response = requests.post(url, data=request_data, timeout=2)
-        except requests.exceptions.ReadTimeout as err:
+        except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 
         r = response.json()
