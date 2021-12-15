@@ -27,7 +27,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         try:
             # format block
             formated_block = format_army_block(armyblock)
-            if formated_block and False:
+            if formated_block:
                 armyblock = formated_block
             # Select which parser to use
             parser_selected = DetectParser(armyblock)

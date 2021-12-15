@@ -12,8 +12,7 @@ def get_recent_tournaments() -> List:
     output = []
 
     now = datetime.now(timezone.utc)
-    # hard coded to look a year and half backwards
-    year_ago = now - timedelta(days=1.5 * 365)
+    year_ago = now - timedelta(days=3 * 365)
 
     now_str = quote(now.isoformat(timespec="seconds") + "Z", safe="")
     year_ago_str = quote(year_ago.isoformat(timespec="seconds") + "Z", safe="")
