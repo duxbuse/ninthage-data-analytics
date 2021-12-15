@@ -117,6 +117,9 @@ def function_data_conversion(request) -> tuple[dict, int]:
         player2 = "\n".join([data["player2_name"], data["player2_army"]])
         lines = "\n".join([player1, player2])
         list_of_armies = Convert_lines_to_army_list(event_name, lines)
+        for army in list_of_armies:
+            if army.player_name == data["player1_name"]:
+                
     else:
         {
             "message": [
