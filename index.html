@@ -54,7 +54,7 @@
         </div>
         <div class="row mt-4"></div>
 
-        <form class="needs-validation">
+        <form class="needs-validation" onsubmit="save_data()">
           <!-- Player info -->
           <div class="row justify-content-center">
             <div class="col">
@@ -190,29 +190,9 @@
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
   <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    // https://getbootstrap.com/docs/5.0/forms/validation/
-    // (function () {
-    //   'use strict'
-
-    //   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    //   var forms = document.querySelectorAll('.needs-validation')
-
-    //   // Loop over them and prevent submission
-    //   Array.prototype.slice.call(forms)
-    //     .forEach(function (form) {
-    //       form.addEventListener('submit', function (event) {
-    //         if (!form.checkValidity()) {
-    //           event.preventDefault()
-    //           event.stopPropagation()
-    //         } else {
-    //           alert("working")
-    //         }
-
-    //         form.classList.add('was-validated')
-    //       }, false)
-    //     })
-    // })()
+    function save_data() {
+      alert("testing - data should be sent to Big query")
+    }
   </script>
 </body>
 
