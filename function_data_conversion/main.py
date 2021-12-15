@@ -110,11 +110,19 @@ def function_data_conversion(request) -> tuple[dict, int]:
                 f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
             ]
         }, 400
-    else:
+    elif data.get("player_score"):
         # Game reported through web form
         return {"message": [f"Manual game reporting not yet implemented."]}, 400
-        player1 = "\n".join()
+        player1 = "\n".join([data["player1_name"], data["player1_army"]])
+        player2 = "\n".join([data["player2_name"], data["player2_army"]])
+        lines = "\n".join([player1, player2])
         list_of_armies = Convert_lines_to_army_list(event_name, lines)
+    else:
+        {
+            "message": [
+                f"Data was neither an uploaded word .docx or a manual upload from game reporter."
+            ]
+        }, 400
 
 
 if __name__ == "__main__":
