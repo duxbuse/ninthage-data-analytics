@@ -10,6 +10,7 @@ from discord_message_limits import truncate_message
 
 
 def function_discord_error_reporting(request: Request):
+    print(f"{request.json=}")
     FILE_NAME = request.json["data"]["name"]
     json_message = {
         "content": "",
