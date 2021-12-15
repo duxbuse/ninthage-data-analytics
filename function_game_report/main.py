@@ -2,7 +2,7 @@ from flask.wrappers import Request
 
 
 def function_game_report(request: Request):
-    print(f"{request.json=}")
+    print(f"{request=}")
     return "Yay!!!!!", 200
 
 
