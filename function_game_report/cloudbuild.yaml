@@ -1,0 +1,16 @@
+substitutions:
+  _REGION: "us-central1"
+
+steps:
+  - id: Deploy function_game_report
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - function_game_report
+      - --region=${_REGION}
+      - --source=./function_game_report/
+      - --trigger-http
+      - --allow-unauthenticated
+      - --runtime=python39
