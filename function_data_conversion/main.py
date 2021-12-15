@@ -4,8 +4,9 @@ from typing import Union
 from google.cloud.storage.blob import Blob
 from fuzzywuzzy import fuzz
 from os import remove
-from converter import Convert_docx_to_list, Write_army_lists_to_json_file
+from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
 from tourney_keeper import get_recent_tournaments
+from utility_functions import Docx_to_line_list
 from multi_error import Multi_Error
 
 
@@ -39,65 +40,80 @@ def function_data_conversion(request) -> tuple[dict, int]:
     data = request.json["data"]
     print(f"request.json = {data}")
 
-    bucket_name = data["bucket"]
-    upload_bucket = "tournament-lists-json"
-    file_name = data["name"]
+    if data.get("bucket"):
+        bucket_name = data["bucket"]
+        upload_bucket = "tournament-lists-json"
+        file_name = data["name"]
 
-    # only convert .docx files, because the json versions are also put back into the bucket there is another trigger
-    if Path(file_name).suffix == ".docx":
-        try:
-            downloaded_docx_blob = download_blob(bucket_name, file_name)
-            download_file_path = f"/tmp/{file_name}"
-            downloaded_docx_blob.download_to_filename(download_file_path)
-            print(f"Downloaded {file_name} from {bucket_name} to {download_file_path}")
+        # only convert .docx files, because the json versions are also put back into the bucket there is another trigger
+        if Path(file_name).suffix == ".docx":
+            try:
+                downloaded_docx_blob = download_blob(bucket_name, file_name)
+                download_file_path = f"/tmp/{file_name}"
+                downloaded_docx_blob.download_to_filename(download_file_path)
+                print(
+                    f"Downloaded {file_name} from {bucket_name} to {download_file_path}"
+                )
 
-            list_of_armies = Convert_docx_to_list(download_file_path)
-            loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
-            possible_tk_names = []
-            if not loaded_tk_info:
-                recent_tournaments = get_recent_tournaments()
-                for tournament in recent_tournaments:
-                    ratio = fuzz.token_sort_ratio(
-                        Path(download_file_path).stem, tournament.get("Name")
-                    )
-                    if ratio > 80:
-                        possible_tk_names.append((tournament, ratio))
-            else:
-                possible_tk_names = [Path(download_file_path).stem]
+                event_name = Path(download_file_path).stem
+                lines = Docx_to_line_list(download_file_path)
 
-            validation_count = sum(1 for i in list_of_armies if i.validated)
-            validation_errors = [
-                {"player_name": x.player_name, "validation_errors": x.validation_errors}
-                for x in list_of_armies
-                if len(x.validation_errors) > 0
+                list_of_armies = Convert_lines_to_army_list(event_name, lines)
+                loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
+                possible_tk_names = []
+                if not loaded_tk_info:
+                    recent_tournaments = get_recent_tournaments()
+                    for tournament in recent_tournaments:
+                        ratio = fuzz.token_sort_ratio(
+                            Path(download_file_path).stem, tournament.get("Name")
+                        )
+                        if ratio > 80:
+                            possible_tk_names.append((tournament, ratio))
+                else:
+                    possible_tk_names = [Path(download_file_path).stem]
+
+                validation_count = sum(1 for i in list_of_armies if i.validated)
+                validation_errors = [
+                    {
+                        "player_name": x.player_name,
+                        "validation_errors": x.validation_errors,
+                    }
+                    for x in list_of_armies
+                    if len(x.validation_errors) > 0
+                ]
+
+                upload_filename = Path(download_file_path).stem + ".json"
+                converted_filename = str(
+                    Path(download_file_path).parent / upload_filename
+                )
+                Write_army_lists_to_json_file(converted_filename, list_of_armies)
+                print(f"Converted {download_file_path} to {converted_filename}")
+
+                upload_blob(upload_bucket, converted_filename, upload_filename)
+                print(f"Uploaded {upload_filename} to {upload_bucket}")
+                remove(download_file_path)
+                remove(converted_filename)
+                return_dict = dict(
+                    bucket_name=upload_bucket,
+                    file_name=upload_filename,
+                    loaded_tk_info=loaded_tk_info,
+                    possible_tk_names=possible_tk_names,
+                    validation_count=validation_count,
+                    validation_errors=validation_errors,
+                )
+                return return_dict, 200
+            except Multi_Error as e:
+                return {"message": [str(x) for x in e.errors]}, 400
+
+        return {
+            "message": [
+                f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
             ]
-
-            upload_filename = Path(download_file_path).stem + ".json"
-            converted_filename = str(Path(download_file_path).parent / upload_filename)
-            Write_army_lists_to_json_file(converted_filename, list_of_armies)
-            print(f"Converted {download_file_path} to {converted_filename}")
-
-            upload_blob(upload_bucket, converted_filename, upload_filename)
-            print(f"Uploaded {upload_filename} to {upload_bucket}")
-            remove(download_file_path)
-            remove(converted_filename)
-            return_dict = dict(
-                bucket_name=upload_bucket,
-                file_name=upload_filename,
-                loaded_tk_info=loaded_tk_info,
-                possible_tk_names=possible_tk_names,
-                validation_count=validation_count,
-                validation_errors=validation_errors,
-            )
-            return return_dict, 200
-        except Multi_Error as e:
-            return {"message": [str(x) for x in e.errors]}, 400
-
-    return {
-        "message": [
-            f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
-        ]
-    }, 400
+        }, 400
+    else:
+        # Game reported through web form
+        player1 = "\n".join()
+        list_of_armies = Convert_lines_to_army_list(event_name, lines)
 
 
 if __name__ == "__main__":

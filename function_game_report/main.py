@@ -7,6 +7,7 @@ import json
 
 def function_game_report(request: Request):
     form_data = request.form.to_dict()
+    # [('player1_name', 'sean'), ('player1_score', '3'), ('player1_vps', '123'), ('player1_army', 'abc'), ('player2_name', 'courtney'), ('player2_score', '17'), ('who_won', 'player2'), ('player2_vps', '456'), ('player2_army', 'def'), ('map_selected', 'Other'), ('deployment_selected', '1 Frontline Clash'), ('objective_selected', '1 Hold the Ground')]
     print(f"{form_data=}")
 
     project = "ninthage-data-analytics"

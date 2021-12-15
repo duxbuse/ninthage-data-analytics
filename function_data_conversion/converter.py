@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from fuzzywuzzy import fuzz
 from multi_error import Multi_Error
 from utility_functions import (
-    Docx_to_line_list,
     DetectParser,
     Is_int,
     Write_army_lists_to_json_file,
@@ -15,23 +14,13 @@ from data_classes import ArmyEntry, Army_names, Tk_info, Round
 from ninth_builder import format_army_block
 
 
-def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
-    """Read in a .docx file reading in multiple army lists and saving them into a list object
-
-    Args:
-        docxFilePath (str): path to .docx file
-
-    Returns:
-        List: list of ArmyEntry objects representing all lists in the .docx file
-    """
-    lines = Docx_to_line_list(docxFilePath)
+def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
     errors = []
-    filename = Path(docxFilePath).stem
 
     army_list: List[ArmyEntry] = []
 
     armyblocks = split_lines_into_blocks(lines)
-    tk_info = load_tk_info(filename)
+    tk_info = load_tk_info(event_name)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
@@ -46,7 +35,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
             army = parse_army_block(
                 parser=parser_selected,
                 armyblock=armyblock,
-                tournament_name=filename,
+                tournament_name=event_name,
                 event_size=len(armyblocks),
                 ingest_date=ingest_date,
                 tk_info=tk_info,
@@ -173,6 +162,7 @@ if __name__ == "__main__":
     """Used for testing locally"""
     import os
     from time import perf_counter
+    from utility_functions import Docx_to_line_list
 
     t1_start = perf_counter()
 
@@ -189,9 +179,11 @@ if __name__ == "__main__":
         if file.endswith(".docx") and not file.startswith("~$"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
-
+            event_name = Path(filePath).stem
             print(f"Input filepath = {filePath}")
-            list_of_armies = Convert_docx_to_list(filePath)
+
+            lines = Docx_to_line_list(filePath)
+            list_of_armies = Convert_lines_to_army_list(event_name, lines)
             new_path = filePath.parent / ("json/" + filePath.stem + ".json")
 
             Write_army_lists_to_json_file(new_path, list_of_armies)
