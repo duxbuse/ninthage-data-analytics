@@ -112,6 +112,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
         }, 400
     else:
         # Game reported through web form
+        return {"message": [f"Manual game reporting not yet implemented."]}, 400
         player1 = "\n".join()
         list_of_armies = Convert_lines_to_army_list(event_name, lines)
 

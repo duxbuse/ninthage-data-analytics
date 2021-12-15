@@ -126,7 +126,7 @@ class new_recruit_parser:
         # Then match number "630 - Death Cult Hierarch" -> "<number> - <unit name>, upgrades"
         # Sometimes there are unit entries on the same line so we then do a positive lookahead to make sure if there is another unit entry its not captured by the '(.+?)'
         split_line_points_entry = (
-            r"(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[-– :] ?)(.+?)(?=\d{2,4}|$)"
+            r"(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[\W ] ?)(.+?)(?=\d{2,4}|$)"
         )
         pointsSearch = re.findall(
             split_line_points_entry, line.lower()
