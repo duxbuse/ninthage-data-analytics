@@ -65,9 +65,9 @@
                 <input type="text" class="form-control shadow" name="player1_name" placeholder="bob" required>
               </div>
               <div class="form-group mt-2 has-validation">
-                <label for="player1_score">Player 1's Score</label>
+                <label for="player1_score">Player 1's Score. Number between[3,17]</label>
                 <input type="number" min="3" max="17" class="form-control shadow" name="player1_score"
-                  placeholder="3-17" required>
+                  placeholder="(3->17)" required>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="who_won" value="player1">
@@ -93,9 +93,9 @@
                 <input type="text" class="form-control shadow" name="player2_name" placeholder="jane" required>
               </div>
               <div class="form-group mt-2">
-                <label for="player2_score">Player 2's Score</label>
+                <label for="player2_score">Player 2's Score. Number between[3,17]</label>
                 <input type="number" min="3" max="17" class="form-control shadow" name="player2_score"
-                  placeholder="3-17" required>
+                  placeholder="(3->17)" required>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="who_won" value="player2">
                   <label class="form-check-label" for="player2_won">
@@ -121,7 +121,8 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label for="map_selected">Map</label>
-                <select class="form-control shadow" name="map_selected">
+                <select class="form-control shadow" name="map_selected" required>
+                  <option></option>
                   <option>Other</option>
                   <option>A1</option>
                   <option>A2</option>
@@ -146,6 +147,7 @@
                 <label for="deployment_selected">Deployment</label>
                 <select class="form-control shadow" name="deployment_selected" required>
                   <option></option>
+                  <option>Other</option>
                   <option>1 Frontline Clash</option>
                   <option>2 Dawn Assault</option>
                   <option>3 Counter Thrust</option>
@@ -158,6 +160,7 @@
                 <label for="objective_selected">Objective</label>
                 <select class="form-control shadow" name="objective_selected" required>
                   <option></option>
+                  <option>Other</option>
                   <option>1 Hold the Ground</option>
                   <option>2 Breakthrough</option>
                   <option>3 Spoils of War</option>
