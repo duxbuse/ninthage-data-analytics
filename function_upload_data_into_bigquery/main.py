@@ -19,6 +19,20 @@ def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
     return blob
 
 
+def delete_blob(bucket_name: str, blob_name: str) -> None:
+    """Deletes a blob from the bucket."""
+    # bucket_name = "your-bucket-name"
+    # blob_name = "your-object-name"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.delete()
+
+    print("Blob {} deleted.".format(blob_name))
+
+
 def function_upload_data_into_bigquery(
     request: Request, is_remote: bool = True
 ) -> tuple[dict, int]:
@@ -96,7 +110,11 @@ def function_upload_data_into_bigquery(
         print(
             "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id)
         )
+        # delete local download to reduce function memory
         remove(file_path)
+        # delete *.json to reduce bucket storage
+        if not is_remote:
+            delete_blob(bucket_name, filename)
 
         return {
             "list_number": job.output_rows,
