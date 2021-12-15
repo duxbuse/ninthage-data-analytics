@@ -131,10 +131,12 @@ class ArmyEntry:
         ):
             raise ValueError(
                 f"""
-            Mismatch between reported:{self.reported_total_army_points} and calculated:{self.calculated_total_army_points}.
+            Reported:{self.reported_total_army_points}
+            Calculated:{self.calculated_total_army_points}
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
+            Found Units: {[(x.name, x.points) for x in self.units]}
             """
             )
 

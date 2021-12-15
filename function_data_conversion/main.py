@@ -104,6 +104,8 @@ def function_data_conversion(request) -> tuple[dict, int]:
                 return return_dict, 200
             except Multi_Error as e:
                 return {"message": [str(x) for x in e.errors]}, 400
+            except ValueError as e:
+                return {"message": [str(e)]}, 400
 
         return {
             "message": [
@@ -121,7 +123,7 @@ def function_data_conversion(request) -> tuple[dict, int]:
             if army.player_name == data["player1_name"]:
                 
     else:
-        {
+       return {
             "message": [
                 f"Data was neither an uploaded word .docx or a manual upload from game reporter."
             ]
