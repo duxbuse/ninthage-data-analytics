@@ -62,16 +62,16 @@
               <!-- Player 1 -->
               <div class="form-group">
                 <label for="player1_name">Player 1's Name</label>
-                <input type="text" class="form-control shadow" id="player1_name" placeholder="bob">
+                <input type="text" class="form-control shadow" name="player1_name" placeholder="bob">
               </div>
               <div class="form-group mt-2 has-validation">
                 <label for="player1_score">Player 1's Score</label>
-                <input type="number" min="3" max="17" class="form-control shadow" id="player1_score" placeholder="3-17"
-                  required>
+                <input type="number" min="3" max="17" class="form-control shadow" name="player1_score"
+                  placeholder="3-17" required>
                 <div class="invalid-feedback">Score must be 3-17</div>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_won" value="" id="player1_won">
+                <input class="form-check-input" type="radio" name="who_won" value="player1">
                 <label class="form-check-label" for="player1_won">
                   Won Secondary
                 </label>
@@ -79,11 +79,11 @@
               </div>
               <div class="form-group mt-2">
                 <label for="player1_vps">Player 1's Victory Points</label>
-                <input type="number" class="form-control shadow" id="player1_vps" placeholder="0-4900">
+                <input type="number" class="form-control shadow" name="player1_vps" placeholder="0-4900">
               </div>
               <div class="form-group mt-2">
                 <label for="player1_army">Player 1's List</label>
-                <textarea class="form-control shadow" id="player1_army" rows="3" required></textarea>
+                <textarea class="form-control shadow" name="player1_army" rows="3" required></textarea>
                 <div class="invalid-feedback">List must be provided</div>
               </div>
             </div>
@@ -92,15 +92,15 @@
               <!-- Player 2 -->
               <div class="form-group">
                 <label for="player2_name">Player 2's Name</label>
-                <input type="text" class="form-control shadow" id="player2_name" placeholder="jane">
+                <input type="text" class="form-control shadow" name="player2_name" placeholder="jane">
               </div>
               <div class="form-group mt-2">
                 <label for="player2_score">Player 2's Score</label>
-                <input type="number" min="3" max="17" class="form-control shadow" id="player2_score" placeholder="3-17"
-                  required>
+                <input type="number" min="3" max="17" class="form-control shadow" name="player2_score"
+                  placeholder="3-17" required>
                 <div class="invalid-feedback">Score must be 3-17</div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="who_won" value="" id="player2_won">
+                  <input class="form-check-input" type="radio" name="who_won" value="player2">
                   <label class="form-check-label" for="player2_won">
                     Won Secondary
                   </label>
@@ -109,11 +109,11 @@
               </div>
               <div class="form-group mt-2">
                 <label for="player2_vps">Player 2's Victory Points</label>
-                <input type="number" class="form-control shadow" id="player2_vps" placeholder="0-4900">
+                <input type="number" class="form-control shadow" name="player2_vps" placeholder="0-4900">
               </div>
               <div class="form-group mt-2">
                 <label for="player2_army">Player 2's List</label>
-                <textarea class="form-control shadow" id="player2_army" rows="3" required></textarea>
+                <textarea class="form-control shadow" name="player2_army" rows="3" required></textarea>
                 <div class="invalid-feedback">List must be provided</div>
               </div>
             </div>
@@ -125,7 +125,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label for="map_selected">Map</label>
-                <select class="form-control shadow" id="map_selected">
+                <select class="form-control shadow" name="map_selected">
                   <option>Other</option>
                   <option>A1</option>
                   <option>A2</option>
@@ -148,7 +148,7 @@
 
               <div class="form-group mt-2">
                 <label for="deployment_selected">Deployment</label>
-                <select class="form-control shadow" id="deployment_selected" required>
+                <select class="form-control shadow" name="deployment_selected" required>
                   <option></option>
                   <option>1 Frontline Clash</option>
                   <option>2 Dawn Assault</option>
@@ -161,7 +161,7 @@
               </div>
               <div class="form-group mt-2">
                 <label for="objective_selected">Objective</label>
-                <select class="form-control shadow" id="objective_selected" required>
+                <select class="form-control shadow" name="objective_selected" required>
                   <option></option>
                   <option>1 Hold the Ground</option>
                   <option>2 Breakthrough</option>
