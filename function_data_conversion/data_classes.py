@@ -18,6 +18,44 @@ class Event_types(Enum):
     TEAMS = auto()
 
 
+Maps = {
+    "OTHER": "Other",
+    "A1": "A1",
+    "A2": "A2",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "A6": "A6",
+    "A7": "A7",
+    "A8": "A8",
+    "B1": "B1",
+    "B2": "B2",
+    "B3": "B3",
+    "B4": "B4",
+    "B5": "B5",
+    "B6": "B6",
+    "B7": "B7",
+    "B8": "B8",
+}
+Deployments = {
+    "OTHER": "Other",
+    "1 FRONTLINE CLASH": "Frontline Clash",
+    "2 DAWN ASSULT": "Dawn Assault",
+    "3 COUNTER THRUST": "Counter Thrust",
+    "4 ENCIRCLE": "Encircle",
+    "5 REFUSED FLANK": "Refused Flank",
+    "6 MARCHING COLUMNS": "Marching Columns",
+}
+Objectives = {
+    "OTHER": "Other",
+    "1 HOLD THE GROUND": "Hold the Ground",
+    "2 BREAKTHROUGH": "Breakthrough",
+    "3 SPOILS OF WAR": "Spoils of War",
+    "4 KING OF THE HILL": "King of the Hill",
+    "5 CAPTURE THE FLAGS": "Capture the Flags",
+    "6 SECURE TARGET": "Secure Target",
+}
+
 Army_names = {
     "BEAST HERDS": "Beast Herds",
     "BH": "Beast Herds",
@@ -96,7 +134,13 @@ class Round:
     game_uuid: Optional[
         Union[UUID, str]
     ] = ""  # I know this is a type issue, but when there is no TK data to load we need a non 'None' default
-    # TODO: we should also have map, objective, deployment, who won secondary
+    won_secondary: Optional[bool] = None
+    deployed_first: Optional[bool] = None
+    deployed_everything: Optional[bool] = None
+    first_turn: Optional[bool] = None
+    map_selected: Optional[str] = None
+    deployment_selected: Optional[str] = None
+    objective_selected: Optional[str] = None
 
 
 @dataclass
