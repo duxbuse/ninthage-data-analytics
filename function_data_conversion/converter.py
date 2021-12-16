@@ -11,7 +11,7 @@ from utility_functions import (
 )
 from parser_protocol import Parser
 from tourney_keeper import load_tk_info, append_tk_game_data
-from data_classes import ArmyEntry, Army_names, Tk_info, Round
+from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 
 __not_yet_printed_tk_list__ = True
@@ -37,7 +37,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         try:
             # format block
             formated_block = format_army_block(armyblock)
-            if formated_block and False:
+            if formated_block:
                 armyblock = formated_block
             # Select which parser to use
             parser_selected = DetectParser(armyblock)
@@ -72,13 +72,6 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
-    else:
-        # need to add empty round() object so total object fits bigquery schema
-        for army in army_list:
-            if not army.round_performance:
-                army.round_performance.append(
-                    Round()
-                )  # empty round who references itself
 
     return army_list
 

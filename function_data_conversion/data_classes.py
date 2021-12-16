@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional, Union
+from datetime import datetime
+from typing import Optional
 from uuid import UUID, uuid4
 from enum import Enum, unique, auto
 
@@ -16,6 +16,7 @@ class Parsers(Enum):
 class Event_types(Enum):
     SINGLES = auto()
     TEAMS = auto()
+    CASUAL = auto()
 
 
 Maps = {
@@ -102,7 +103,7 @@ Army_names = {
 
 @dataclass
 class Tk_info:
-    event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    event_date: Optional[datetime] = None
     event_type: Optional[Event_types] = Event_types.SINGLES
     event_id: Optional[int] = None
     game_list: Optional[dict] = field(default_factory=dict)
@@ -111,7 +112,7 @@ class Tk_info:
         default_factory=dict
     )  # dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
     player_count: Optional[int] = None
-    players_per_team: Optional[int] = 1
+    players_per_team: Optional[int] = None
 
 
 @dataclass
@@ -127,13 +128,11 @@ class UnitEntry:
 
 @dataclass
 class Round:
-    opponent: Optional[Union[UUID, str]] = ""
-    result: Optional[int] = -1
-    secondary_points: Optional[int] = -1
-    round_number: Optional[int] = -1
-    game_uuid: Optional[
-        Union[UUID, str]
-    ] = ""  # I know this is a type issue, but when there is no TK data to load we need a non 'None' default
+    opponent: Optional[UUID] = None
+    result: Optional[int] = None
+    secondary_points: Optional[int] = None
+    round_number: Optional[int] = None
+    game_uuid: Optional[UUID] = None
     won_secondary: Optional[bool] = None
     deployed_first: Optional[bool] = None
     deployed_everything: Optional[bool] = None
@@ -141,6 +140,7 @@ class Round:
     map_selected: Optional[str] = None
     deployment_selected: Optional[str] = None
     objective_selected: Optional[str] = None
+    TODO: something about magic choices, also make every field optional if possible.
 
 
 @dataclass
@@ -153,24 +153,24 @@ class ArmyEntry:
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None
     event_type: Optional[Event_types] = None
-    list_placing: Optional[int] = -1
+    list_placing: Optional[int] = None
     event_size: Optional[int] = None
-    tourney_keeper_TournamentPlayerId: Optional[int] = -1
-    tourney_keeper_PlayerId: Optional[int] = -1
-    calculated_total_tournament_points: Optional[int] = -1
-    calculated_total_tournament_secondary_points: Optional[int] = -1
-    reported_total_army_points: Optional[int] = -1
+    tourney_keeper_TournamentPlayerId: Optional[int] = None
+    tourney_keeper_PlayerId: Optional[int] = None
+    calculated_total_tournament_points: Optional[int] = None
+    calculated_total_tournament_secondary_points: Optional[int] = None
+    reported_total_army_points: Optional[int] = None
     calculated_total_army_points: Optional[int] = None
     validated: bool = False
-    validation_errors: list[str] = field(default_factory=list)
-    round_performance: list[Round] = field(default_factory=list)
+    validation_errors: Optional[list[str]] = None
+    round_performance: Optional[list[Round]] = None
     army_uuid: UUID = field(default_factory=lambda: uuid4())
     units: list[UnitEntry] = field(default_factory=list)
 
     def calculate_total_points(self) -> None:
         self.calculated_total_army_points = sum([x.points for x in self.units])
         if (
-            self.reported_total_army_points != -1
+            self.reported_total_army_points != None
             and self.calculated_total_army_points != self.reported_total_army_points
         ):
             raise ValueError(

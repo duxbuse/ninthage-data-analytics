@@ -114,8 +114,10 @@ class new_recruit_parser:
         validation_errors = self.validate(
             lines
         )  # TODO: if this timesout then we get a Null object
-        new_army.validated = not validation_errors
-        new_army.validation_errors = validation_errors
+        if validation_errors:
+
+            new_army.validated = not validation_errors
+            new_army.validation_errors = validation_errors
 
         return new_army
 

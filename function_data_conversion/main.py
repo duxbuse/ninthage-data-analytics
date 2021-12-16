@@ -7,7 +7,7 @@ from fuzzywuzzy import fuzz
 from uuid import uuid4
 from os import remove
 from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
-from data_classes import Round, Maps, Deployments, Objectives
+from data_classes import Round, Event_types, Maps, Deployments, Objectives
 from tourney_keeper import get_recent_tournaments
 from utility_functions import Docx_to_line_list
 from multi_error import Multi_Error
@@ -146,6 +146,12 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 objective_selected=Objectives[data["objective_selected"].upper()],
             )
             player2_army.round_performance = [player2_round]
+
+            player1_army.calculate_total_tournament_points()
+            player1_army.event_type = Event_types.CASUAL
+            player2_army.calculate_total_tournament_points()
+            player2_army.event_type = Event_types.CASUAL
+
         except Exception as e:
             return {"message": [str(e)]}, 400
     else:
@@ -155,7 +161,9 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             ]
         }, 400
 
-    loaded_tk_info = any(army.list_placing > 0 for army in list_of_armies)
+    loaded_tk_info = any(
+        army.list_placing > 0 for army in list_of_armies if army.list_placing
+    )
     possible_tk_names = []
     if not loaded_tk_info:
         recent_tournaments = get_recent_tournaments()
@@ -175,12 +183,15 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             "validation_errors": x.validation_errors,
         }
         for x in list_of_armies
-        if len(x.validation_errors) > 0
+        if x.validation_errors
     ]
 
     upload_filename = Path(download_file_path).stem + ".json"
     converted_filename = Path(download_file_path).parent / upload_filename
-    Write_army_lists_to_json_file(converted_filename, list_of_armies)
+    try:
+        Write_army_lists_to_json_file(converted_filename, list_of_armies)
+    except Exception as e:
+        return {"message": [str(e)]}, 400
     print(f"Converted {download_file_path} to {converted_filename}")
 
     upload_blob(upload_bucket, converted_filename, upload_filename)
