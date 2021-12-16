@@ -140,7 +140,7 @@ class Round:
     map_selected: Optional[str] = None
     deployment_selected: Optional[str] = None
     objective_selected: Optional[str] = None
-    TODO: something about magic choices, also make every field optional if possible.
+    # TODO: something about magic choices, also make every field optional if possible.
 
 
 @dataclass
