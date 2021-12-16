@@ -19,8 +19,13 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
     army_list: List[ArmyEntry] = []
 
+    try:
+        tk_info = load_tk_info(event_name)
+    except ValueError as e:
+        errors.append(e)
+        tk_info = Tk_info()
+
     armyblocks = split_lines_into_blocks(lines)
-    tk_info = load_tk_info(event_name)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:

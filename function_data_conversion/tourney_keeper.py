@@ -90,9 +90,14 @@ def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
     for tournament in recent_tournaments:
         # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
-        if fuzz.token_sort_ratio(tournament_name, tournament.get("Name")) == 100:
+        ratio = fuzz.token_sort_ratio(tournament_name, tournament.get("Name"))
+        if ratio == 100:
             # we have found the tournament
             return tournament
+        elif tournament_name in tournament.get("Name"):
+            raise ValueError(
+                f"Found very similar TK event named: '{tournament.get('Name')}'"
+            )
     return None
 
 
