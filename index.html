@@ -21,8 +21,8 @@
     }
 
     h1 {
-      /* font-size: 72px; */
-      background: -webkit-linear-gradient(#eee, #333);
+      /* font-size: 50px; */
+      background: -webkit-linear-gradient(#eee, rgb(248, 1, 1));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -48,7 +48,7 @@
       <div class="container">
         <!-- Title info -->
         <div class="row justify-content-center">
-          <div class="col-md-4 mt-4 align-self-center">
+          <div class="col-md-3 mt-4">
             <h1>Report a Game</h1>
           </div>
         </div>
@@ -65,20 +65,38 @@
                 <input type="text" class="form-control shadow" name="player1_name" placeholder="bob" required>
               </div>
               <div class="form-group mt-2 has-validation">
-                <label for="player1_score">Player 1's Score. Number between[3,17]</label>
-                <input type="number" min="3" max="17" class="form-control shadow" name="player1_score"
-                  placeholder="(3->17)" required>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_won" value="player1">
-                <label class="form-check-label" for="player1_won">
-                  Won Secondary
-                </label>
+                <label for="player1_score">Player 1's Score</label>
+                <input type="number" min="0" max="20" class="form-control shadow" name="player1_score" placeholder="20"
+                  required>
               </div>
               <div class="form-group mt-2">
                 <label for="player1_vps">Player 1's Victory Points</label>
-                <input type="number" class="form-control shadow" name="player1_vps" placeholder="0-4900">
+                <input type="number" class="form-control shadow" name="player1_vps" placeholder="0-4900" required>
               </div>
+
+
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_won" value="player1" required>
+                <label class="form-check-label">
+                  Won Secondary
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_deployed" value="player1" required>
+                <label class="form-check-label">
+                  Deployed First
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_started" value="player1" required>
+                <label class="form-check-label">
+                  First Turn
+                </label>
+              </div>
+
+
+
               <div class="form-group mt-2">
                 <label for="player1_army">Player 1's List</label>
                 <textarea class="form-control shadow" name="player1_army" rows="3" required
@@ -93,20 +111,40 @@
                 <input type="text" class="form-control shadow" name="player2_name" placeholder="jane" required>
               </div>
               <div class="form-group mt-2">
-                <label for="player2_score">Player 2's Score. Number between[3,17]</label>
-                <input type="number" min="3" max="17" class="form-control shadow" name="player2_score"
-                  placeholder="(3->17)" required>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="who_won" value="player2">
-                  <label class="form-check-label" for="player2_won">
-                    Won Secondary
-                  </label>
-                </div>
+                <label for="player2_score">Player 2's Score</label>
+                <input type="number" min="0" max="20" class="form-control shadow" name="player2_score" placeholder="20"
+                  required>
               </div>
               <div class="form-group mt-2">
                 <label for="player2_vps">Player 2's Victory Points</label>
-                <input type="number" class="form-control shadow" name="player2_vps" placeholder="0-4900">
+                <input type="number" class="form-control shadow" name="player2_vps" placeholder="0-4900" required>
               </div>
+
+
+
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_won" value="player1" required>
+                <label class="form-check-label">
+                  Won Secondary
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_deployed" value="player1" required>
+                <label class="form-check-label">
+                  Deployed First
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="who_started" value="player1" required>
+                <label class="form-check-label">
+                  First Turn
+                </label>
+              </div>
+
+
+
+
               <div class="form-group mt-2">
                 <label for="player2_army">Player 2's List</label>
                 <textarea class="form-control shadow" name="player2_army" rows="3" required
