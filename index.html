@@ -61,29 +61,36 @@
             <div class="col">
               <!-- Player 1 -->
               <div class="form-group">
+                <label for="player1_army">Player 1's List</label>
+                <textarea class="form-control shadow" name="player1_army" rows="3" required
+                  placeholder="new recruit format"></textarea>
+              </div>
+
+
+
+              <div class="form-group mt-4">
                 <label for="player1_name">Player 1's Name</label>
-                <input type="text" class="form-control shadow" name="player1_name" placeholder="bob" required>
+                <input type="text" class="form-control shadow" name="player1_name" placeholder="bob">
               </div>
               <div class="form-group mt-2 has-validation">
-                <label for="player1_score">Player 1's Score</label>
-                <input type="number" min="0" max="20" class="form-control shadow" name="player1_score" placeholder="20"
-                  required>
+                <label for="player1_score">Player 1's Score - Including Secondary</label>
+                <input type="number" min="0" max="20" class="form-control shadow" name="player1_score" placeholder="20">
               </div>
               <div class="form-group mt-2">
                 <label for="player1_vps">Player 1's Victory Points</label>
-                <input type="number" class="form-control shadow" name="player1_vps" placeholder="0-4900" required>
+                <input type="number" class="form-control shadow" name="player1_vps" placeholder="0-4900">
               </div>
 
 
 
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="won_secondary" value="player1" required>
+                <input class="form-check-input" type="radio" name="won_secondary" value="player1">
                 <label class="form-check-label">
-                  Won Secondary
+                  Won Secondary Objective
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_deployed" value="player1" required>
+                <input class="form-check-input" type="radio" name="who_deployed" value="player1">
                 <label class="form-check-label">
                   Deployed First
                 </label>
@@ -95,48 +102,125 @@
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_started" value="player1" required>
+                <input class="form-check-input" type="radio" name="who_started" value="player1">
                 <label class="form-check-label">
                   First Turn
                 </label>
               </div>
 
-
-
               <div class="form-group mt-2">
-                <label for="player1_army">Player 1's List</label>
-                <textarea class="form-control shadow" name="player1_army" rows="3" required
-                  placeholder="First Line must be the army name. eg. 'beast herds' or 'bh'"></textarea>
+                <label class="form-check-label">Player1's Magic Spells</label>
+                <select class="form-select" size="5" name="player1_magic" multiple>
+                  <option>Hereditary</option>
+                  <optgroup label="Alchemy"></optgroup>
+                  <option value="A1">1</option>
+                  <option value="A2">2</option>
+                  <option value="A3">3</option>
+                  <option value="A4">4</option>
+                  <option value="A5">5</option>
+                  <option value="A6">6</option>
+                  <optgroup label="Cosmology"></optgroup>
+                  <option value="C1">1</option>
+                  <option value="C2">2</option>
+                  <option value="C3">3</option>
+                  <option value="C4">4</option>
+                  <option value="C5">5</option>
+                  <option value="C6">6</option>
+                  <optgroup label="Divination"></optgroup>
+                  <option value="DV1">1</option>
+                  <option value="DV2">2</option>
+                  <option value="DV3">3</option>
+                  <option value="DV4">4</option>
+                  <option value="DV5">5</option>
+                  <option value="DV6">6</option>
+                  <optgroup label="Druidism"></optgroup>
+                  <option value="DR1">1</option>
+                  <option value="DR2">2</option>
+                  <option value="DR3">3</option>
+                  <option value="DR4">4</option>
+                  <option value="DR5">5</option>
+                  <option value="DR6">6</option>
+                  <optgroup label="Evocation"></optgroup>
+                  <option value="E1">1</option>
+                  <option value="E2">2</option>
+                  <option value="E3">3</option>
+                  <option value="E4">4</option>
+                  <option value="E5">5</option>
+                  <option value="E6">6</option>
+                  <optgroup label="Occultism"></optgroup>
+                  <option value="O1">1</option>
+                  <option value="O2">2</option>
+                  <option value="O3">3</option>
+                  <option value="O4">4</option>
+                  <option value="O5">5</option>
+                  <option value="O6">6</option>
+                  <optgroup label="Pyromancy"></optgroup>
+                  <option value="P1">1</option>
+                  <option value="P2">2</option>
+                  <option value="P3">3</option>
+                  <option value="P4">4</option>
+                  <option value="P5">5</option>
+                  <option value="P6">6</option>
+                  <optgroup label="Shamanism"></optgroup>
+                  <option value="S1">1</option>
+                  <option value="S2">2</option>
+                  <option value="S3">3</option>
+                  <option value="S4">4</option>
+                  <option value="S5">5</option>
+                  <option value="S6">6</option>
+                  <optgroup label="Thaumaturgy"></optgroup>
+                  <option value="T1">1</option>
+                  <option value="T2">2</option>
+                  <option value="T3">3</option>
+                  <option value="T4">4</option>
+                  <option value="T5">5</option>
+                  <option value="T6">6</option>
+                  <optgroup label="Witchcraft"></optgroup>
+                  <option value="W1">1</option>
+                  <option value="W2">2</option>
+                  <option value="W3">3</option>
+                  <option value="W4">4</option>
+                  <option value="W5">5</option>
+                  <option value="W6">6</option>
+                </select>
               </div>
+
+
             </div>
 
             <div class="col">
               <!-- Player 2 -->
+
               <div class="form-group">
+                <label for="player2_army">Player 2's List</label>
+                <textarea class="form-control shadow" name="player2_army" rows="3"
+                  placeholder="new recruit format"></textarea>
+              </div>
+
+              <div class="form-group mt-4">
                 <label for="player2_name">Player 2's Name</label>
-                <input type="text" class="form-control shadow" name="player2_name" placeholder="jane" required>
+                <input type="text" class="form-control shadow" name="player2_name" placeholder="jane">
               </div>
               <div class="form-group mt-2">
-                <label for="player2_score">Player 2's Score</label>
-                <input type="number" min="0" max="20" class="form-control shadow" name="player2_score" placeholder="20"
-                  required>
+                <label for="player2_score">Player 2's Score - Including Secondary</label>
+                <input type="number" min="0" max="20" class="form-control shadow" name="player2_score" placeholder="20">
               </div>
               <div class="form-group mt-2">
                 <label for="player2_vps">Player 2's Victory Points</label>
-                <input type="number" class="form-control shadow" name="player2_vps" placeholder="0-4900" required>
+                <input type="number" class="form-control shadow" name="player2_vps" placeholder="0-4900">
               </div>
 
 
 
 
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="won_secondary" value="player2" required>
+                <input class="form-check-input" type="radio" name="won_secondary" value="player2">
                 <label class="form-check-label">
-                  Won Secondary
+                  Won Secondary Objective
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_deployed" value="player2" required>
+                <input class="form-check-input" type="radio" name="who_deployed" value="player2">
                 <label class="form-check-label">
                   Deployed First
                 </label>
@@ -148,30 +232,101 @@
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="who_started" value="player2" required>
+                <input class="form-check-input" type="radio" name="who_started" value="player2">
                 <label class="form-check-label">
                   First Turn
                 </label>
               </div>
 
-
-
-
               <div class="form-group mt-2">
-                <label for="player2_army">Player 2's List</label>
-                <textarea class="form-control shadow" name="player2_army" rows="3" required
-                  placeholder="First Line must be the army name. eg. 'beast herds' or 'bh'"></textarea>
+                <label class="form-check-label">Player 2's Magic Spells</label>
+                <select class="form-select" size="5" name="player2_magic" multiple>
+                  <option>Hereditary</option>
+                  <optgroup label="Alchemy"></optgroup>
+                  <option value="A1">1</option>
+                  <option value="A2">2</option>
+                  <option value="A3">3</option>
+                  <option value="A4">4</option>
+                  <option value="A5">5</option>
+                  <option value="A6">6</option>
+                  <optgroup label="Cosmology"></optgroup>
+                  <option value="C1">1</option>
+                  <option value="C2">2</option>
+                  <option value="C3">3</option>
+                  <option value="C4">4</option>
+                  <option value="C5">5</option>
+                  <option value="C6">6</option>
+                  <optgroup label="Divination"></optgroup>
+                  <option value="DV1">1</option>
+                  <option value="DV2">2</option>
+                  <option value="DV3">3</option>
+                  <option value="DV4">4</option>
+                  <option value="DV5">5</option>
+                  <option value="DV6">6</option>
+                  <optgroup label="Druidism"></optgroup>
+                  <option value="DR1">1</option>
+                  <option value="DR2">2</option>
+                  <option value="DR3">3</option>
+                  <option value="DR4">4</option>
+                  <option value="DR5">5</option>
+                  <option value="DR6">6</option>
+                  <optgroup label="Evocation"></optgroup>
+                  <option value="E1">1</option>
+                  <option value="E2">2</option>
+                  <option value="E3">3</option>
+                  <option value="E4">4</option>
+                  <option value="E5">5</option>
+                  <option value="E6">6</option>
+                  <optgroup label="Occultism"></optgroup>
+                  <option value="O1">1</option>
+                  <option value="O2">2</option>
+                  <option value="O3">3</option>
+                  <option value="O4">4</option>
+                  <option value="O5">5</option>
+                  <option value="O6">6</option>
+                  <optgroup label="Pyromancy"></optgroup>
+                  <option value="P1">1</option>
+                  <option value="P2">2</option>
+                  <option value="P3">3</option>
+                  <option value="P4">4</option>
+                  <option value="P5">5</option>
+                  <option value="P6">6</option>
+                  <optgroup label="Shamanism"></optgroup>
+                  <option value="S1">1</option>
+                  <option value="S2">2</option>
+                  <option value="S3">3</option>
+                  <option value="S4">4</option>
+                  <option value="S5">5</option>
+                  <option value="S6">6</option>
+                  <optgroup label="Thaumaturgy"></optgroup>
+                  <option value="T1">1</option>
+                  <option value="T2">2</option>
+                  <option value="T3">3</option>
+                  <option value="T4">4</option>
+                  <option value="T5">5</option>
+                  <option value="T6">6</option>
+                  <optgroup label="Witchcraft"></optgroup>
+                  <option value="W1">1</option>
+                  <option value="W2">2</option>
+                  <option value="W3">3</option>
+                  <option value="W4">4</option>
+                  <option value="W5">5</option>
+                  <option value="W6">6</option>
+                </select>
               </div>
+
+
+
             </div>
           </div>
           <div class="row mt-4"></div>
           <!-- Map and objective info -->
 
           <div class="row justify-content-center">
-            <div class="col-md-4">
+            <div class="col">
               <div class="form-group">
                 <label for="map_selected">Map</label>
-                <select class="form-control shadow" name="map_selected" required>
+                <select class="form-control shadow" name="map_selected">
                   <option></option>
                   <option>Other</option>
                   <option>A1</option>
@@ -195,7 +350,7 @@
 
               <div class="form-group mt-2">
                 <label for="deployment_selected">Deployment</label>
-                <select class="form-control shadow" name="deployment_selected" required>
+                <select class="form-control shadow" name="deployment_selected">
                   <option></option>
                   <option>Other</option>
                   <option>1 Frontline Clash</option>
@@ -206,9 +361,12 @@
                   <option>6 Marching Columns</option>
                 </select>
               </div>
-              <div class="form-group mt-2">
-                <label for="objective_selected">Objective</label>
-                <select class="form-control shadow" name="objective_selected" required>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="objective_selected">Secondary Objective</label>
+                <select class="form-control shadow" name="objective_selected">
                   <option></option>
                   <option>Other</option>
                   <option>1 Hold the Ground</option>
@@ -219,8 +377,18 @@
                   <option>6 Secure Target</option>
                 </select>
               </div>
+
+              <div class="form-group mt-2">
+                <label class="form-check-label">
+                  Game Date
+                </label>
+                <input class="form-control shadow" type="date" name="game_date" value="2017-06-01">
+              </div>
             </div>
           </div>
+
+
+
           <div class="row mt-4"></div>
           <!-- Submit button -->
 
