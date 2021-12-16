@@ -12,6 +12,23 @@ from new_recruit_parser import new_recruit_parser
 from data_classes import ArmyEntry
 
 
+def clean_lines(lines: List[str]) -> List[str]:
+    cleaned_lines = []
+    for line in lines:
+        text = line.strip(" .")  # remove leading and trailing whitespace and .
+        multiple_lines = (
+            text.splitlines()
+        )  # line break and page break characters are split into separate sections
+        for section in multiple_lines:
+            if (
+                len(section) >= 2
+            ):  # hard coded ignore short lines need to handle army short names aka "BH"
+                cleaned_lines.append(
+                    " ".join(section.split())
+                )  # remove weird unicode spaces \xa0
+    return cleaned_lines
+
+
 def Docx_to_line_list(docxFile) -> List[str]:
     # remove hyperlinks as they are treated different to paragraphs especially when that is all that is on the line.
     # This is explained https://github.com/python-openxml/python-docx/issues/85#issuecomment-917134257
@@ -22,17 +39,7 @@ def Docx_to_line_list(docxFile) -> List[str]:
 
     par = doc.paragraphs
     for line in par:
-        text = line.text.strip(" .")  # remove leading and trailing whitespace and .
-        multiple_lines = (
-            text.splitlines()
-        )  # line break and page break characters are split into separate sections
-        for section in multiple_lines:
-            if (
-                len(section) >= 2
-            ):  # hard coded ignore short lines need to handle army short names aka "BH"
-                lines.append(
-                    " ".join(section.split())
-                )  # remove weird unicode spaces \xa0
+        lines.append(line.text)
     return lines
 
 

@@ -7,6 +7,7 @@ from utility_functions import (
     DetectParser,
     Is_int,
     Write_army_lists_to_json_file,
+    clean_lines,
 )
 from parser_protocol import Parser
 from tourney_keeper import load_tk_info, append_tk_game_data
@@ -27,14 +28,16 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         errors.append(e)
         tk_info = Tk_info()
 
-    armyblocks = split_lines_into_blocks(lines)
+    cleaned_lines = clean_lines(lines)
+
+    armyblocks = split_lines_into_blocks(cleaned_lines)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
         try:
             # format block
             formated_block = format_army_block(armyblock)
-            if formated_block:
+            if formated_block and False:
                 armyblock = formated_block
             # Select which parser to use
             parser_selected = DetectParser(armyblock)
