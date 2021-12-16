@@ -13,6 +13,8 @@ from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info, Round
 from ninth_builder import format_army_block
 
+__not_yet_printed_tk_list__ = True
+
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
     errors = []
@@ -156,9 +158,19 @@ def parse_army_block(
                     f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
         else:
-            raise ValueError(
-                f'player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})'
-            )
+            global __not_yet_printed_tk_list__
+            extra_info = "\n".join(armyblock)
+            if __not_yet_printed_tk_list__:
+                __not_yet_printed_tk_list__ = False
+                raise ValueError(
+                    f"""player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})
+                    Extra info: {extra_info}"""
+                )
+            else:
+                raise ValueError(
+                    f"""player: "{army.player_name}" also not found in TK player list
+                    Extra info: {extra_info}"""
+                )
 
     return army
 
