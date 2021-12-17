@@ -99,6 +99,11 @@ def Write_army_lists_to_json_file(
         for army in list_of_armies:
 
             no_nulls = {k: v for k, v in vars(army).items() if v is not None}
+            if no_nulls.get("round_performance"):
+                no_nulls["round_performance"] = [
+                    {k: v for k, v in vars(x).items() if v is not None}
+                    for x in no_nulls["round_performance"]
+                ]
             army_as_string = jsons.dumps(no_nulls) + "\n"
             if "null" in army_as_string:  # TODO: need to remove field if null
                 jsonFile.close

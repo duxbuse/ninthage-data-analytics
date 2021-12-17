@@ -19,6 +19,70 @@ class Event_types(Enum):
     CASUAL = auto()
 
 
+Magic = {
+    "H": "Hereditary",
+    "A1": "A1",
+    "A2": "A2",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "A6": "A6",
+    "C1": "C1",
+    "C2": "C2",
+    "C3": "C3",
+    "C4": "C4",
+    "C5": "C5",
+    "C6": "C6",
+    "DV1": "DV1",
+    "DV2": "DV2",
+    "DV3": "DV3",
+    "DV4": "DV4",
+    "DV5": "DV5",
+    "DV6": "DV6",
+    "DR1": "DR1",
+    "DR2": "DR2",
+    "DR3": "DR3",
+    "DR4": "DR4",
+    "DR5": "DR5",
+    "DR6": "DR6",
+    "E1": "E1",
+    "E2": "E2",
+    "E3": "E3",
+    "E4": "E4",
+    "E5": "E5",
+    "E6": "E6",
+    "O1": "O1",
+    "O2": "O2",
+    "O3": "O3",
+    "O4": "O4",
+    "O5": "O5",
+    "O6": "O6",
+    "P1": "P1",
+    "P2": "P2",
+    "P3": "P3",
+    "P4": "P4",
+    "P5": "P5",
+    "P6": "P6",
+    "S1": "S1",
+    "S2": "S2",
+    "S3": "S3",
+    "S4": "S4",
+    "S5": "S5",
+    "S6": "S6",
+    "T1": "T1",
+    "T2": "T2",
+    "T3": "T3",
+    "T4": "T4",
+    "T5": "T5",
+    "T6": "T6",
+    "W1": "W1",
+    "W2": "W2",
+    "W3": "W3",
+    "W4": "W4",
+    "W5": "W5",
+    "W6": "W6",
+}
+
 Maps = {
     "OTHER": "Other",
     "A1": "A1",
@@ -123,7 +187,7 @@ class UnitEntry:
     quantity: int  # 25
     name: str  # spearmen
     unit_uuid: UUID = field(default_factory=lambda: uuid4())
-    upgrades: list[str] = field(default_factory=list)  # musician and banner
+    upgrades: Optional[list[str]] = None  # musician and banner
 
 
 @dataclass
@@ -132,7 +196,7 @@ class Round:
     result: Optional[int] = None
     secondary_points: Optional[int] = None
     round_number: Optional[int] = None
-    game_uuid: Optional[UUID] = None
+    game_uuid: UUID = field(default_factory=lambda: uuid4())
     won_secondary: Optional[bool] = None
     deployed_first: Optional[bool] = None
     deployed_everything: Optional[bool] = None
@@ -140,7 +204,7 @@ class Round:
     map_selected: Optional[str] = None
     deployment_selected: Optional[str] = None
     objective_selected: Optional[str] = None
-    # TODO: something about magic choices, also make every field optional if possible.
+    spells_selected: Optional[list[str]] = None
 
 
 @dataclass
@@ -164,11 +228,11 @@ class ArmyEntry:
     validated: bool = False
     validation_errors: Optional[list[str]] = None
     round_performance: Optional[list[Round]] = None
+    units: Optional[list[UnitEntry]] = None
     army_uuid: UUID = field(default_factory=lambda: uuid4())
-    units: list[UnitEntry] = field(default_factory=list)
 
     def calculate_total_points(self) -> None:
-        self.calculated_total_army_points = sum([x.points for x in self.units])
+        self.calculated_total_army_points = sum([x.points for x in self.units or []])
         if (
             self.reported_total_army_points != None
             and self.calculated_total_army_points != self.reported_total_army_points
@@ -180,18 +244,29 @@ class ArmyEntry:
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
-            Found Units: {[(x.name, x.points) for x in self.units]}
+            Found Units: {[(x.name, x.points) for x in self.units or []]}
             """
             )
 
     def calculate_total_tournament_points(self) -> None:
         if self.round_performance:
             self.calculated_total_tournament_points = sum(
-                [x.result for x in self.round_performance]
+                [x.result for x in self.round_performance if x.result]
             )
             self.calculated_total_tournament_secondary_points = sum(
-                [x.secondary_points for x in self.round_performance]
+                [
+                    x.secondary_points
+                    for x in self.round_performance
+                    if x.secondary_points
+                ]
             )
+        if self.calculated_total_tournament_points == 0:
+            self.calculated_total_tournament_points = None
+        if self.calculated_total_tournament_secondary_points == 0:
+            self.calculated_total_tournament_secondary_points = None
 
     def add_unit(self, unit: UnitEntry) -> None:
-        self.units.append(unit)
+        if self.units is not None:
+            self.units.append(unit)
+        else:
+            self.units = [unit]
