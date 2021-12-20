@@ -55,7 +55,8 @@ Vampire Covenant
 ```
 ## Architecture
 
-Note this is out of date.
+***Note:*** this is out of date.
+
 It does not include architecture of game reporter or discord error reporter
 Additionally its missing the external calls to new recruit, 9th builder and tournament keeper
 
