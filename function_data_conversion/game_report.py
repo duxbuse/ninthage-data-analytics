@@ -14,22 +14,26 @@ from data_classes import (
 
 def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     name1 = "name-not-provided"
-    if data.get("player1_name")[0]:
+    if data.get("player1_name", [None])[0]:
         name1 = data.get("player1_name")[0]
     player1_list = "\n".join([name1, data.get("player1_army")[0]])
     player2_list = ""
     name2 = "name-not-provided"
-    if data.get("player2_army")[0]:
-        if data.get("player2_name")[0]:
+    if data.get("player2_army", [None])[0]:
+        if data.get("player2_name", [None])[0]:
             name2 = data.get("player2_name")[0]
 
         player2_list = "\n".join([name2, data.get("player2_army")[0]])
 
     lines = "\n".join([player1_list, player2_list]).split("\n")
     list_of_armies = Convert_lines_to_army_list(event_name, lines)
-    player1_army = list_of_armies[0]
+    if len(list_of_armies) == 0:
+        raise ValueError("No armies found")
+    player1_army = list_of_armies[
+        0
+    ]  # TODO: There is a case here where player 1 is missing but player 2 exists and then we rename player2's army list as player 1
     player2_army = None
-    if data.get("player2_army")[0]:
+    if data.get("player2_army", [None])[0]:
         player2_army = list_of_armies[1]
 
     player1_round = None

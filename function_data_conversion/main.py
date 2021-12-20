@@ -146,23 +146,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 if __name__ == "__main__":
     json_message = {
         "data": {
-            "player1_army": [
-                "BH\n635 - Beast Lord, General, Beast Axe, Heavy  Armour, Hunting Call, Razortusk Chariot, Shield,  Death Cheater, Fatal Folly, Seed of the Dark  Forest\n110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot 110 - 1 Raiding Chariot\n 110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot"
-            ],
-            "player1_name": ["bob"],
-            "player1_score": ["12"],
-            "player1_vps": ["4567"],
-            "player2_army": [""],
-            "player1_magic": ["H", "DR1", "DR2", "DR3", "DR4", "DR5"],
-            "player2_name": ["alice"],
-            "player2_score": ["8"],
-            "player2_vps": ["1234"],
-            "player2_magic": ["H"],
-            "map_selected": ["B5"],
-            "deployment_selected": ["3 Counter Thrust"],
-            "objective_selected": ["4 King of the Hill"],
-            "game_date": ["2021-12-24"],
-            "dropped_all": ["player2"],
+            "player1_army": ["a"],
             "name": "manual game report",
         }
     }
