@@ -1,6 +1,14 @@
 # ninthage-data-analytics
 A better way for the project to ingest tournament results
 
+## Manual Game Reporting
+[Game Reporter](https://duxbuse.github.io/ninthage-data-analytics/)
+
+## Dash Board
+[Dash Board](https://public.tableau.com/app/profile/sander.kaa/viz/9thAgeDataAnalysis_16379569647110/KPI)
+
+## Discord
+[Discord Server](https://discord.gg/mTDT7rgKrU)
 
 ## Requirements for performance metrics from TourneyKeeper
 
@@ -17,7 +25,7 @@ Then the document itself is a list of legal 9thage army lists in new recruit for
 
 `army` ***Must be valid 9thAge Army name***
 
-`list` **Currently only newrecruit format is supported***
+`list` **Currently newrecruit, 9th-builder and battlescribe formats are supported***
 
 `total points` ***optional***
 ```
@@ -45,17 +53,10 @@ Vampire Covenant
 300 - Court of the Damned
 4499
 ```
-
-Also supported is the `20x Skeletons` in addition to `20 Skeletons`
-
-## Common fixes
-
-Often lists look like this:
-![example-bad-file](architecture/example-bad-file.png)
-
-But easy fixes make it look like this:
-![example-fixed-file](architecture/example-fixed-file.png)
-
 ## Architecture
+
+Note this is out of date.
+It does not include architecture of game reporter or discord error reporter
+Additionally its missing the external calls to new recruit, 9th builder and tournament keeper
 
 ![Architecture Diagram](architecture/arch-diagram.drawio.svg)
