@@ -107,10 +107,8 @@ def function_upload_data_into_bigquery(
         try:
             job.result()  # Waits for table load to complete.
         except BadRequest:
-            print("Upload job failed:")
-            for err in job.errors:
-                print(err)
-            return {"message": job.errors}, 400
+            print(f"Upload job failed: {job.errors=}")
+            return {"message": [err["message"] for err in job.errors or []]}, 400
 
         print(
             "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id)

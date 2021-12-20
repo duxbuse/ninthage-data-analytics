@@ -126,7 +126,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     upload_blob(upload_bucket, converted_filename, upload_filename)
     print(f"Uploaded {upload_filename} to {upload_bucket}")
     try:
-        remove(download_file_path)
+        if Path(file_name).suffix == ".docx":
+            remove(download_file_path)
         remove(converted_filename)
     except FileNotFoundError as e:
         print(f"Failed to remove file: {e}")
