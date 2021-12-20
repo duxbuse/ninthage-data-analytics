@@ -1,4 +1,5 @@
 from flask.wrappers import Request
+from flask import render_template
 from google.cloud import workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
@@ -31,13 +32,7 @@ def function_game_report(request: Request):
     response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
-    return (
-        f"""
-    Parser Workflow: {response.state}
-    Form{form_data=}
-    """,
-        200,
-    )
+    return render_template("index.html")
 
 
 if __name__ == "__main__":
