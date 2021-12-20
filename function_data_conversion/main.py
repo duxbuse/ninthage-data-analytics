@@ -1,3 +1,4 @@
+import re
 from google.cloud import storage
 from pathlib import Path
 from typing import Union
@@ -93,7 +94,9 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         army.list_placing > 0 for army in list_of_armies if army.list_placing
     )
     possible_tk_names = []
-    if not loaded_tk_info:
+    if (
+        not loaded_tk_info and download_file_path is not "/tmp/manual game report"
+    ):  # Find name of close events since a misname may be why nothing was loaded.
         recent_tournaments = get_recent_tournaments()
         for tournament in recent_tournaments:
             ratio = fuzz.token_sort_ratio(
@@ -143,20 +146,24 @@ if __name__ == "__main__":
             "player1_army": [
                 "BH\n635 - Beast Lord, General, Beast Axe, Heavy  Armour, Hunting Call, Razortusk Chariot, Shield,  Death Cheater, Fatal Folly, Seed of the Dark  Forest\n110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot 110 - 1 Raiding Chariot\n 110 - 1 Raiding Chariot\n110 - 1 Raiding Chariot"
             ],
-            "player1_name": [""],
-            "player1_score": [""],
-            "player1_vps": [""],
+            "player1_name": ["bob"],
+            "player1_score": ["12"],
+            "player1_vps": ["4567"],
             "player2_army": [""],
-            "player2_name": [""],
-            "player2_score": [""],
-            "player2_vps": [""],
+            "player1_magic": ["H", "DR1", "DR2", "DR3", "DR4", "DR5"],
+            "player2_name": ["alice"],
+            "player2_score": ["8"],
+            "player2_vps": ["1234"],
             "player2_magic": ["H"],
-            "map_selected": [""],
-            "deployment_selected": [""],
-            "objective_selected": [""],
+            "map_selected": ["B5"],
+            "deployment_selected": ["3 Counter Thrust"],
+            "objective_selected": ["4 King of the Hill"],
             "game_date": ["2021-12-24"],
+            "dropped_all": ["player2"],
         }
     }
 
     request_obj = Request.from_values(json=json_message)
-    function_data_conversion(request_obj)
+    (results, code) = function_data_conversion(request_obj)
+    if code != 200 and results.get("message"):
+        print(results["message"])

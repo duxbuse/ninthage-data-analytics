@@ -49,6 +49,11 @@ def function_upload_data_into_bigquery(
         dataset_id = "all_lists"
         table_id = "tournament_lists"
 
+        if "t9a-data-test" in filename:
+            return {
+                "message": [f"File was a test file so skipping upload\n{filename=}"]
+            }, 204
+
         # Running on gcp
         if is_remote:
             client = bigquery.Client()

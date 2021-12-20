@@ -38,10 +38,10 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
             data.get("player2_army"),
             data.get("player1_score"),
             data.get("player1_vps"),
-            data.get("won_secondary", {}).get(0) == "player1",
-            data.get("who_deployed", {}).get(0) == "player1",
-            data.get("dropped_all", {}).get(0) == "player1",
-            data.get("who_started", {}).get(0) == "player1",
+            data.get("won_secondary", [None])[0] == "player1",
+            data.get("who_deployed", [None])[0] == "player1",
+            data.get("dropped_all", [None])[0] == "player1",
+            data.get("who_started", [None])[0] == "player1",
             data.get("map_selected"),
             data.get("deployment_selected"),
             data.get("objective_selected"),
@@ -58,10 +58,10 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
             data.get("player2_army"),
             data.get("player2_score"),
             data.get("player2_vps"),
-            data.get("won_secondary", {}).get(0) == "player2",
-            data.get("who_deployed", {}).get(0) == "player2",
-            data.get("dropped_all", {}).get(0) == "player2",
-            data.get("who_started", {}).get(0) == "player2",
+            data.get("won_secondary", [None])[0] == "player2",
+            data.get("who_deployed", [None])[0] == "player2",
+            data.get("dropped_all", [None])[0] == "player2",
+            data.get("who_started", [None])[0] == "player2",
             data.get("map_selected"),
             data.get("deployment_selected"),
             data.get("objective_selected"),
@@ -76,48 +76,54 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         )
 
     # Opponent exists
-    if player1_round is not None and player2_round is not None:
+    if player1_round and player2_round:
         player1_round.opponent = player2_army.army_uuid
         player2_round.opponent = player1_army.army_uuid
 
     # Set scores
-    if data.get("player1_score", {})[0]:
+    score_total = 0
+    if data.get("player1_score", [None])[0]:
         player1_round.result = int(data.get("player1_score")[0])
-    if data.get("player2_score", {})[0]:
+        score_total += player1_round.result
+    if data.get("player2_score", [None])[0]:
         player2_round.result = int(data.get("player2_score")[0])
+        score_total += player2_round.result
+
+    if score_total > 20:
+        raise ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}")
 
     # Set secondary points
-    if data.get("player1_vps", {})[0]:
+    if data.get("player1_vps", [None])[0]:
         player1_round.secondary_points = int(data.get("player1_vps")[0])
-    if data.get("player2_vps", {})[0]:
+    if data.get("player2_vps", [None])[0]:
         player2_round.secondary_points = int(data.get("player2_vps")[0])
 
     # Who won secondary
-    if data.get("won_secondary", {}).get(0) == "player1":
+    if data.get("won_secondary", [None])[0] == "player1":
         player1_round.won_secondary = True
-    elif data.get("won_secondary", {}).get(0) == "player2":
+    elif data.get("won_secondary", [None])[0] == "player2":
         player2_round.won_secondary = True
 
     # Who deployed first
-    if data.get("who_deployed", {}).get(0) == "player1":
+    if data.get("who_deployed", [None])[0] == "player1":
         player1_round.deployed_first = True
-    elif data.get("who_deployed", {}).get(0) == "player2":
+    elif data.get("who_deployed", [None])[0] == "player2":
         player2_round.deployed_first = True
 
     # Who dropped all
-    if data.get("dropped_all", {}).get(0) == "player1":
+    if data.get("dropped_all", [None])[0] == "player1":
         player1_round.deployed_everything = True
-    elif data.get("dropped_all", {}).get(0) == "player2":
+    elif data.get("dropped_all", [None])[0] == "player2":
         player2_round.deployed_everything = True
 
     # Who had first turn
-    if data.get("who_started", {}).get(0) == "player1":
+    if data.get("who_started", [None])[0] == "player1":
         player1_round.first_turn = True
-    elif data.get("who_started", {}).get(0) == "player2":
+    elif data.get("who_started", [None])[0] == "player2":
         player2_round.first_turn = True
 
     # Game date
-    if data.get("game_date", {})[0]:  # 2021-12-24'
+    if data.get("game_date", [None])[0]:  # 2021-12-24'
         game_date = datetime.strptime(data.get("game_date")[0], "%Y-%m-%d").replace(
             tzinfo=timezone.utc
         )
@@ -127,12 +133,12 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
             player2_army.event_date = game_date
 
     # Map played
-    if data.get("map_selected", {})[0]:
+    if data.get("map_selected", [None])[0]:
         player1_round.map_selected = Maps[data.get("map_selected")[0].upper()]
         player2_round.map_selected = Maps[data.get("map_selected")[0].upper()]
 
     # Deployment played
-    if data.get("deployment_selected", {})[0]:
+    if data.get("deployment_selected", [None])[0]:
         player1_round.deployment_selected = Deployments[
             data.get("deployment_selected")[0].upper()
         ]
@@ -141,7 +147,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         ]
 
     # Objective played
-    if data.get("objective_selected", {})[0]:
+    if data.get("objective_selected", [None])[0]:
         player1_round.objective_selected = Objectives[
             data.get("objective_selected")[0].upper()
         ]
