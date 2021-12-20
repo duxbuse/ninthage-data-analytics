@@ -45,6 +45,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
     list_of_armies = []
     file_name = data["name"]
+    download_file_path = f"/tmp/{file_name}"
+
     upload_bucket = "tournament-lists-json"
 
     if data.get("bucket"):
@@ -54,7 +56,6 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         if Path(file_name).suffix == ".docx":
             try:
                 downloaded_docx_blob = download_blob(bucket_name, file_name)
-                download_file_path = f"/tmp/{file_name}"
                 downloaded_docx_blob.download_to_filename(download_file_path)
                 print(
                     f"Downloaded {file_name} from {bucket_name} to {download_file_path}"
@@ -94,17 +95,15 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     )
     possible_tk_names = []
     if (
-        not loaded_tk_info and download_file_path is not "/tmp/manual game report"
+        not loaded_tk_info and file_name != "manual game report"
     ):  # Find name of close events since a misname may be why nothing was loaded.
         recent_tournaments = get_recent_tournaments()
         for tournament in recent_tournaments:
-            ratio = fuzz.token_sort_ratio(
-                Path(download_file_path).stem, tournament.get("Name")
-            )
+            ratio = fuzz.token_sort_ratio(Path(file_name).stem, tournament.get("Name"))
             if ratio > 80:
                 possible_tk_names.append((tournament, ratio))
     else:
-        possible_tk_names = [Path(download_file_path).stem]
+        possible_tk_names = [Path(file_name).stem]
 
     validation_count = sum(1 for i in list_of_armies if i.validated)
     validation_errors = [
@@ -126,8 +125,12 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
     upload_blob(upload_bucket, converted_filename, upload_filename)
     print(f"Uploaded {upload_filename} to {upload_bucket}")
-    remove(download_file_path)
-    remove(converted_filename)
+    try:
+        remove(download_file_path)
+        remove(converted_filename)
+    except FileNotFoundError as e:
+        print(f"Failed to remove file: {e}")
+
     return_dict = dict(
         bucket_name=upload_bucket,
         file_name=upload_filename,
@@ -159,6 +162,7 @@ if __name__ == "__main__":
             "objective_selected": ["4 King of the Hill"],
             "game_date": ["2021-12-24"],
             "dropped_all": ["player2"],
+            "name": "manual game report",
         }
     }
 
