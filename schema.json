@@ -1,0 +1,193 @@
+[
+    {
+        "mode": "REPEATED",
+        "name": "validation_errors",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "validated",
+        "type": "BOOLEAN"
+    },
+    {
+        "fields": [
+            {
+                "mode": "REPEATED",
+                "name": "upgrades",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "unit_uuid",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "quantity",
+                "type": "INTEGER"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "points",
+                "type": "INTEGER"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "name",
+                "type": "STRING"
+            }
+        ],
+        "mode": "REPEATED",
+        "name": "units",
+        "type": "RECORD"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "tourney_keeper_PlayerId",
+        "type": "INTEGER"
+    },
+    {
+        "fields": [
+            {
+                "mode": "NULLABLE",
+                "name": "round_number",
+                "type": "INTEGER"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "result",
+                "type": "INTEGER"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "opponent",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "secondary_points",
+                "type": "INTEGER"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "game_uuid",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "won_secondary",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "deployed_first",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "deployed_everything",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "first_turn",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "map_selected",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "deployment_selected",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "objective_selected",
+                "type": "STRING"
+            },
+            {
+                "mode": "REPEATED",
+                "name": "spells_selected",
+                "type": "STRING"
+            }
+        ],
+        "mode": "REPEATED",
+        "name": "round_performance",
+        "type": "RECORD"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "tournament",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "event_type",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "event_size",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "army_uuid",
+        "type": "STRING"
+    },
+    {
+        "description": "bq-datetime",
+        "mode": "NULLABLE",
+        "name": "event_date",
+        "type": "TIMESTAMP"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "reported_total_army_points",
+        "type": "INTEGER"
+    },
+    {
+        "description": "bq-datetime",
+        "mode": "NULLABLE",
+        "name": "ingest_date",
+        "type": "TIMESTAMP"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "player_name",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "tourney_keeper_TournamentPlayerId",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "calculated_total_tournament_secondary_points",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "calculated_total_tournament_points",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "list_placing",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "calculated_total_army_points",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "army",
+        "type": "STRING"
+    }
+]

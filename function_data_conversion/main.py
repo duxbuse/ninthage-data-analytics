@@ -103,7 +103,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             if ratio > 80:
                 possible_tk_names.append((tournament, ratio))
     else:
-        possible_tk_names = [Path(file_name).stem]
+        possible_tk_names = ["N/A"]
 
     validation_count = sum(1 for i in list_of_armies if i.validated)
     validation_errors = [
