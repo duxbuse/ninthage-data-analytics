@@ -44,12 +44,11 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     print(f"request.json = {data}")
 
     list_of_armies = []
-    download_file_path = "/tmp/manual game report"
+    file_name = data["name"]
     upload_bucket = "tournament-lists-json"
 
     if data.get("bucket"):
         bucket_name = data["bucket"]
-        file_name = data["name"]
 
         # only convert .docx files, because the json versions are also put back into the bucket there is another trigger
         if Path(file_name).suffix == ".docx":
@@ -77,7 +76,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             }, 400
     elif data.get("player1_army"):
         try:
-            list_of_armies = armies_from_report(data, Path(download_file_path).stem)
+            list_of_armies = armies_from_report(data, Path(file_name).stem)
 
         except Multi_Error as e:
             return {"message": [str(x) for x in e.errors]}, 400
