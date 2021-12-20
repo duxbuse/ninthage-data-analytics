@@ -4,34 +4,33 @@ from datetime import datetime, timezone
 from fuzzywuzzy import fuzz
 from multi_error import Multi_Error
 from utility_functions import (
-    Docx_to_line_list,
     DetectParser,
     Is_int,
     Write_army_lists_to_json_file,
+    clean_lines,
 )
 from parser_protocol import Parser
 from tourney_keeper import load_tk_info, append_tk_game_data
-from data_classes import ArmyEntry, Army_names, Tk_info, Round
+from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 
+__not_yet_printed_tk_list__ = True
 
-def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
-    """Read in a .docx file reading in multiple army lists and saving them into a list object
 
-    Args:
-        docxFilePath (str): path to .docx file
-
-    Returns:
-        List: list of ArmyEntry objects representing all lists in the .docx file
-    """
-    lines = Docx_to_line_list(docxFilePath)
+def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
     errors = []
-    filename = Path(docxFilePath).stem
 
     army_list: List[ArmyEntry] = []
 
-    armyblocks = split_lines_into_blocks(lines)
-    tk_info = load_tk_info(filename)
+    try:
+        tk_info = load_tk_info(event_name)
+    except ValueError as e:
+        errors.append(e)
+        tk_info = Tk_info()
+
+    cleaned_lines = clean_lines(lines)
+
+    armyblocks = split_lines_into_blocks(cleaned_lines)
     ingest_date = datetime.now(timezone.utc)
 
     for armyblock in armyblocks:
@@ -46,7 +45,7 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
             army = parse_army_block(
                 parser=parser_selected,
                 armyblock=armyblock,
-                tournament_name=filename,
+                tournament_name=event_name,
                 event_size=len(armyblocks),
                 ingest_date=ingest_date,
                 tk_info=tk_info,
@@ -73,13 +72,6 @@ def Convert_docx_to_list(docxFilePath) -> List[ArmyEntry]:
 
     if tk_info.game_list:
         append_tk_game_data(tk_info.game_list, army_list)
-    else:
-        # need to add empty round() object so total object fits bigquery schema
-        for army in army_list:
-            if not army.round_performance:
-                army.round_performance.append(
-                    Round()
-                )  # empty round who references itself
 
     return army_list
 
@@ -162,9 +154,19 @@ def parse_army_block(
                     f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
         else:
-            raise ValueError(
-                f'player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})'
-            )
+            global __not_yet_printed_tk_list__
+            extra_info = "\n".join(armyblock)
+            if __not_yet_printed_tk_list__:
+                __not_yet_printed_tk_list__ = False
+                raise ValueError(
+                    f"""player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})
+                    Extra info: {extra_info}"""
+                )
+            else:
+                raise ValueError(
+                    f"""player: "{army.player_name}" also not found in TK player list
+                    Extra info: {extra_info}"""
+                )
 
     return army
 
@@ -173,6 +175,7 @@ if __name__ == "__main__":
     """Used for testing locally"""
     import os
     from time import perf_counter
+    from utility_functions import Docx_to_line_list
 
     t1_start = perf_counter()
 
@@ -189,9 +192,11 @@ if __name__ == "__main__":
         if file.endswith(".docx") and not file.startswith("~$"):
             file_start = perf_counter()
             filePath = Path(os.path.join(path, file))
-
+            event_name = Path(filePath).stem
             print(f"Input filepath = {filePath}")
-            list_of_armies = Convert_docx_to_list(filePath)
+
+            lines = Docx_to_line_list(filePath)
+            list_of_armies = Convert_lines_to_army_list(event_name, lines)
             new_path = filePath.parent / ("json/" + filePath.stem + ".json")
 
             Write_army_lists_to_json_file(new_path, list_of_armies)

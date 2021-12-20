@@ -19,6 +19,20 @@ def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
     return blob
 
 
+def delete_blob(bucket_name: str, blob_name: str) -> None:
+    """Deletes a blob from the bucket."""
+    # bucket_name = "your-bucket-name"
+    # blob_name = "your-object-name"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.delete()
+
+    print("Blob {} deleted.".format(blob_name))
+
+
 def function_upload_data_into_bigquery(
     request: Request, is_remote: bool = True
 ) -> tuple[dict, int]:
@@ -34,6 +48,11 @@ def function_upload_data_into_bigquery(
         bucket_name = request_body["bucket_name"]
         dataset_id = "all_lists"
         table_id = "tournament_lists"
+
+        if "t9a-data-test" in filename:
+            return {
+                "message": [f"File was a test file so skipping upload\n{filename=}"]
+            }, 204
 
         # Running on gcp
         if is_remote:
@@ -88,15 +107,17 @@ def function_upload_data_into_bigquery(
         try:
             job.result()  # Waits for table load to complete.
         except BadRequest:
-            print("Upload job failed:")
-            for err in job.errors:
-                print(err)
-            return {"message": job.errors}, 400
+            print(f"Upload job failed: {job.errors=}")
+            return {"message": [err["message"] for err in job.errors or []]}, 400
 
         print(
             "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id)
         )
+        # delete local download to reduce function memory
         remove(file_path)
+        # delete *.json to reduce bucket storage
+        if not is_remote:
+            delete_blob(bucket_name, filename)
 
         return {
             "list_number": job.output_rows,

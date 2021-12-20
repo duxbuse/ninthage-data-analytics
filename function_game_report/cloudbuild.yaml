@@ -2,15 +2,15 @@ substitutions:
   _REGION: "us-central1"
 
 steps:
-  - id: Deploy function-data-conversion
+  - id: Deploy function_game_report
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args:
       - gcloud
       - functions
       - deploy
-      - function_data_conversion
+      - function_game_report
       - --region=${_REGION}
-      - --source=./function_data_conversion/
+      - --source=./function_game_report/
       - --trigger-http
+      - --allow-unauthenticated
       - --runtime=python39
-      - --timeout=540

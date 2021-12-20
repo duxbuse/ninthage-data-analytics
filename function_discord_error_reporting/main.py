@@ -10,6 +10,10 @@ from discord_message_limits import truncate_message
 
 
 def function_discord_error_reporting(request: Request):
+    print(f"{request.json=}")
+    if not request.json.get("data") and not request.json.get("data").get("name"):
+        pass  # We should raise an exception here, but we also want to submit this info back to discord
+
     FILE_NAME = request.json["data"]["name"]
     json_message = {
         "content": "",

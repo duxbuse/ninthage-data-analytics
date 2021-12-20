@@ -114,8 +114,10 @@ class new_recruit_parser:
         validation_errors = self.validate(
             lines
         )  # TODO: if this timesout then we get a Null object
-        new_army.validated = not validation_errors
-        new_army.validation_errors = validation_errors
+        if validation_errors:
+
+            new_army.validated = not validation_errors
+            new_army.validation_errors = validation_errors
 
         return new_army
 
@@ -125,16 +127,15 @@ class new_recruit_parser:
         # regex explanation don't match "Benji#9781 - Captain" so we need to start with a negative lookbehind due to python being basic, and needing fixed look behinds we need to do each variation separately
         # Then match number "630 - Death Cult Hierarch" -> "<number> - <unit name>, upgrades"
         # Sometimes there are unit entries on the same line so we then do a positive lookahead to make sure if there is another unit entry its not captured by the '(.+?)'
-        split_line_points_entry = (
-            r"(?<!#)(?<!#\d)(?<!#\d{2})(\d{2,4}?)(?: ?[-– :] ?)(.+?)(?=\d{2,4}|$)"
-        )
-        pointsSearch = re.findall(
+        split_line_points_entry = r"^(\d{2,4}?)(?: ?[\W ] ?)(.+)"
+        pointsSearch = re.search(
             split_line_points_entry, line.lower()
         )  # ensure its all lowercase to prevent casing issues
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately
-
-            for unit in pointsSearch:
+            multi_unit = r"(\d{2,4}?)(?: ?[\W ] ?)(.+?)(?=\d{2,4}|$)"
+            multi_pointsSearch = re.findall(multi_unit, line.lower())
+            for unit in multi_pointsSearch:
                 unit_points = int(unit[0]) if self.Is_int(unit[0]) else -1
 
                 if unit_points == -1:

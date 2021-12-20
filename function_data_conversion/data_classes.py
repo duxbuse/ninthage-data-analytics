@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional, Union
+from datetime import datetime
+from typing import Optional
 from uuid import UUID, uuid4
 from enum import Enum, unique, auto
 
@@ -16,7 +16,110 @@ class Parsers(Enum):
 class Event_types(Enum):
     SINGLES = auto()
     TEAMS = auto()
+    CASUAL = auto()
 
+
+Magic = {
+    "H": "Hereditary",
+    "A1": "A1",
+    "A2": "A2",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "A6": "A6",
+    "C1": "C1",
+    "C2": "C2",
+    "C3": "C3",
+    "C4": "C4",
+    "C5": "C5",
+    "C6": "C6",
+    "DV1": "DV1",
+    "DV2": "DV2",
+    "DV3": "DV3",
+    "DV4": "DV4",
+    "DV5": "DV5",
+    "DV6": "DV6",
+    "DR1": "DR1",
+    "DR2": "DR2",
+    "DR3": "DR3",
+    "DR4": "DR4",
+    "DR5": "DR5",
+    "DR6": "DR6",
+    "E1": "E1",
+    "E2": "E2",
+    "E3": "E3",
+    "E4": "E4",
+    "E5": "E5",
+    "E6": "E6",
+    "O1": "O1",
+    "O2": "O2",
+    "O3": "O3",
+    "O4": "O4",
+    "O5": "O5",
+    "O6": "O6",
+    "P1": "P1",
+    "P2": "P2",
+    "P3": "P3",
+    "P4": "P4",
+    "P5": "P5",
+    "P6": "P6",
+    "S1": "S1",
+    "S2": "S2",
+    "S3": "S3",
+    "S4": "S4",
+    "S5": "S5",
+    "S6": "S6",
+    "T1": "T1",
+    "T2": "T2",
+    "T3": "T3",
+    "T4": "T4",
+    "T5": "T5",
+    "T6": "T6",
+    "W1": "W1",
+    "W2": "W2",
+    "W3": "W3",
+    "W4": "W4",
+    "W5": "W5",
+    "W6": "W6",
+}
+
+Maps = {
+    "OTHER": "Other",
+    "A1": "A1",
+    "A2": "A2",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "A6": "A6",
+    "A7": "A7",
+    "A8": "A8",
+    "B1": "B1",
+    "B2": "B2",
+    "B3": "B3",
+    "B4": "B4",
+    "B5": "B5",
+    "B6": "B6",
+    "B7": "B7",
+    "B8": "B8",
+}
+Deployments = {
+    "OTHER": "Other",
+    "1 FRONTLINE CLASH": "Frontline Clash",
+    "2 DAWN ASSULT": "Dawn Assault",
+    "3 COUNTER THRUST": "Counter Thrust",
+    "4 ENCIRCLE": "Encircle",
+    "5 REFUSED FLANK": "Refused Flank",
+    "6 MARCHING COLUMNS": "Marching Columns",
+}
+Objectives = {
+    "OTHER": "Other",
+    "1 HOLD THE GROUND": "Hold the Ground",
+    "2 BREAKTHROUGH": "Breakthrough",
+    "3 SPOILS OF WAR": "Spoils of War",
+    "4 KING OF THE HILL": "King of the Hill",
+    "5 CAPTURE THE FLAGS": "Capture the Flags",
+    "6 SECURE TARGET": "Secure Target",
+}
 
 Army_names = {
     "BEAST HERDS": "Beast Herds",
@@ -64,7 +167,7 @@ Army_names = {
 
 @dataclass
 class Tk_info:
-    event_date: Optional[datetime] = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    event_date: Optional[datetime] = None
     event_type: Optional[Event_types] = Event_types.SINGLES
     event_id: Optional[int] = None
     game_list: Optional[dict] = field(default_factory=dict)
@@ -73,7 +176,7 @@ class Tk_info:
         default_factory=dict
     )  # dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
     player_count: Optional[int] = None
-    players_per_team: Optional[int] = 1
+    players_per_team: Optional[int] = None
 
 
 @dataclass
@@ -84,18 +187,24 @@ class UnitEntry:
     quantity: int  # 25
     name: str  # spearmen
     unit_uuid: UUID = field(default_factory=lambda: uuid4())
-    upgrades: list[str] = field(default_factory=list)  # musician and banner
+    upgrades: Optional[list[str]] = None  # musician and banner
 
 
 @dataclass
 class Round:
-    opponent: Optional[Union[UUID, str]] = ""
-    result: Optional[int] = -1
-    secondary_points: Optional[int] = -1
-    round_number: Optional[int] = -1
-    game_uuid: Optional[
-        Union[UUID, str]
-    ] = ""  # I know this is a type issue, but when there is no TK data to load we need a non 'None' default
+    opponent: Optional[UUID] = None
+    result: Optional[int] = None
+    secondary_points: Optional[int] = None
+    round_number: Optional[int] = None
+    game_uuid: UUID = field(default_factory=lambda: uuid4())
+    won_secondary: Optional[bool] = None
+    deployed_first: Optional[bool] = None
+    deployed_everything: Optional[bool] = None
+    first_turn: Optional[bool] = None
+    map_selected: Optional[str] = None
+    deployment_selected: Optional[str] = None
+    objective_selected: Optional[str] = None
+    spells_selected: Optional[list[str]] = None
 
 
 @dataclass
@@ -108,43 +217,56 @@ class ArmyEntry:
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None
     event_type: Optional[Event_types] = None
-    list_placing: Optional[int] = -1
+    list_placing: Optional[int] = None
     event_size: Optional[int] = None
-    tourney_keeper_TournamentPlayerId: Optional[int] = -1
-    tourney_keeper_PlayerId: Optional[int] = -1
-    calculated_total_tournament_points: Optional[int] = -1
-    calculated_total_tournament_secondary_points: Optional[int] = -1
-    reported_total_army_points: Optional[int] = -1
+    tourney_keeper_TournamentPlayerId: Optional[int] = None
+    tourney_keeper_PlayerId: Optional[int] = None
+    calculated_total_tournament_points: Optional[int] = None
+    calculated_total_tournament_secondary_points: Optional[int] = None
+    reported_total_army_points: Optional[int] = None
     calculated_total_army_points: Optional[int] = None
     validated: bool = False
-    validation_errors: list[str] = field(default_factory=list)
-    round_performance: list[Round] = field(default_factory=list)
+    validation_errors: Optional[list[str]] = None
+    round_performance: Optional[list[Round]] = None
+    units: Optional[list[UnitEntry]] = None
     army_uuid: UUID = field(default_factory=lambda: uuid4())
-    units: list[UnitEntry] = field(default_factory=list)
 
     def calculate_total_points(self) -> None:
-        self.calculated_total_army_points = sum([x.points for x in self.units])
+        self.calculated_total_army_points = sum([x.points for x in self.units or []])
         if (
-            self.reported_total_army_points != -1
+            self.reported_total_army_points != None
             and self.calculated_total_army_points != self.reported_total_army_points
         ):
             raise ValueError(
                 f"""
-            Mismatch between reported:{self.reported_total_army_points} and calculated:{self.calculated_total_army_points}.
+            Reported:{self.reported_total_army_points}
+            Calculated:{self.calculated_total_army_points}
             Army: {self.army}
             Player_name: {self.player_name}
             Tournament: {self.tournament}
+            Found Units: {[(x.name, x.points) for x in self.units or []]}
             """
             )
 
     def calculate_total_tournament_points(self) -> None:
         if self.round_performance:
             self.calculated_total_tournament_points = sum(
-                [x.result for x in self.round_performance]
+                [x.result for x in self.round_performance if x.result]
             )
             self.calculated_total_tournament_secondary_points = sum(
-                [x.secondary_points for x in self.round_performance]
+                [
+                    x.secondary_points
+                    for x in self.round_performance
+                    if x.secondary_points
+                ]
             )
+        if self.calculated_total_tournament_points == 0:
+            self.calculated_total_tournament_points = None
+        if self.calculated_total_tournament_secondary_points == 0:
+            self.calculated_total_tournament_secondary_points = None
 
     def add_unit(self, unit: UnitEntry) -> None:
-        self.units.append(unit)
+        if self.units is not None:
+            self.units.append(unit)
+        else:
+            self.units = [unit]
