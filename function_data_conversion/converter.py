@@ -82,9 +82,9 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     Args:
         lines (List[str]): lines of a file
     """
-    active_block = []
+    active_block: List[str] = []
     armyblocks = []
-    previousLine = str
+    previousLine = ""
     for i, line in enumerate(lines):
         # look for list starting
         found_army_name = Army_names.get(line.upper())
