@@ -79,7 +79,7 @@ def function_upload_data_into_bigquery(
                 "list_number": num_lines,
                 "file_name": filename,
                 "output_table": f"File was a test file so skipping upload",
-            }, 204
+            }, 200
 
         # Clear data that we are overwritting
         tournament_name = Path(filename).stem
@@ -129,7 +129,7 @@ def function_upload_data_into_bigquery(
             "file_name": filename,
             "output_table": f"{dataset_id}:{table_id}",
         }, 200
-    return {"message": "Do nothing cause no file was parsed"}, 204
+    return {"message": ["Do nothing cause no file was parsed"]}, 400
 
 
 if __name__ == "__main__":
