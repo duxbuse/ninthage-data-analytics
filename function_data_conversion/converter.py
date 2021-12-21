@@ -185,7 +185,7 @@ if __name__ == "__main__":
     # GTC singles
     # data\2021 data\WTC Nations Cup Online 2021.docx
 
-    path = Path("data/2021 data")
+    path = Path("data/list-files")
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
