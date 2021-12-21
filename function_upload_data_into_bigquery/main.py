@@ -73,6 +73,7 @@ def function_upload_data_into_bigquery(
 
         # skip uploads for test files
         if "t9a-data-test" in filename:
+            print("Skipping upload due to test file")
             num_lines = sum(1 for line in open(file_path))
             return {
                 "list_number": num_lines,
