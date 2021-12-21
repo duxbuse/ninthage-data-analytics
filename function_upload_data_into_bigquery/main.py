@@ -49,11 +49,6 @@ def function_upload_data_into_bigquery(
         dataset_id = "all_lists"
         table_id = "tournament_lists"
 
-        if "t9a-data-test" in filename:
-            return {
-                "message": [f"File was a test file so skipping upload\n{filename=}"]
-            }, 204
-
         # Running on gcp
         if is_remote:
             client = bigquery.Client()
@@ -75,6 +70,15 @@ def function_upload_data_into_bigquery(
                 key_path
             )
             client = bigquery.Client(credentials=credentials)
+
+        # skip uploads for test files
+        if "t9a-data-test" in filename:
+            num_lines = sum(1 for line in open(file_path))
+            return {
+                "list_number": num_lines,
+                "file_name": filename,
+                "output_table": f"File was a test file so skipping upload",
+            }, 204
 
         # Clear data that we are overwritting
         tournament_name = Path(filename).stem

@@ -2,5 +2,7 @@
     "jupyter.jupyterServerType": "local",
     "cSpell.words": [
         "jsons"
-    ]
+    ],
+    "python.linting.mypyEnabled": true,
+    "python.linting.enabled": true
 }
