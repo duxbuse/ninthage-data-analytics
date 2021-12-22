@@ -250,20 +250,20 @@ class ArmyEntry:
 
     def calculate_total_tournament_points(self) -> None:
         if self.round_performance:
-            self.calculated_total_tournament_points = sum(
-                [x.result for x in self.round_performance if x.result]
-            )
-            self.calculated_total_tournament_secondary_points = sum(
-                [
-                    x.secondary_points
-                    for x in self.round_performance
-                    if x.secondary_points
-                ]
-            )
-        if self.calculated_total_tournament_points == 0:
-            self.calculated_total_tournament_points = None
-        if self.calculated_total_tournament_secondary_points == 0:
-            self.calculated_total_tournament_secondary_points = None
+            if all([isinstance(x.result, int) for x in self.round_performance]):
+                self.calculated_total_tournament_points = sum(
+                    [x.result for x in self.round_performance if x.result]
+                )
+            if all(
+                [isinstance(x.secondary_points, int) for x in self.round_performance]
+            ):
+                self.calculated_total_tournament_secondary_points = sum(
+                    [
+                        x.secondary_points
+                        for x in self.round_performance
+                        if x.secondary_points
+                    ]
+                )
 
     def add_unit(self, unit: UnitEntry) -> None:
         if self.units is not None:
