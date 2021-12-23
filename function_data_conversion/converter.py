@@ -55,14 +55,28 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         except ValueError as e:
             errors.append(e)
 
-    if tk_info.player_count and tk_info.player_count != len(army_list):
+    number_of_matched_players = sum(
+        1 for x in army_list if x.tourney_keeper_TournamentPlayerId
+    )
+    if (
+        tk_info.player_count
+        and tk_info.player_count != number_of_matched_players
+        and tk_info.player_list
+    ):
         # If we have the player count from TK then we can check that the number of lists we read in are equal
+        from_file = [x.player_name for x in army_list]
+        from_tk = tk_info.player_list.keys()
+        unique_from_file = set(from_file).difference(from_tk)
+        unique_from_tk = set(from_tk).difference(from_file)
+
         errors.append(
             ValueError(
                 f"""
-        Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}
-        Players read from file: {[x.player_name for x in army_list]}
-        Players read from TK: {tk_info.player_list.keys()}
+        Lists read: {len(army_list)}
+        Players registered on tourneykeeper: {tk_info.player_count}
+        Players matched: {number_of_matched_players}
+        Players in file but not TK: {unique_from_file}
+        Players in TK but not in file: {unique_from_tk}
         """
             )
         )
@@ -163,6 +177,7 @@ def parse_army_block(
                     Extra info: {extra_info}"""
                 )
             else:
+                # dont reprint the whole list as it gets spammy
                 raise ValueError(
                     f"""player: "{army.player_name}" also not found in TK player list
                     Extra info: {extra_info}"""
