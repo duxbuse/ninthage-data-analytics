@@ -136,6 +136,7 @@ Army_names = {
     "HE": "Highborn Elves",
     "HBE": "Highborn Elves",
     "INFERNAL DWARVES": "Infernal Dwarves",
+    "INFERNAL DWARFS": "Infernal Dwarves",
     "ID": "Infernal Dwarves",
     "KINGDOM OF EQUITAINE": "Kingdom of Equitaine",
     "KOE": "Kingdom of Equitaine",
