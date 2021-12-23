@@ -168,20 +168,11 @@ def parse_army_block(
                     f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
         else:
-            global __not_yet_printed_tk_list__
             extra_info = "\n".join(armyblock)
-            if __not_yet_printed_tk_list__:
-                __not_yet_printed_tk_list__ = False
-                raise ValueError(
-                    f"""player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})
-                    Extra info: {extra_info}"""
-                )
-            else:
-                # dont reprint the whole list as it gets spammy
-                raise ValueError(
-                    f"""player: "{army.player_name}" also not found in TK player list
-                    Extra info: {extra_info}"""
-                )
+            raise ValueError(
+                f"""Player: "{army.player_name}" not on TK
+                Extra info: {extra_info}"""
+            )
 
     return army
 
