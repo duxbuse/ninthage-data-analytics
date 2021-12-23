@@ -18,7 +18,7 @@ __not_yet_printed_tk_list__ = True
 
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
-    errors = []
+    errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
 
@@ -55,12 +55,32 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         except ValueError as e:
             errors.append(e)
 
-    number_of_matched_players = sum(
-        1 for x in army_list if x.tourney_keeper_TournamentPlayerId
+    matched_player_names, matched_player_tkids = zip(
+        *[
+            (x.player_name, x.tourney_keeper_TournamentPlayerId)
+            for x in army_list
+            if x.tourney_keeper_TournamentPlayerId
+        ]
     )
+
+    # check to make sure that all players are uniquely identified in tk
+    if len(set(matched_player_tkids)) != len(matched_player_tkids):
+        double_matches = set(
+            [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
+        )
+        doubles_with_name = [
+            x
+            for x in zip(matched_player_names, matched_player_tkids)
+            if x[1] in double_matches
+        ]
+
+        errors.append(
+            ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
+        )
+
     if (
         tk_info.player_count
-        and tk_info.player_count != number_of_matched_players
+        and tk_info.player_count != len(matched_player_tkids)
         and tk_info.player_list
     ):
         # If we have the player count from TK then we can check that the number of lists we read in are equal
@@ -74,7 +94,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                 f"""
         Lists read: {len(army_list)}
         Players registered on tourneykeeper: {tk_info.player_count}
-        Players matched: {number_of_matched_players}
+        Players matched: {len(matched_player_tkids)}
         Players in file but not TK: {unique_from_file}
         Players in TK but not in file: {unique_from_tk}
         """
@@ -149,7 +169,11 @@ def parse_army_block(
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
-            (tk_info.player_list[key][0], fuzz.token_sort_ratio(key, army.player_name))
+            (
+                tk_info.player_list[key][0],
+                fuzz.token_sort_ratio(key, army.player_name),
+                key,
+            )
             for key in tk_info.player_list
             if fuzz.token_sort_ratio(key, army.player_name) > 50
         ]
