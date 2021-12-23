@@ -164,15 +164,17 @@ def Convert2_TKid_to_uuid(
             army2_uuid = army.army_uuid
 
     if not army1_uuid:
+        player_data = Get_Player_Army_Details(TKID_1)
         raise ValueError(
             f"""
-            tourney_keeper_TournamentPlayerId:{TKID_1} could not be found in file {list_of_armies[0].tournament}
+            TK player {player_data.get("PlayerName", f"TKID:{TKID_1}, could not be mapped to a player name")} not found in file.
         """
         )
     if not army2_uuid:
+        player_data = Get_Player_Army_Details(TKID_2)
         raise ValueError(
             f"""
-            tourney_keeper_TournamentPlayerId:{TKID_2} could not be found in file {list_of_armies[0].tournament}
+            TK player {player_data.get("PlayerName", f"TKID:{TKID_2}, could not be mapped to a player name")} not found in file.
         """
         )
     return (army1_uuid, army2_uuid)
