@@ -154,6 +154,7 @@ Army_names = {
     "VC": "Vampire Covenant",
     "VERMIN SWARM": "Vermin Swarm",
     "VS": "Vermin Swarm",
+    "THE VERMIN SWARM": "Vermin Swarm",
     "WARRIORS OF THE DARK GODS": "Warriors of the Dark Gods",
     "WDG": "Warriors of the Dark Gods",
     "WTDG": "Warriors of the Dark Gods",
