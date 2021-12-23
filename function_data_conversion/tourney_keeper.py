@@ -244,14 +244,15 @@ def append_tk_game_data(
             game_uuid=game_uuid,
         )
 
-        for (
-            army
-        ) in (
-            list_of_armies
-        ):  # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
+        for army in list_of_armies:
+            # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
             if army.army_uuid == player1_uuid:
+                if not army.round_performance:
+                    army.round_performance = []
                 army.round_performance.append(player1_round)
             elif army.army_uuid == player2_uuid:
+                if not army.round_performance:
+                    army.round_performance = []
                 army.round_performance.append(player2_round)
 
     # Calculate who won
@@ -259,12 +260,19 @@ def append_tk_game_data(
         army.calculate_total_tournament_points()
 
     # sort armies based on performace then set the placing based on that order
-    list_of_armies.sort(
-        key=lambda x: (
-            x.calculated_total_tournament_points,
-            x.calculated_total_tournament_secondary_points,
-        ),
-        reverse=True,
-    )
+    if all([x.calculated_total_tournament_secondary_points for x in list_of_armies]):
+        list_of_armies.sort(
+            key=lambda x: (
+                x.calculated_total_tournament_points,
+                x.calculated_total_tournament_secondary_points,
+            ),
+            reverse=True,
+        )
+    else:
+        # sometimes secondary points are not recorded and so we can not sort on that field
+        list_of_armies.sort(
+            key=lambda x: (x.calculated_total_tournament_points,),
+            reverse=True,
+        )
     for index, army in enumerate(list_of_armies):
         army.list_placing = index + 1  # have to account for 0 index lists

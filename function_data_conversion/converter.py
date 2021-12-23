@@ -18,7 +18,7 @@ __not_yet_printed_tk_list__ = True
 
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
-    errors = []
+    errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
 
@@ -55,14 +55,48 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         except ValueError as e:
             errors.append(e)
 
-    if tk_info.player_count and tk_info.player_count != len(army_list):
+    matched_player_names, matched_player_tkids = zip(
+        *[
+            (x.player_name, x.tourney_keeper_TournamentPlayerId)
+            for x in army_list
+            if x.tourney_keeper_TournamentPlayerId
+        ]
+    )
+
+    # check to make sure that all players are uniquely identified in tk
+    if len(set(matched_player_tkids)) != len(matched_player_tkids):
+        double_matches = set(
+            [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
+        )
+        doubles_with_name = [
+            x
+            for x in zip(matched_player_names, matched_player_tkids)
+            if x[1] in double_matches
+        ]
+
+        errors.append(
+            ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
+        )
+
+    if (
+        tk_info.player_count
+        and tk_info.player_count != len(matched_player_tkids)
+        and tk_info.player_list
+    ):
         # If we have the player count from TK then we can check that the number of lists we read in are equal
+        from_file = [x.player_name for x in army_list]
+        from_tk = tk_info.player_list.keys()
+        unique_from_file = set(from_file).difference(from_tk)
+        unique_from_tk = set(from_tk).difference(from_file)
+
         errors.append(
             ValueError(
                 f"""
-        Number of lists read: {len(army_list)} did not equal number of players on tourneykeeper: {tk_info.player_count}
-        Players read from file: {[x.player_name for x in army_list]}
-        Players read from TK: {tk_info.player_list.keys()}
+        Lists read: {len(army_list)}
+        Players registered on tourneykeeper: {tk_info.player_count}
+        Players matched: {len(matched_player_tkids)}
+        Players in file but not TK: {unique_from_file}
+        Players in TK but not in file: {unique_from_tk}
         """
             )
         )
@@ -82,9 +116,9 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
     Args:
         lines (List[str]): lines of a file
     """
-    active_block = []
+    active_block: List[str] = []
     armyblocks = []
-    previousLine = str
+    previousLine = ""
     for i, line in enumerate(lines):
         # look for list starting
         found_army_name = Army_names.get(line.upper())
@@ -135,7 +169,11 @@ def parse_army_block(
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
-            (tk_info.player_list[key][0], fuzz.token_sort_ratio(key, army.player_name))
+            (
+                tk_info.player_list[key][0],
+                fuzz.token_sort_ratio(key, army.player_name),
+                key,
+            )
             for key in tk_info.player_list
             if fuzz.token_sort_ratio(key, army.player_name) > 50
         ]
@@ -154,19 +192,11 @@ def parse_army_block(
                     f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
         else:
-            global __not_yet_printed_tk_list__
             extra_info = "\n".join(armyblock)
-            if __not_yet_printed_tk_list__:
-                __not_yet_printed_tk_list__ = False
-                raise ValueError(
-                    f"""player: "{army.player_name}" not found in TK player list: {[*tk_info.player_list]}\n[Tourney Keeper Link](https://www.tourneykeeper.net/Team/TKTeamLeaderboard.aspx?Id={tk_info.event_id})
-                    Extra info: {extra_info}"""
-                )
-            else:
-                raise ValueError(
-                    f"""player: "{army.player_name}" also not found in TK player list
-                    Extra info: {extra_info}"""
-                )
+            raise ValueError(
+                f"""Player: "{army.player_name}" not on TK
+                Extra info: {extra_info}"""
+            )
 
     return army
 
@@ -185,7 +215,7 @@ if __name__ == "__main__":
     # GTC singles
     # data\2021 data\WTC Nations Cup Online 2021.docx
 
-    path = Path("data/2021 data")
+    path = Path("data/list-files")
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):

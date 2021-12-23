@@ -6,6 +6,7 @@ from discord_message_limits import *
 
 
 def function_discord_success_reporting(request: Request):
+    print(f"{request.json=}")
     request_body = request.json["data"]["body"]
     print(f"{request_body=}")
 
