@@ -83,7 +83,8 @@ class new_recruit_parser:
 
     def parse_block(self, lines: List[str]) -> ArmyEntry:
         new_army = ArmyEntry()
-        for i, line in enumerate(lines):
+        # skip the first line as it is the player name and stored later. THis will prevent the cleaning process from altering the name
+        for i, line in enumerate(lines[1:]):
 
             if (
                 i == len(lines) - 1
@@ -111,9 +112,7 @@ class new_recruit_parser:
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(
-            lines
-        )  # TODO: if this timesout then we get a Null object
+        validation_errors = self.validate(lines)
         if validation_errors:
 
             new_army.validated = not validation_errors
@@ -129,7 +128,7 @@ class new_recruit_parser:
         # Sometimes there are unit entries on the same line so we then do a positive lookahead to make sure if there is another unit entry its not captured by the '(.+?)'
         split_line_points_entry = r"^(\d{2,4}?)(?: ?[\W ] ?)(.+)"
         pointsSearch = re.search(
-            split_line_points_entry, line.lower()
+            split_line_points_entry, line.lower().strip(".")
         )  # ensure its all lowercase to prevent casing issues
         if pointsSearch:
             # potentially multiple units were on the same line and need to be handle separately

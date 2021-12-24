@@ -10,65 +10,67 @@ from discord_message_limits import truncate_message
 
 
 def function_discord_error_reporting(request: Request):
-    print(f"{request.json=}")
-    if not request.json.get("data") and not request.json.get("data").get("name"):
-        pass  # We should raise an exception here, but we also want to submit this info back to discord
+    if request.json:
+        print(f"{request.json=}")
+        if not request.json.get("data") and not request.json.get("data").get("name"):
+            pass  # TODO: We should raise an exception here, but we also want to submit this info back to discord
 
-    FILE_NAME = request.json["data"]["name"]
-    json_message = {
-        "content": "",
-        "embeds": [
-            {
-                "author": {
-                    "name": FILE_NAME,
-                },
-                "title": "Errors:",
-                "description": "",
-                "color": 15224675,
-                "fields": [
-                    {
-                        "name": "\u200B",
-                        "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!",
-                    }
-                ],
-            }
-        ],
-    }
+        FILE_NAME = request.json["data"]["name"]
+        json_message = {
+            "content": "",
+            "embeds": [
+                {
+                    "author": {
+                        "name": FILE_NAME,
+                    },
+                    "title": "Errors:",
+                    "description": "",
+                    "color": 15224675,
+                    "fields": [
+                        {
+                            "name": "\u200B",
+                            "value": "Got an issue raise it [here](https://github.com/duxbuse/ninthage-data-analytics/issues)!",
+                        }
+                    ],
+                }
+            ],
+        }
 
-    error_code: int = request.json["error"]["code"]
-    print(f"{error_code=}")
-    if error_code == 400:
-        handle_400(request, json_message)
+        error_code: int = request.json.get("error_code", {}).get("code", 408)
+        print(f"{error_code=}")
+        if error_code == 400:  # value errors
+            handle_400(request, json_message)
 
-    elif error_code == 408:
-        handle_408(request, json_message)
+        elif error_code == 408:  # Timeout
+            handle_408(request, json_message)
 
-    else:
-        handle_error(request, json_message)
-    print(f"{json_message=}")
+        else:  # default
+            handle_error(request, json_message)
+        print(f"{json_message=}")
 
-    truncate_message(json_message)
-    print(f"after truncation {json_message=}")
+        truncate_message(json_message)
+        print(f"after truncation {json_message=}")
 
-    TOKEN = getenv("DISCORD_WEBHOOK_TOKEN")
-    WEBHOOK_ID = getenv("DISCORD_WEBHOOK_ID")
+        TOKEN = getenv("DISCORD_WEBHOOK_TOKEN")
+        WEBHOOK_ID = getenv("DISCORD_WEBHOOK_ID")
 
-    url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
-    headers = {
-        "Authorization": f"Bot {TOKEN}",
-        "Accept": "application/json",
-        "User-Agent": "",
-        "Content-Type": "application/json",
-    }
+        url = f"https://discord.com/api/webhooks/{WEBHOOK_ID}/{TOKEN}"
+        headers = {
+            "Authorization": f"Bot {TOKEN}",
+            "Accept": "application/json",
+            "User-Agent": "",
+            "Content-Type": "application/json",
+        }
 
-    r = requests.post(url, headers=headers, json=json_message)
+        r = requests.post(url, headers=headers, json=json_message)
 
-    print(f"discord status code: {r.status_code}")
-    print(f"discord text: {r.text}")
-    if r.status_code != 200 or r.status_code != 204:
-        return r.text, r.status_code
+        print(f"discord status code: {r.status_code}")
+        print(f"discord text: {r.text}")
+        if r.status_code != 200 or r.status_code != 204:
+            return r.text, r.status_code
 
-    return "reported to discord", 200
+        return "reported to discord", 200
+    return "There was no json payload", 500
 
 
 if __name__ == "__main__":

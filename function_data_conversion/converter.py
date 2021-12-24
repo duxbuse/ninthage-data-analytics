@@ -14,8 +14,6 @@ from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 
-__not_yet_printed_tk_list__ = True
-
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
     errors: List[Exception] = []
