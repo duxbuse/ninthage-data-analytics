@@ -13,4 +13,4 @@ steps:
       - --source=./function_data_conversion/
       - --trigger-http
       - --runtime=python39
-      - --timeout=300
+      - --timeout=540
