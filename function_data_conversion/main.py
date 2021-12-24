@@ -70,7 +70,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 return {"message": [str(x) for x in e.errors]}, 400
             except Exception as e:
                 print(f"Captured non multi error {e}")
-                return {"message": [str(e)]}, 418
+                return {"message": [str(e)]}, 501
         else:
             return {
                 "message": [
@@ -85,7 +85,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            return {"message": [str(e)]}, 418
+            return {"message": [str(e)]}, 501
     else:
         return {
             "message": [

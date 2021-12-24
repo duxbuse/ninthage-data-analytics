@@ -35,8 +35,12 @@ def function_discord_error_reporting(request: Request):
                 }
             ],
         }
+        error_code: int = 418
+        if request.json.get("error_code"):
+            error_code = request.json.get("error_code").get("code", 418)
+        elif request.json.get("error"):
+            error_code = request.json.get("error").get("code", 418)
 
-        error_code: int = request.json.get("error_code", {}).get("code", 418)
         print(f"{error_code=}")
         if error_code == 400:  # value errors
             handle_400(request, json_message)
