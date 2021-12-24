@@ -89,13 +89,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
         errors.append(
             ValueError(
-                f"""
-        Lists read: {len(army_list)}
-        Players registered on tourneykeeper: {tk_info.player_count}
-        Players matched: {len(matched_player_tkids)}
-        Players in file but not TK: {unique_from_file}
-        Players in TK but not in file: {unique_from_tk}
-        """
+                f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
             )
         )
 
