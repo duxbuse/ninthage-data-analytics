@@ -7,6 +7,7 @@ main:
           call: http.post
           args:
             url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
+            timeout: 540
             headers:
               Content-type: application/json
             body:
@@ -47,8 +48,8 @@ main:
         except:
           as: e
           steps:
-            - workflow_function_discord_error_reporting_for_upload_data_into_bigquery:
-                call: http.post
+            - ? workflow_function_discord_error_reporting_for_upload_data_into_bigquery
+              : call: http.post
                 args:
                   url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
                   headers:
@@ -61,7 +62,6 @@ main:
 
             - return_error_big_query:
                 return: ${e}
-
 
     - workflow_function_discord_success_reporting:
         call: http.post
@@ -77,4 +77,3 @@ main:
 
     - return_success:
         return: ${upload_result}
-
