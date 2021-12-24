@@ -66,6 +66,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
                 list_of_armies = Convert_lines_to_army_list(event_name, lines)
             except Multi_Error as e:
+                print(f"Multi_Error1: {[str(x) for x in e.errors]}")
                 return {"message": [str(x) for x in e.errors]}, 400
             except Exception as e:
                 print(f"Captured non multi error {e}")
@@ -81,6 +82,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
 
         except Multi_Error as e:
+            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
             return {"message": [str(e)]}, 418
@@ -121,6 +123,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     try:
         Write_army_lists_to_json_file(converted_filename, list_of_armies)
     except Exception as e:
+        print(f"error writing to json file")
         return {"message": [str(e)]}, 400
     print(f"Converted {download_file_path} to {converted_filename}")
 
