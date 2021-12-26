@@ -22,7 +22,7 @@ def get_recent_tournaments() -> List:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         return []
@@ -46,7 +46,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     # need to blank the user agent as the default is automatically blocked
     headers = {
         "Accept": "application/json",
-        "User-Agent": "",
+        "User-Agent": "ninthage-data-analytics",
         "Content-Type": "application/json",
     }
 
@@ -71,7 +71,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         print("This is timing out")
@@ -106,7 +106,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         return None

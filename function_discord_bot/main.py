@@ -51,7 +51,7 @@ if __name__ == "__main__":
     headers = {
         "Authorization": f"Bot {TOKEN}",
         "Accept": "application/json",
-        "User-Agent": "",
+        "User-Agent": "ninthage-data-analytics",
         "Content-Type": "application/json",
     }
 

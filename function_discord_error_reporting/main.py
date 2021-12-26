@@ -62,7 +62,7 @@ def function_discord_error_reporting(request: Request):
         headers = {
             "Authorization": f"Bot {TOKEN}",
             "Accept": "application/json",
-            "User-Agent": "",
+            "User-Agent": "ninthage-data-analytics",
             "Content-Type": "application/json",
         }
 
