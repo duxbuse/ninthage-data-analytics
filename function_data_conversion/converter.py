@@ -89,15 +89,15 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
             ):
                 # If we have the player count from TK then we can check that the number of lists we read in are equal
                 from_file = [x.player_name for x in army_list]
-                from_tk = tk_info.player_list.keys()
+                from_tk = [x["Player_name"] for x in tk_info.player_list]
                 unique_from_file = set(from_file).difference(from_tk)
                 unique_from_tk = set(from_tk).difference(from_file)
 
-            errors.append(
-                ValueError(
-                    f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                errors.append(
+                    ValueError(
+                        f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                    )
                 )
-            )
     else:
        errors.append(
             ValueError(
@@ -175,27 +175,40 @@ def parse_army_block(
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
             (
-                tk_info.player_list[key][0],
-                fuzz.token_sort_ratio(key, army.player_name),
-                key,
+                item,
+                ratio,
             )
-            for key in tk_info.player_list
-            if fuzz.token_sort_ratio(key, army.player_name) > 50
+            for item in tk_info.player_list.items()
+            if (ratio := fuzz.token_sort_ratio(item[1]["Player_name"], army.player_name)) > 50
         ]
         if len(close_matches) > 0:
             sorted_by_fuzz_ratio = sorted(
                 close_matches, key=lambda tup: tup[1], reverse=True
             )
-            army.tourney_keeper_TournamentPlayerId = sorted_by_fuzz_ratio[0][0].get(
-                "TournamentPlayerId"
-            )
-            army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
+
             if (
                 len(close_matches) > 1 and sorted_by_fuzz_ratio[0][1] != 100
             ):  # only report when there are a few options and the top pick isnt 100
-                print(
-                    f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
+                raise ValueError(
+                    f"No good matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
+
+            top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
+            if len(top_picks) > 1:
+                top_picks = [x for x in top_picks if x[0][1].get("Primary_Codex") == army.army]
+
+                if len(top_picks) > 1:
+                    raise ValueError(f"These 2 players are indistinguishable: {top_picks}")
+                elif len(top_picks) == 0:
+                    raise ValueError(f"None of the top picks armies matched the file")
+                
+
+            army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
+                "TournamentPlayerId"
+            )
+            army.tourney_keeper_PlayerId = top_picks[0][0][0]
+
+            
         else:
             extra_info = "\n".join(armyblock)
             raise ValueError(
