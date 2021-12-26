@@ -45,13 +45,18 @@ class new_recruit_parser:
         except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 
-        r = response.json()
-        if type(r) == dict:
-            return [r.get("error")]
-        elif type(r) == list:
-            return [x.get("msg") for x in response.json()]
+        if response.status_code == 200:
+            r = response.json()
+            if type(r) == dict:
+                return [r.get("error")]
+            elif type(r) == list:
+                return [x.get("msg") for x in response.json()]
+            else:
+                return ["Unknown Validation error"]
+        elif response.status_code == 502:
+            return ["Validation Failed, New Recruit is under maintenance"]
         else:
-            return ["Unknown Validation error"]
+            return [f"Validation Failed with code:{response.status_code}"]
 
     def detect_army_name(self, line: str) -> Union[str, None]:
         army_name = Army_names.get(line.strip().upper())

@@ -54,39 +54,42 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
             errors.append(e)
 
     if army_list:
-        matched_player_names, matched_player_tkids = zip(
+
+        zipped = zip(
             *[
                 (x.player_name, x.tourney_keeper_TournamentPlayerId)
                 for x in army_list
                 if x.tourney_keeper_TournamentPlayerId
             ]
         )
+        if list(zipped):
+            matched_player_names, matched_player_tkids = zipped
 
-        # check to make sure that all players are uniquely identified in tk
-        if len(set(matched_player_tkids)) != len(matched_player_tkids):
-            double_matches = set(
-                [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
-            )
-            doubles_with_name = [
-                x
-                for x in zip(matched_player_names, matched_player_tkids)
-                if x[1] in double_matches
-            ]
+            # check to make sure that all players are uniquely identified in tk
+            if len(set(matched_player_tkids)) != len(matched_player_tkids):
+                double_matches = set(
+                    [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
+                )
+                doubles_with_name = [
+                    x
+                    for x in zip(matched_player_names, matched_player_tkids)
+                    if x[1] in double_matches
+                ]
 
-            errors.append(
-                ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
-            )
+                errors.append(
+                    ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
+                )
 
-        if (
-            tk_info.player_count
-            and tk_info.player_count != len(matched_player_tkids)
-            and tk_info.player_list
-        ):
-            # If we have the player count from TK then we can check that the number of lists we read in are equal
-            from_file = [x.player_name for x in army_list]
-            from_tk = tk_info.player_list.keys()
-            unique_from_file = set(from_file).difference(from_tk)
-            unique_from_tk = set(from_tk).difference(from_file)
+            if (
+                tk_info.player_count
+                and tk_info.player_count != len(matched_player_tkids)
+                and tk_info.player_list
+            ):
+                # If we have the player count from TK then we can check that the number of lists we read in are equal
+                from_file = [x.player_name for x in army_list]
+                from_tk = tk_info.player_list.keys()
+                unique_from_file = set(from_file).difference(from_tk)
+                unique_from_tk = set(from_tk).difference(from_file)
 
             errors.append(
                 ValueError(
