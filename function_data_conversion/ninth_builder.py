@@ -13,7 +13,7 @@ def format_army_block(army_block: list[str]) -> list[str]:
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "User-Agent": "",
+                "User-Agent": "ninthage-data-analytics/1.1.0",
             },
             timeout=2,
         )  # need to blank the user agent as the default is automatically blocked

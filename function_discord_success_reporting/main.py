@@ -27,7 +27,7 @@ def function_discord_success_reporting(request: Request):
     headers = {
         "Authorization": f"Bot {TOKEN}",
         "Accept": "application/json",
-        "User-Agent": "",
+        "User-Agent": "ninthage-data-analytics/1.1.0",
         "Content-Type": "application/json",
     }
 
