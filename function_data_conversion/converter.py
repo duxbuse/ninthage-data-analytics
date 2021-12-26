@@ -55,15 +55,16 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
     if army_list:
 
-        zipped = zip(
+        zipped = list(zip(
             *[
                 (x.player_name, x.tourney_keeper_TournamentPlayerId)
                 for x in army_list
                 if x.tourney_keeper_TournamentPlayerId
             ]
-        )
-        if len(list(zipped)) == 2:
-            matched_player_names, matched_player_tkids = zipped
+        ))
+        if len(zipped) == 2:
+            matched_player_names = zipped[0]
+            matched_player_tkids = zipped[1]
 
             # check to make sure that all players are uniquely identified in tk
             if len(set(matched_player_tkids)) != len(matched_player_tkids):
