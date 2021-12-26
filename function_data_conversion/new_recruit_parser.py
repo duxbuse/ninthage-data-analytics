@@ -87,7 +87,7 @@ class new_recruit_parser:
         for i, line in enumerate(lines[1:]):
 
             if (
-                i == len(lines) - 1
+                i == len(lines[1:]) - 1
             ):  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:

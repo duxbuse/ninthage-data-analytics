@@ -27,7 +27,7 @@ def function_discord_success_reporting(request: Request):
     headers = {
         "Authorization": f"Bot {TOKEN}",
         "Accept": "application/json",
-        "User-Agent": "ninthage-data-analytics",
+        "User-Agent": "",
         "Content-Type": "application/json",
     }
 
@@ -42,7 +42,7 @@ def function_discord_success_reporting(request: Request):
     ]
     header = {
         "name": f"Additional Info",
-        "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPossible TK name matches = `{POSSIBLE_TK_NAMES[:3]}`\nPassed Validation = `{VALIDATION_COUNT}`/`{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
+        "value": f"Lists read = `{LIST_NUMBER}`\nTK info Loaded = `{LOADED_TK_INFO}`\nPossible TK name matches = `{POSSIBLE_TK_NAMES[:3]}`\nPassed Validation = `{VALIDATION_COUNT}/{LIST_NUMBER}`\nOutput Table = `{OUTPUT_TABLE}`",
         "inline": False,
     }
     footer = {
