@@ -89,7 +89,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
             ):
                 # If we have the player count from TK then we can check that the number of lists we read in are equal
                 from_file = [x.player_name for x in army_list]
-                from_tk = [x["Player_name"] for x in tk_info.player_list]
+                from_tk = [x["Player_name"] for x in tk_info.player_list.values()]
                 unique_from_file = set(from_file).difference(from_tk)
                 unique_from_tk = set(from_tk).difference(from_file)
 
@@ -171,6 +171,7 @@ def parse_army_block(
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
 
+    # TODO: break this logic out to its own function
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
@@ -195,7 +196,7 @@ def parse_army_block(
 
             top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
             if len(top_picks) > 1:
-                top_picks = [x for x in top_picks if x[0][1].get("Primary_Codex") == army.army]
+                top_picks = [x for x in top_picks if x[0][1].get("Primary_Codex", army.army) == army.army]
 
                 if len(top_picks) > 1:
                     raise ValueError(f"These 2 players are indistinguishable: {top_picks}")
