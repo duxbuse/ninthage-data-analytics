@@ -13,6 +13,7 @@ from parser_protocol import Parser
 from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
+from new_recruit_parser import new_recruit_parser
 
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
@@ -141,7 +142,8 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
             active_block.append(line)
 
             # look for list ending
-            if Is_int(line) and 2000 <= int(line) <= 4500:
+            total_points = new_recruit_parser.detect_total_points(line)
+            if total_points:
                 armyblocks.append(active_block)
                 active_block = []
             elif i == len(lines) - 1:

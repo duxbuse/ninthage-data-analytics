@@ -6,7 +6,8 @@ import string
 
 
 class new_recruit_parser:
-    def Is_int(self, n) -> bool:
+    @staticmethod
+    def Is_int(n) -> bool:
         try:
             float(n)
         except ValueError:
@@ -64,7 +65,8 @@ class new_recruit_parser:
             return army_name
         return None
 
-    def detect_total_points(self, line) -> Union[int, None]:
+    @staticmethod
+    def detect_total_points(line:str) -> Union[int, None]:
         # Examples
         # Total Army Cost: 4499 pts
         # 4498pts
@@ -82,7 +84,7 @@ class new_recruit_parser:
         cleaned_line = cleaned_line.translate(table)
         cleaned_line = cleaned_line.strip()
         # simple case where its just the number
-        if self.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
+        if new_recruit_parser.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
             return int(cleaned_line)
         return None
 
