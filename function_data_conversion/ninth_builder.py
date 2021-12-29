@@ -2,6 +2,7 @@ import requests
 
 
 def format_army_block(army_block: list[str]) -> list[str]:
+    # takes 32% of the exec time
 
     data_string = "\n".join(army_block)
 

@@ -2,13 +2,15 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
+from joblib import Parallel, delayed
 import json
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Round
+from functools import cache
 
-
-def get_recent_tournaments() -> List:
+@cache
+def get_recent_tournaments() -> List[dict]:
     output = []
 
     now = datetime.now(timezone.utc)
@@ -138,19 +140,22 @@ def Get_players_names_from_games(games: dict) -> dict:
 
     # iterate over unique player ids and map them to player names
     output = {}
-    for Id in unique_player_tkIds:
-        player_details = Get_Player_Army_Details(Id)
-        if player_details:
-            player_name = player_details.get("PlayerName")
-            tk_player_id = player_details.get("PlayerId")
-            primary_codex = player_details.get("PrimaryCodex")
-            team_name = player_details.get("TeamName")
-            team_id = player_details.get("TeamId")
 
-            output[tk_player_id] = {"TournamentPlayerId": Id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
+    all_player_details = []
+    all_player_details = Parallel(n_jobs=-1, prefer="threads")(delayed(Get_Player_Army_Details)(Id) for Id in unique_player_tkIds)
+    for details in all_player_details:
+        if details:
+            tournament_player_id = details.get("TournamentPlayerId")
+            player_name = details.get("PlayerName")
+            tk_player_id = details.get("PlayerId")
+            primary_codex = details.get("PrimaryCodex")
+            team_name = details.get("TeamName")
+            team_id = details.get("TeamId")
+
+            output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
         else:
             print(
-                f"Id: {Id} from {unique_player_tkIds}, is not found on TK"
+                f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
             )  # TODO: there is always a 0 id for some reason
 
     if len(output) != len(unique_player_tkIds):
@@ -188,6 +193,7 @@ def Convert2_TKid_to_uuid(
         )
     return (army1_uuid, army2_uuid)
 
+@cache
 def load_tk_info(tournament_name: str) -> Tk_info:
     # Pull in data from tourney keeper
     tourney_keeper_info = Get_tournament_by_name(tournament_name)
