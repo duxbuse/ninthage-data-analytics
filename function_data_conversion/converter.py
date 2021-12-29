@@ -111,11 +111,15 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
             )
         ) 
 
+    try:
+        if tk_info.game_list:
+            append_tk_game_data(tk_info.game_list, army_list)
+    except ValueError as e:
+        errors.append(e)
+
     if errors:
         raise Multi_Error(errors)
 
-    if tk_info.game_list:
-        append_tk_game_data(tk_info.game_list, army_list)
 
     return army_list
 
