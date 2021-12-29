@@ -130,6 +130,7 @@ Army_names = {
     "DH": "Dwarven Holds",
     "Dwarfs": "Dwarven Holds",
     "DAEMON LEGIONS": "Daemon Legions",
+    "DAEMONIC LEGIONS": "Daemon Legions",
     "DL": "Daemon Legions",
     "EMPIRE OF SONNSTAHL": "Empire of Sonnstahl",
     "EOS": "Empire of Sonnstahl",

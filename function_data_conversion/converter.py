@@ -5,7 +5,6 @@ from fuzzywuzzy import fuzz
 from multi_error import Multi_Error
 from utility_functions import (
     DetectParser,
-    Is_int,
     Write_army_lists_to_json_file,
     clean_lines,
 )
@@ -90,8 +89,15 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                 # If we have the player count from TK then we can check that the number of lists we read in are equal
                 from_file = [x.player_name for x in army_list]
                 from_tk = [x["Player_name"] for x in tk_info.player_list.values()]
-                unique_from_file = set(from_file).difference(from_tk)
-                unique_from_tk = set(from_tk).difference(from_file)
+
+                #difference doesn't work here because we are fuzz matching
+                unique_from_file = from_file[:]
+                unique_from_tk = from_tk[:]
+                for x in from_file:
+                    for y in from_tk:
+                        if fuzz.token_sort_ratio(x, y) == 100:
+                            unique_from_file.remove(x)
+                            unique_from_tk.remove(y)
 
                 errors.append(
                     ValueError(
