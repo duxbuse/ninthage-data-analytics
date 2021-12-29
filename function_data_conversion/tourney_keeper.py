@@ -22,7 +22,7 @@ def get_recent_tournaments() -> List:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         return []
@@ -46,7 +46,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     # need to blank the user agent as the default is automatically blocked
     headers = {
         "Accept": "application/json",
-        "User-Agent": "",
+        "User-Agent": "ninthage-data-analytics/1.1.0",
         "Content-Type": "application/json",
     }
 
@@ -71,7 +71,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         print("This is timing out")
@@ -106,7 +106,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = requests.get(
-            url, headers={"Accept": "application/json", "User-Agent": ""}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
         return None
@@ -127,7 +127,8 @@ def Get_players_names_from_games(games: dict) -> dict:
         games (dict): list of tourney keeper games
 
     Returns:
-        dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
+        Key = tk_player_id
+        dict: {1234: {TournamentPlayerId: 5678, Player_name: bob}}
     """
     # interate over all games and produce list of unique player ids
     unique_player_tkIds = set()
@@ -142,11 +143,19 @@ def Get_players_names_from_games(games: dict) -> dict:
         if player_details:
             player_name = player_details.get("PlayerName")
             tk_player_id = player_details.get("PlayerId")
-            output[player_name] = [{"TournamentPlayerId": Id, "PlayerId": tk_player_id}]
+            primary_codex = player_details.get("PrimaryCodex")
+            team_name = player_details.get("TeamName")
+            team_id = player_details.get("TeamId")
+
+            output[tk_player_id] = {"TournamentPlayerId": Id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
         else:
             print(
                 f"Id: {Id} from {unique_player_tkIds}, is not found on TK"
             )  # TODO: there is always a 0 id for some reason
+
+    if len(output) != len(unique_player_tkIds):
+        print(f"I think this is fucked")
+        # raise ValueError(f"Some TK players have been lost due to similar tkIds")
 
     return output
 

@@ -5,7 +5,6 @@ from fuzzywuzzy import fuzz
 from multi_error import Multi_Error
 from utility_functions import (
     DetectParser,
-    Is_int,
     Write_army_lists_to_json_file,
     clean_lines,
 )
@@ -13,6 +12,7 @@ from parser_protocol import Parser
 from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
+from new_recruit_parser import new_recruit_parser
 
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
@@ -53,45 +53,63 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         except ValueError as e:
             errors.append(e)
 
-    matched_player_names, matched_player_tkids = zip(
-        *[
-            (x.player_name, x.tourney_keeper_TournamentPlayerId)
-            for x in army_list
-            if x.tourney_keeper_TournamentPlayerId
-        ]
-    )
+    if army_list:
 
-    # check to make sure that all players are uniquely identified in tk
-    if len(set(matched_player_tkids)) != len(matched_player_tkids):
-        double_matches = set(
-            [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
-        )
-        doubles_with_name = [
-            x
-            for x in zip(matched_player_names, matched_player_tkids)
-            if x[1] in double_matches
-        ]
+        zipped = list(zip(
+            *[
+                (x.player_name, x.tourney_keeper_TournamentPlayerId)
+                for x in army_list
+                if x.tourney_keeper_TournamentPlayerId
+            ]
+        ))
+        if len(zipped) == 2:
+            matched_player_names = zipped[0]
+            matched_player_tkids = zipped[1]
 
-        errors.append(
-            ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
-        )
+            # check to make sure that all players are uniquely identified in tk
+            if len(set(matched_player_tkids)) != len(matched_player_tkids):
+                double_matches = set(
+                    [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
+                )
+                doubles_with_name = [
+                    x
+                    for x in zip(matched_player_names, matched_player_tkids)
+                    if x[1] in double_matches
+                ]
 
-    if (
-        tk_info.player_count
-        and tk_info.player_count != len(matched_player_tkids)
-        and tk_info.player_list
-    ):
-        # If we have the player count from TK then we can check that the number of lists we read in are equal
-        from_file = [x.player_name for x in army_list]
-        from_tk = tk_info.player_list.keys()
-        unique_from_file = set(from_file).difference(from_tk)
-        unique_from_tk = set(from_tk).difference(from_file)
+                errors.append(
+                    ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
+                )
 
-        errors.append(
+            if (
+                tk_info.player_count
+                and tk_info.player_count != len(matched_player_tkids)
+                and tk_info.player_list
+            ):
+                # If we have the player count from TK then we can check that the number of lists we read in are equal
+                from_file = [x.player_name for x in army_list]
+                from_tk = [x["Player_name"] for x in tk_info.player_list.values()]
+
+                #difference doesn't work here because we are fuzz matching
+                unique_from_file = from_file[:]
+                unique_from_tk = from_tk[:]
+                for x in from_file:
+                    for y in from_tk:
+                        if fuzz.token_sort_ratio(x, y) == 100:
+                            unique_from_file.remove(x)
+                            unique_from_tk.remove(y)
+
+                errors.append(
+                    ValueError(
+                        f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                    )
+                )
+    else:
+       errors.append(
             ValueError(
-                f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                f"No Army lists were found in\n{lines}"
             )
-        )
+        ) 
 
     if errors:
         raise Multi_Error(errors)
@@ -130,7 +148,8 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
             active_block.append(line)
 
             # look for list ending
-            if Is_int(line) and 2000 <= int(line) <= 4500:
+            total_points = new_recruit_parser.detect_total_points(line)
+            if total_points:
                 armyblocks.append(active_block)
                 active_block = []
             elif i == len(lines) - 1:
@@ -158,31 +177,46 @@ def parse_army_block(
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
 
+    # TODO: break this logic out to its own function
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
             (
-                tk_info.player_list[key][0],
-                fuzz.token_sort_ratio(key, army.player_name),
-                key,
+                item,
+                ratio,
             )
-            for key in tk_info.player_list
-            if fuzz.token_sort_ratio(key, army.player_name) > 50
+            for item in tk_info.player_list.items()
+            if (ratio := fuzz.token_sort_ratio(item[1]["Player_name"], army.player_name)) > 50
         ]
         if len(close_matches) > 0:
             sorted_by_fuzz_ratio = sorted(
                 close_matches, key=lambda tup: tup[1], reverse=True
             )
-            army.tourney_keeper_TournamentPlayerId = sorted_by_fuzz_ratio[0][0].get(
+
+            if (
+                sorted_by_fuzz_ratio[0][1] != 100
+            ):  # only report when there are a few options and the top pick isn't 100
+                raise ValueError(
+                    f"No perfect matches for {army.player_name} in {sorted_by_fuzz_ratio}"
+                )
+
+            top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
+            if len(top_picks) > 1:
+                # reduce number of top picks down by army played
+                top_picks = [x for x in top_picks if x[0][1].get("Primary_Codex", army.army) == army.army]
+
+                if len(top_picks) > 1:
+                    raise ValueError(f"These {len(top_picks)} players are indistinguishable: {top_picks}")
+                elif len(top_picks) == 0:
+                    raise ValueError(f"None of the perfect name matches played the right army as found in the word docx.")
+                
+
+            army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
                 "TournamentPlayerId"
             )
-            army.tourney_keeper_PlayerId = close_matches[0][0].get("PlayerId")
-            if (
-                len(close_matches) > 1 and sorted_by_fuzz_ratio[0][1] != 100
-            ):  # only report when there are a few options and the top pick isnt 100
-                print(
-                    f"Multiple close matches for {army.player_name} in {sorted_by_fuzz_ratio}"
-                )
+            army.tourney_keeper_PlayerId = top_picks[0][0][0]
+
+            
         else:
             extra_info = "\n".join(armyblock)
             raise ValueError(

@@ -6,7 +6,8 @@ import string
 
 
 class new_recruit_parser:
-    def Is_int(self, n) -> bool:
+    @staticmethod
+    def Is_int(n) -> bool:
         try:
             float(n)
         except ValueError:
@@ -45,13 +46,18 @@ class new_recruit_parser:
         except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 
-        r = response.json()
-        if type(r) == dict:
-            return [r.get("error")]
-        elif type(r) == list:
-            return [x.get("msg") for x in response.json()]
+        if response.status_code == 200:
+            r = response.json()
+            if type(r) == dict:
+                return [r.get("error")]
+            elif type(r) == list:
+                return [x.get("msg") for x in response.json()]
+            else:
+                return ["Unknown Validation error"]
+        elif response.status_code == 502:
+            return ["Validation Failed, New Recruit is under maintenance"]
         else:
-            return ["Unknown Validation error"]
+            return [f"Validation Failed with code:{response.status_code}"]
 
     def detect_army_name(self, line: str) -> Union[str, None]:
         army_name = Army_names.get(line.strip().upper())
@@ -59,7 +65,8 @@ class new_recruit_parser:
             return army_name
         return None
 
-    def detect_total_points(self, line) -> Union[int, None]:
+    @staticmethod
+    def detect_total_points(line:str) -> Union[int, None]:
         # Examples
         # Total Army Cost: 4499 pts
         # 4498pts
@@ -77,7 +84,7 @@ class new_recruit_parser:
         cleaned_line = cleaned_line.translate(table)
         cleaned_line = cleaned_line.strip()
         # simple case where its just the number
-        if self.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
+        if new_recruit_parser.Is_int(cleaned_line) and 2000 <= int(cleaned_line) <= 4500:
             return int(cleaned_line)
         return None
 
@@ -87,7 +94,7 @@ class new_recruit_parser:
         for i, line in enumerate(lines[1:]):
 
             if (
-                i == len(lines) - 1
+                i == len(lines[1:]) - 1
             ):  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:

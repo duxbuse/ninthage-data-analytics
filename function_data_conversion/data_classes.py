@@ -130,6 +130,7 @@ Army_names = {
     "DH": "Dwarven Holds",
     "Dwarfs": "Dwarven Holds",
     "DAEMON LEGIONS": "Daemon Legions",
+    "DAEMONIC LEGIONS": "Daemon Legions",
     "DL": "Daemon Legions",
     "EMPIRE OF SONNSTAHL": "Empire of Sonnstahl",
     "EOS": "Empire of Sonnstahl",
@@ -144,6 +145,7 @@ Army_names = {
     "OGRE KHANS": "Ogre Khans",
     "OK": "Ogre Khans",
     "ORCS AND GOBLINS": "Orcs and Goblins",
+    "ORCS & GOBLINS": "Orcs and Goblins",
     "ONG": "Orcs and Goblins",
     "O&G": "Orcs and Goblins",
     "SAURIAN ANCIENTS": "Saurian Ancients",
@@ -177,7 +179,7 @@ class Tk_info:
     # output from Get_players_names_from_games()
     player_list: Optional[dict] = field(
         default_factory=dict
-    )  # dict: {Player_name: {TournamentPlayerId: 5678, PlayerId: 1234}}
+    )  # dict: {PlayerId: 1234: {TournamentPlayerId: 5678, Player_name: bob}}
     player_count: Optional[int] = None
     players_per_team: Optional[int] = None
 

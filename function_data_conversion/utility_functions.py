@@ -21,8 +21,8 @@ def clean_lines(lines: List[str]) -> List[str]:
         )  # line break and page break characters are split into separate sections
         for section in multiple_lines:
             if (
-                len(section) >= 2
-            ):  # hard coded ignore short lines need to handle army short names aka "BH"
+                len(section) > 0
+            ):  # hard coded ignore empty lines need to handle army short names aka "BH" or player names like `M`
                 cleaned_lines.append(
                     " ".join(section.split())
                 )  # remove weird unicode spaces \xa0
