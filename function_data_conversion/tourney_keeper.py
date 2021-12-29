@@ -176,14 +176,14 @@ def Convert2_TKid_to_uuid(
         player_data = Get_Player_Army_Details(TKID_1)
         raise ValueError(
             f"""
-            TK player {player_data.get("PlayerName")}, TKID:{TKID_1}, could not be mapped to a player name not found in file.
+            TK player {player_data.get("PlayerName")}, TKID:{TKID_1}, could not be found in the word doc.
         """
         )
     if not army2_uuid:
         player_data = Get_Player_Army_Details(TKID_2)
         raise ValueError(
             f"""
-            TK player {player_data.get("PlayerName")}, TKID:{TKID_2}, could not be mapped to a player name not found in file.
+            TK player {player_data.get("PlayerName")}, TKID:{TKID_2}, could not be found in the word doc.
         """
         )
     return (army1_uuid, army2_uuid)
