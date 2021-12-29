@@ -197,7 +197,7 @@ def parse_army_block(
                 sorted_by_fuzz_ratio[0][1] != 100
             ):  # only report when there are a few options and the top pick isn't 100
                 raise ValueError(
-                    f"No perfect matches for {army.player_name} in {sorted_by_fuzz_ratio}"
+                    f"No perfect matches for '{army.player_name}' in {sorted_by_fuzz_ratio}"
                 )
 
             top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
