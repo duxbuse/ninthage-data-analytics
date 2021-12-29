@@ -188,7 +188,6 @@ def Convert2_TKid_to_uuid(
         )
     return (army1_uuid, army2_uuid)
 
-
 def load_tk_info(tournament_name: str) -> Tk_info:
     # Pull in data from tourney keeper
     tourney_keeper_info = Get_tournament_by_name(tournament_name)
