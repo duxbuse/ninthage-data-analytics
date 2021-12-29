@@ -188,20 +188,21 @@ def parse_army_block(
             )
 
             if (
-                len(close_matches) > 1 and sorted_by_fuzz_ratio[0][1] != 100
-            ):  # only report when there are a few options and the top pick isnt 100
+                sorted_by_fuzz_ratio[0][1] != 100
+            ):  # only report when there are a few options and the top pick isn't 100
                 raise ValueError(
-                    f"No good matches for {army.player_name} in {sorted_by_fuzz_ratio}"
+                    f"No perfect matches for {army.player_name} in {sorted_by_fuzz_ratio}"
                 )
 
             top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
             if len(top_picks) > 1:
+                # reduce number of top picks down by army played
                 top_picks = [x for x in top_picks if x[0][1].get("Primary_Codex", army.army) == army.army]
 
                 if len(top_picks) > 1:
-                    raise ValueError(f"These 2 players are indistinguishable: {top_picks}")
+                    raise ValueError(f"These {len(top_picks)} players are indistinguishable: {top_picks}")
                 elif len(top_picks) == 0:
-                    raise ValueError(f"None of the top picks armies matched the file")
+                    raise ValueError(f"None of the perfect name matches played the right army as found in the word docx.")
                 
 
             army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
