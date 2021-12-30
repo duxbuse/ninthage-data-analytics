@@ -16,7 +16,7 @@ from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
 
 
-def proccess_block(armyblock: List[str], event_size:int, ingest_date:datetime, tk_info:Tk_info) -> ArmyEntry:
+def proccess_block(armyblock: List[str], event_size:int, event_name:str, ingest_date:datetime, tk_info:Tk_info) -> ArmyEntry:
     # format block
     formated_block = format_army_block(armyblock)
     if formated_block:
@@ -53,7 +53,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
     ingest_date = datetime.now(timezone.utc)
 
     try:
-        army_list = Parallel(n_jobs=-1, prefer="threads")(delayed(proccess_block)(x, event_size, ingest_date, tk_info) for x in armyblocks)
+        army_list = Parallel(n_jobs=-1, prefer="threads")(delayed(proccess_block)(x, event_size, event_name, ingest_date, tk_info) for x in armyblocks)
     except ValueError as e:
         errors.append(e)
 
