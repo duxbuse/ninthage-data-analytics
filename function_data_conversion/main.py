@@ -1,4 +1,4 @@
-import re
+import traceback
 from google.cloud import storage
 from pathlib import Path
 from typing import Union
@@ -69,7 +69,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 print(f"Multi_Error1: {[str(x) for x in e.errors]}")
                 return {"message": [str(x) for x in e.errors]}, 400
             except Exception as e:
-                print(f"Captured non multi error {e}")
+                tb1 = traceback.TracebackException.from_exception(e)
+                print(f"Captured non multi error:\n {''.join(tb1.format())}")
                 return {"message": [str(e)]}, 501
         else:
             return {
