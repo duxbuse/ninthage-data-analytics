@@ -4,6 +4,7 @@ import requests
 from urllib.parse import quote
 from joblib import Parallel, delayed
 import json
+from unicodedata import category
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Round
@@ -90,9 +91,13 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
 
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
+    name_no_punc = ''.join(ch for ch in tournament_name if not category(ch).startswith('P'))
     for tournament in recent_tournaments:
+        # Clear punctuation
+        tk_name_no_punc = ''.join(ch for ch in tournament.get("Name", "") if not category(ch).startswith('P'))
+
         # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
-        ratio = fuzz.token_sort_ratio(tournament_name, tournament.get("Name"))
+        ratio = fuzz.token_sort_ratio(name_no_punc, tk_name_no_punc)
         if ratio == 100:
             # we have found the tournament
             return tournament
