@@ -16,6 +16,7 @@ class new_recruit_parser:
             return float(n).is_integer()
 
     def validate(self, lines: List[str]) -> list[str]:
+        # This takes 52% of exec time
         """
         TODO: Known issues:
         if some units are on the same line we can still read it in but validation will fail

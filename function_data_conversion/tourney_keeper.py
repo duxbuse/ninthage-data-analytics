@@ -2,13 +2,17 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
+from joblib import Parallel, delayed
 import json
+from unicodedata import category
+from unidecode import unidecode
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Round
+from functools import cache
 
-
-def get_recent_tournaments() -> List:
+@cache
+def get_recent_tournaments() -> List[dict]:
     output = []
 
     now = datetime.now(timezone.utc)
@@ -88,9 +92,13 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
 
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
+    name_no_punc:str = unidecode(''.join(ch for ch in tournament_name if not category(ch).startswith('P')))
     for tournament in recent_tournaments:
+        # Clear punctuation
+        tk_name_no_punc:str = unidecode(''.join(ch for ch in tournament.get("Name", "") if not category(ch).startswith('P')))
+
         # cant be to lax here otherwise "brisy battle 1" will match to "brisy battles 3"
-        ratio = fuzz.token_sort_ratio(tournament_name, tournament.get("Name"))
+        ratio = fuzz.token_sort_ratio(name_no_punc, tk_name_no_punc)
         if ratio == 100:
             # we have found the tournament
             return tournament
@@ -138,24 +146,27 @@ def Get_players_names_from_games(games: dict) -> dict:
 
     # iterate over unique player ids and map them to player names
     output = {}
-    for Id in unique_player_tkIds:
-        player_details = Get_Player_Army_Details(Id)
-        if player_details:
-            player_name = player_details.get("PlayerName")
-            tk_player_id = player_details.get("PlayerId")
-            primary_codex = player_details.get("PrimaryCodex")
-            team_name = player_details.get("TeamName")
-            team_id = player_details.get("TeamId")
 
-            output[tk_player_id] = {"TournamentPlayerId": Id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
+    all_player_details = []
+    all_player_details = Parallel(n_jobs=-1, prefer="threads")(delayed(Get_Player_Army_Details)(Id) for Id in unique_player_tkIds)
+    for details in all_player_details:
+        if details:
+            tournament_player_id = details.get("TournamentPlayerId")
+            player_name = details.get("PlayerName")
+            tk_player_id = details.get("PlayerId")
+            primary_codex = details.get("PrimaryCodex")
+            team_name = details.get("TeamName")
+            team_id = details.get("TeamId")
+
+            output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
         else:
             print(
-                f"Id: {Id} from {unique_player_tkIds}, is not found on TK"
-            )  # TODO: there is always a 0 id for some reason
+                f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
+            )
 
     if len(output) != len(unique_player_tkIds):
         print(f"I think this is fucked")
-        # raise ValueError(f"Some TK players have been lost due to similar tkIds")
+        raise ValueError(f"Some TK players have been lost due. This is probably due to poor network conditions")
 
     return output
 
@@ -176,19 +187,19 @@ def Convert2_TKid_to_uuid(
         player_data = Get_Player_Army_Details(TKID_1)
         raise ValueError(
             f"""
-            TK player {player_data.get("PlayerName")}, TKID:{TKID_1}, could not be mapped to a player name not found in file.
+            TK player {player_data.get("PlayerName")}, TKID:{TKID_1}, could not be found in the word doc.
         """
         )
     if not army2_uuid:
         player_data = Get_Player_Army_Details(TKID_2)
         raise ValueError(
             f"""
-            TK player {player_data.get("PlayerName")}, TKID:{TKID_2}, could not be mapped to a player name not found in file.
+            TK player {player_data.get("PlayerName")}, TKID:{TKID_2}, could not be found in the word doc.
         """
         )
     return (army1_uuid, army2_uuid)
 
-
+@cache
 def load_tk_info(tournament_name: str) -> Tk_info:
     # Pull in data from tourney keeper
     tourney_keeper_info = Get_tournament_by_name(tournament_name)
@@ -204,8 +215,9 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         ).replace(tzinfo=timezone.utc)
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
-
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
+        if player_count != len(player_list):
+            raise ValueError(f"TK giving bad data. Players registered:{player_count} does not equal people who played:{len(player_list)}")
 
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
