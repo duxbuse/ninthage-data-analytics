@@ -69,20 +69,19 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         if len(zipped) == 2:
             matched_player_names = zipped[0]
             matched_player_tkids = zipped[1]
-
             # check to make sure that all players are uniquely identified in tk
             if len(set(matched_player_tkids)) != len(matched_player_tkids):
                 double_matches = set(
                     [x for x in matched_player_tkids if matched_player_tkids.count(x) > 1]
                 )
-                doubles_with_name = [
+                doubles_with_name = set([
                     x
                     for x in zip(matched_player_names, matched_player_tkids)
                     if x[1] in double_matches
-                ]
+                ])
 
                 errors.append(
-                    ValueError(f"""Players not uniquely mapped to tk:\n {doubles_with_name}""")
+                    ValueError(f"""Players duplicated in word file and not uniquely mapped to tk:\n {doubles_with_name}""")
                 )
 
             if (
@@ -100,8 +99,13 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                 for x in from_file:
                     for y in from_tk:
                         if fuzz.token_sort_ratio(x, y) == 100:
-                            unique_from_file.remove(x)
-                            unique_from_tk.remove(y)
+                            try:
+                                unique_from_file.remove(x)
+                                unique_from_tk.remove(y)
+                            except ValueError:
+                                # This happens when there are 2 player names that are the same and so the value can not be removed.
+                                # This is already handeled above with the message of all duplicated players so does not need handeling here
+                                pass
 
                 errors.append(
                     ValueError(
