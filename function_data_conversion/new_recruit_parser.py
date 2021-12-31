@@ -4,6 +4,7 @@ import requests
 from data_classes import ArmyEntry, UnitEntry, Army_names
 import string
 
+http = requests.Session()
 
 class new_recruit_parser:
     @staticmethod
@@ -43,7 +44,7 @@ class new_recruit_parser:
         request_data = {"list": flattened_list}
 
         try:
-            response = requests.post(url, data=request_data, timeout=2)
+            response = http.post(url, data=request_data, timeout=2)
         except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 

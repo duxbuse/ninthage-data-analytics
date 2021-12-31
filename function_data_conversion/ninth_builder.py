@@ -1,5 +1,6 @@
 import requests
 
+http = requests.Session()
 
 def format_army_block(army_block: list[str]) -> list[str]:
     # takes 32% of the exec time
@@ -8,7 +9,7 @@ def format_army_block(army_block: list[str]) -> list[str]:
 
     url = f"https://www.9thbuilder.com/en/api/v1/builder/imports/format"
     try:
-        response = requests.post(
+        response = http.post(
             url,
             json={"data": data_string},
             headers={

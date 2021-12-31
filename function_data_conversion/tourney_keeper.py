@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
-from joblib import Parallel, delayed
+import concurrent.futures
 import json
 from unicodedata import category
 from unidecode import unidecode
@@ -10,6 +10,8 @@ from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Round
 from functools import cache
+
+http = requests.Session()
 
 @cache
 def get_recent_tournaments() -> List[dict]:
@@ -25,7 +27,7 @@ def get_recent_tournaments() -> List[dict]:
 
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -55,7 +57,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     }
 
     try:
-        response = requests.post(
+        response = http.post(
             url, json={"Id": tourney_id}, headers=headers, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -74,7 +76,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/Game/GetGamesForTournament?tournamentId={tourney_id}"
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -113,7 +115,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/TournamentPlayer/GetPlayerArmyDetails?tournamentPlayerId={tournamentPlayerId}"
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -147,20 +149,29 @@ def Get_players_names_from_games(games: dict) -> dict:
     # iterate over unique player ids and map them to player names
     output = {}
 
-    all_player_details = []
-    all_player_details = Parallel(n_jobs=-1, prefer="threads")(delayed(Get_Player_Army_Details)(Id) for Id in unique_player_tkIds)
-    for details in all_player_details:
-        if details:
-            tournament_player_id = details.get("TournamentPlayerId")
-            player_name = details.get("PlayerName")
-            tk_player_id = details.get("PlayerId")
-            primary_codex = details.get("PrimaryCodex")
-            team_name = details.get("TeamName")
-            team_id = details.get("TeamId")
 
-            output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
-        else:
-            print(
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for Id in unique_player_tkIds:
+            futures.append(
+                executor.submit(
+                    Get_Player_Army_Details, Id
+                )
+            )
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                details = future.result()
+                tournament_player_id = details.get("TournamentPlayerId")
+                player_name = details.get("PlayerName")
+                tk_player_id = details.get("PlayerId")
+                primary_codex = details.get("PrimaryCodex")
+                team_name = details.get("TeamName")
+                team_id = details.get("TeamId")
+
+                output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
+            except Exception:
+                # TODO: I think this should be a raise ValueError not a print
+                print(
                 f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
             )
 
@@ -216,9 +227,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
-        if player_count != len(player_list):
-            raise ValueError(f"TK giving bad data. Players registered:{player_count} does not equal people who played:{len(player_list)}")
-
+        
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
 
