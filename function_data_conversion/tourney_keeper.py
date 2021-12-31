@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Union, Tuple
 import requests
 from urllib.parse import quote
-from joblib import Parallel, delayed
+import concurrent.futures
 import json
 from unicodedata import category
 from unidecode import unidecode
@@ -149,20 +149,29 @@ def Get_players_names_from_games(games: dict) -> dict:
     # iterate over unique player ids and map them to player names
     output = {}
 
-    all_player_details = []
-    all_player_details = Parallel(n_jobs=-1, prefer="threads")(delayed(Get_Player_Army_Details)(Id) for Id in unique_player_tkIds)
-    for details in all_player_details:
-        if details:
-            tournament_player_id = details.get("TournamentPlayerId")
-            player_name = details.get("PlayerName")
-            tk_player_id = details.get("PlayerId")
-            primary_codex = details.get("PrimaryCodex")
-            team_name = details.get("TeamName")
-            team_id = details.get("TeamId")
 
-            output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
-        else:
-            print(
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for Id in unique_player_tkIds:
+            futures.append(
+                executor.submit(
+                    Get_Player_Army_Details, Id
+                )
+            )
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                details = future.result()
+                tournament_player_id = details.get("TournamentPlayerId")
+                player_name = details.get("PlayerName")
+                tk_player_id = details.get("PlayerId")
+                primary_codex = details.get("PrimaryCodex")
+                team_name = details.get("TeamName")
+                team_id = details.get("TeamId")
+
+                output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
+            except Exception:
+                # TODO: I think this should be a raise ValueError not a print
+                print(
                 f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
             )
 

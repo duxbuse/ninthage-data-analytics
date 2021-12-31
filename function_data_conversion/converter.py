@@ -2,7 +2,7 @@ from typing import List
 from pathlib import Path
 from datetime import datetime, timezone
 from fuzzywuzzy import fuzz
-from joblib import Parallel, delayed
+import concurrent.futures
 from multi_error import Multi_Error
 from utility_functions import (
     DetectParser,
@@ -14,33 +14,6 @@ from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
-
-
-def proccess_block(
-    armyblock: List[str],
-    event_size: int,
-    event_name: str,
-    ingest_date: datetime,
-    tk_info: Tk_info,
-) -> ArmyEntry:
-    # format block
-    formated_block = format_army_block(armyblock)
-    if formated_block:
-        armyblock = formated_block
-    # Select which parser to use
-    parser_selected = DetectParser(armyblock)
-    # parse block into army object
-    army = parse_army_block(
-        parser=parser_selected,
-        armyblock=armyblock,
-        tournament_name=event_name,
-        event_size=event_size,
-        ingest_date=ingest_date,
-        tk_info=tk_info,
-    )
-    # save into army list
-    return army
-
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
     errors: List[Exception] = []
@@ -64,13 +37,19 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
     event_size = len(armyblocks)
     ingest_date = datetime.now(timezone.utc)
 
-    try:
-        army_list = Parallel(n_jobs=-1, prefer="threads")(
-            delayed(proccess_block)(x, event_size, event_name, ingest_date, tk_info)
-            for x in armyblocks
-        )
-    except ValueError as e:
-        errors.append(e)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for block in armyblocks:
+            futures.append(
+                executor.submit(
+                    proccess_block, block, event_size, event_name, ingest_date, tk_info
+                )
+            )
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                army_list.append(future.result())
+            except ValueError as e:
+                errors.append(e)
 
     if army_list:
 
@@ -266,6 +245,30 @@ def parse_army_block(
 
     return army
 
+def proccess_block(
+    armyblock: List[str],
+    event_size: int,
+    event_name: str,
+    ingest_date: datetime,
+    tk_info: Tk_info,
+) -> ArmyEntry:
+    # format block
+    formated_block = format_army_block(armyblock)
+    if formated_block:
+        armyblock = formated_block
+    # Select which parser to use
+    parser_selected = DetectParser(armyblock)
+    # parse block into army object
+    army = parse_army_block(
+        parser=parser_selected,
+        armyblock=armyblock,
+        tournament_name=event_name,
+        event_size=event_size,
+        ingest_date=ingest_date,
+        tk_info=tk_info,
+    )
+    # save into army list
+    return army
 
 if __name__ == "__main__":
     """Used for testing locally"""
