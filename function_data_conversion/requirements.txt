@@ -4,3 +4,4 @@ google-cloud-storage
 fuzzywuzzy
 python-Levenshtein
 joblib
+unidecode
