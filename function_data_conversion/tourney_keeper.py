@@ -11,6 +11,8 @@ from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Round
 from functools import cache
 
+http = requests.Session()
+
 @cache
 def get_recent_tournaments() -> List[dict]:
     output = []
@@ -25,7 +27,7 @@ def get_recent_tournaments() -> List[dict]:
 
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -55,7 +57,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     }
 
     try:
-        response = requests.post(
+        response = http.post(
             url, json={"Id": tourney_id}, headers=headers, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -74,7 +76,7 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/Game/GetGamesForTournament?tournamentId={tourney_id}"
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -113,7 +115,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     url = f"https://tourneykeeper.net/WebAPI/TournamentPlayer/GetPlayerArmyDetails?tournamentPlayerId={tournamentPlayerId}"
     try:
         # need to blank the user agent as the default is automatically blocked
-        response = requests.get(
+        response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
         )
     except requests.exceptions.ReadTimeout as err:
@@ -216,9 +218,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
-        if player_count != len(player_list):
-            raise ValueError(f"TK giving bad data. Players registered:{player_count} does not equal people who played:{len(player_list)}")
-
+        
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
 
