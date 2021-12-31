@@ -162,11 +162,11 @@ def Get_players_names_from_games(games: dict) -> dict:
         else:
             print(
                 f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
-            )  # TODO: there is always a 0 id for some reason
+            )
 
     if len(output) != len(unique_player_tkIds):
         print(f"I think this is fucked")
-        # raise ValueError(f"Some TK players have been lost due to similar tkIds")
+        raise ValueError(f"Some TK players have been lost due. This is probably due to poor network conditions")
 
     return output
 
@@ -215,8 +215,9 @@ def load_tk_info(tournament_name: str) -> Tk_info:
         ).replace(tzinfo=timezone.utc)
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
-
         player_count = Get_active_players(tourney_keeper_info.get("Id"))
+        if player_count != len(player_list):
+            raise ValueError(f"TK giving bad data. Players registered:{player_count} does not equal people who played:{len(player_list)}")
 
         event_id = tourney_keeper_info.get("Id")
         players_per_team = tourney_keeper_info.get("PlayersPrTeam")
