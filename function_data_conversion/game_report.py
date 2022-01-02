@@ -31,10 +31,13 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         raise ValueError("No armies found")
     player1_army = list_of_armies[
         0
-    ]  # TODO: There is a case here where player 1 is missing but player 2 exists and then we rename player2's army list as player 1
+    ]
     player2_army = None
     if data.get("player2_army", [None])[0]:
-        player2_army = list_of_armies[1]
+        if len(list_of_armies) == 2:
+            player2_army = list_of_armies[1]
+        else:
+            raise ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}")
 
     player1_round = None
     if any(
