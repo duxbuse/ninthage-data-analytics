@@ -19,9 +19,6 @@ class new_recruit_parser:
     def validate(self, lines: List[str]) -> list[str]:
         # This takes 52% of exec time
         """
-        TODO: Known issues:
-        if some units are on the same line we can still read it in but validation will fail
-
         """
         if len(lines) < 6:  # minimum is name, army, and 4 units
             raise ValueError(
@@ -121,11 +118,12 @@ class new_recruit_parser:
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(lines)
-        if validation_errors:
+        # TODO: skipping validation untill flammy has a bigger server
+        # validation_errors = self.validate(lines)
+        # if validation_errors:
 
-            new_army.validated = not validation_errors
-            new_army.validation_errors = validation_errors
+        #     new_army.validated = not validation_errors
+        #     new_army.validation_errors = validation_errors
 
         return new_army
 
