@@ -74,7 +74,7 @@ def function_upload_data_into_bigquery(
         # skip uploads for test files
         if "t9a-data-test" in filename:
             print("Skipping upload due to test file")
-            num_lines = sum(1 for line in open(file_path))
+            num_lines = sum(1 for _ in open(file_path))
             return {
                 "list_number": num_lines,
                 "file_name": filename,
@@ -88,11 +88,12 @@ def function_upload_data_into_bigquery(
         FROM `ninthage-data-analytics.all_lists.tournament_lists`
         WHERE `tournament` = "{tournament_name}"
         """
+        # Dont delete if its a manual report because its not the same event
+        if tournament_name != "manual game report":
+            delete_result = client.query(query_string).result()
 
-        delete_result = client.query(query_string).result()
-
-        if not isinstance(delete_result, bigquery.table._EmptyRowIterator):
-            raise ValueError(f"Delete failed for {tournament_name}")
+            if not isinstance(delete_result, bigquery.table._EmptyRowIterator):
+                raise ValueError(f"Delete failed for {tournament_name}")
 
         # Save new data
         dataset_ref = client.dataset(dataset_id)
