@@ -130,6 +130,11 @@
     },
     {
         "mode": "NULLABLE",
+        "name": "data_source",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
         "name": "event_size",
         "type": "INTEGER"
     },

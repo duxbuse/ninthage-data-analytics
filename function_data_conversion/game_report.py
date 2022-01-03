@@ -4,6 +4,7 @@ from converter import Convert_lines_to_army_list
 from data_classes import (
     Round,
     Event_types,
+    Data_sources,
     ArmyEntry,
     Maps,
     Deployments,
@@ -179,8 +180,11 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
 
     player1_army.calculate_total_tournament_points()
     player1_army.event_type = Event_types.CASUAL
+    player1_army.data_source = Data_sources.MANUAL
     if player2_army:
         player2_army.calculate_total_tournament_points()
         player2_army.event_type = Event_types.CASUAL
+        player2_army.data_source = Data_sources.MANUAL
+
 
     return list_of_armies

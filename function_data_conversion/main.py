@@ -78,6 +78,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                     f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
                 ]
             }, 400
+    # manual game report
     elif data.get("player1_army"):
         try:
             list_of_armies = armies_from_report(data, Path(file_name).stem)

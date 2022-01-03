@@ -13,11 +13,17 @@ class Parsers(Enum):
 
 
 @unique
+class Data_sources(Enum):
+    TOURNEY_KEEPER = auto()
+    NEW_RECRUIT = auto()
+    FADING_FLAMES = auto()
+    MANUAL = auto()
+
+@unique
 class Event_types(Enum):
     SINGLES = auto()
     TEAMS = auto()
     CASUAL = auto()
-
 
 Magic = {
     "H": "Hereditary",
@@ -227,6 +233,7 @@ class ArmyEntry:
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
     event_size: Optional[int] = None
+    data_source: Optional[Data_sources] = None
     tourney_keeper_TournamentPlayerId: Optional[int] = None
     tourney_keeper_PlayerId: Optional[int] = None
     calculated_total_tournament_points: Optional[int] = None

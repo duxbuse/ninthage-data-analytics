@@ -8,7 +8,7 @@ from unicodedata import category
 from unidecode import unidecode
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
-from data_classes import ArmyEntry, Tk_info, Event_types, Round
+from data_classes import ArmyEntry, Tk_info, Event_types, Data_sources, Round
 from functools import cache
 
 http = requests.Session()
@@ -277,7 +277,7 @@ def append_tk_game_data(
         )
 
         for army in list_of_armies:
-            # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
+            army.data_source = Data_sources.TOURNEY_KEEPER
             if army.army_uuid == player1_uuid:
                 if not army.round_performance:
                     army.round_performance = []
