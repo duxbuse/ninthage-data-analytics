@@ -222,7 +222,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
             event_type = Event_types.SINGLES
 
         event_date = datetime.strptime(
-            tourney_keeper_info.get("Start"), "%Y-%m-%yT%H:%M:%S"
+            tourney_keeper_info.get("Start"), "%Y-%m-%dT%H:%M:%S"
         ).replace(tzinfo=timezone.utc)
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
