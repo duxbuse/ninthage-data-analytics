@@ -154,6 +154,7 @@ Army_names = {
     "ORCS & GOBLINS": "Orcs and Goblins",
     "ONG": "Orcs and Goblins",
     "O&G": "Orcs and Goblins",
+    "OG": "Orcs and Goblins",
     "SAURIAN ANCIENTS": "Saurian Ancients",
     "SA": "Saurian Ancients",
     "SYLVAN ELVES": "Sylvan Elves",
