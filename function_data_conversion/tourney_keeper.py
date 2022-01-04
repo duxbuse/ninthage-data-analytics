@@ -127,6 +127,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
         message = response.json()["Message"]
         data = json.loads(message)
         return data
+    # print(f"Failed to download player data for {tournamentPlayerId}")
     return None
 
 
@@ -175,10 +176,7 @@ def Get_players_names_from_games(games: dict) -> dict:
 
                     output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
                 else:
-                    # TODO: Not sure why this triggers so much
-                    pass
-                    # print(f"Figure out how this happens")
-
+                   raise ValueError(f"Tourney Keeper yielded no data for {Id}")
             except Exception as e:
                 # TODO: I think this should be a raise ValueError not a print
                 print(e)
