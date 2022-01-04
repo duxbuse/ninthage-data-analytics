@@ -28,6 +28,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
     # if tk_info.player_count != len(tk_info.player_list):
         # TODO: enable this when tk is submitting the right data for player count
+        # This will happen as tk reports all players not just active players
         # errors.append(ValueError(f"TK giving bad data. Players registered:{tk_info.player_count} does not equal people who played:{len(tk_info.player_list)}"))
 
 
@@ -110,17 +111,19 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                                 # This is already handeled above with the message of all duplicated players so does not need handeling here
                                 pass
 
-                errors.append(
-                    ValueError(
-                        f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                # if all the "missing" tk names are not active then ignore this error
+                if any(missing_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active")]):
+                    errors.append(
+                        ValueError(
+                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
+                        )
                     )
-                )
     else:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
     try:
-        if tk_info.game_list:
-            append_tk_game_data(tk_info.game_list, army_list)
+        if tk_info.game_list and tk_info.player_list:
+            append_tk_game_data(tk_info, army_list)
     except ValueError as e:
         errors.append(e)
 
