@@ -118,6 +118,8 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                             f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
                         )
                     )
+        elif tk_info:
+            errors.append(ValueError(f"No tkdata was loaded into armies"))
     else:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
