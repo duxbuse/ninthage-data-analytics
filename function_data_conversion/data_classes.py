@@ -233,6 +233,7 @@ class ArmyEntry:
     ingest_date: Optional[datetime] = None
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
+    list_as_str: Optional[str] = None
     event_size: Optional[int] = None
     data_source: Optional[Data_sources] = None
     tourney_keeper_TournamentPlayerId: Optional[int] = None
