@@ -251,9 +251,8 @@ def append_tk_game_data(
     if tk_info.game_list and tk_info.player_list:
         # extract TK game results if avaliable
         for game in tk_info.game_list:
-
-            player1 = next( x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player1Id"))
-            player2 = next( x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player2Id"))
+            player1 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player1Id")), {})
+            player2 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player2Id")), {})
 
             
 

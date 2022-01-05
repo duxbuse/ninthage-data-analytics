@@ -226,7 +226,7 @@ def parse_army_block(
                 top_picks = [
                     x
                     for x in top_picks
-                    if x[0][1].get("Primary_Codex", army.army) == army.army
+                    if Army_names[x[0][1].get("Primary_Codex", army.army).upper()] == army.army
                 ]
 
                 if len(top_picks) > 1:
@@ -237,7 +237,7 @@ def parse_army_block(
                     raise ValueError(
                         f"None of the tk matches for {army.player_name} played {army.army} as found in the word docx."
                     )
-
+            # set current army to be the top pick
             army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
                 "TournamentPlayerId"
             )
@@ -305,5 +305,7 @@ if __name__ == "__main__":
                 f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds"
             )
             print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
+            if list_of_armies[0].tourney_keeper_PlayerId:
+                print(f"Tk Info loaded")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")
