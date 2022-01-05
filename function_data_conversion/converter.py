@@ -305,7 +305,9 @@ if __name__ == "__main__":
                 f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds"
             )
             print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
-            if list_of_armies[0].tourney_keeper_PlayerId:
+            if all(x.tourney_keeper_PlayerId for x in list_of_armies):
                 print(f"Tk Info loaded")
+            else:
+                print(f"TK Not loaded")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")

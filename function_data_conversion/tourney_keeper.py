@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
 from data_classes import ArmyEntry, Tk_info, Event_types, Data_sources, Round
 from functools import cache
+import re
 
 http = requests.Session()
 
@@ -164,7 +165,7 @@ def Get_players_names_from_games(games: dict) -> dict:
                 details = future.result()
                 if details:
                     tournament_player_id = details.get("TournamentPlayerId")
-                    player_name = details.get("PlayerName")
+                    player_name:str = details.get("PlayerName")
                     tk_player_id = details.get("PlayerId")
                     team_name = details.get("TeamName")
                     team_id = details.get("TeamId")
@@ -173,6 +174,12 @@ def Get_players_names_from_games(games: dict) -> dict:
                     primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
                     if primary_codex is None:
                         primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
+
+                    dummy_players = r"player\d"
+                    if re.fullmatch(dummy_players, player_name):
+                        # Skip dummy players
+                        print(f"Dummy player {player_name} skipped")
+                        continue
 
                     output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
                 else:
