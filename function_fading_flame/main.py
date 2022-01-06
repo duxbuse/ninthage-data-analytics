@@ -13,7 +13,7 @@ from os import getenv
 http = requests.Session()
 
 # name of the function in main.py must equal the trigger name as a default or be set explicitly
-def function_fading_flame(request: Request) -> None:
+def function_fading_flame(request: Request):
 
     API_KEY = getenv("API_KEY")
 
@@ -22,8 +22,20 @@ def function_fading_flame(request: Request) -> None:
     formatted_since_date = since_date.isoformat(timespec="microseconds") + "Z"
 
     url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={formatted_since_date}"
-    response = requests.get(url, timeout=10)
+    
+    try:
+        # need to blank the user agent as the default is automatically blocked
+        response = http.get(
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=10
+        )
+    except requests.exceptions.ReadTimeout as err:
+        return "timeout", 400
+    if response.status_code != 200:
+        return "http status code: ", response.status_code
+    
     r = response.json()
+    
+    
     data = {}
     data["games"] = r
     # add name so we can tell its fading flame data
