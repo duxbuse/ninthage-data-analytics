@@ -10,7 +10,7 @@ from uuid import uuid4
 from pathlib import Path
 
 
-def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
+def upload_blob(bucket_name:str, file_path:str, destination_blob_name:str) -> None:
     """Uploads a file to the bucket."""
     storage_client = google.cloud.storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
@@ -31,7 +31,7 @@ def store_raw_report(report:dict):
     write_report_to_json(file_path=local_file, report=report)
 
     bucket_name = "manual-game-reports"
-    upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=file_name)
+    upload_blob(bucket_name=bucket_name, file_path=str(local_file), destination_blob_name=str(file_name))
     remove(local_file)
 
 def function_game_report(request: Request):

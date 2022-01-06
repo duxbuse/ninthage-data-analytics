@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 import requests
 import json
+
 from os import getenv
 
 
@@ -14,19 +15,19 @@ http = requests.Session()
 # name of the function in main.py must equal the trigger name as a default or be set explicitly
 def function_fading_flame(request: Request) -> None:
 
-    data = request.json()
-    # since_date = data["date"]
     API_KEY = getenv("API_KEY")
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
     since_date = now + relativedelta(months=-1)
+    formatted_since_date = since_date.isoformat(timespec="microseconds") + "Z"
 
-
-    url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={since_date}"
+    url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={formatted_since_date}"
     response = requests.get(url, timeout=10)
     r = response.json()
 
-
+    data = r
+    # add name so we can tell its fading flame data
+    data["name"] = "fading flame"
 
     project = "ninthage-data-analytics"
     location = "us-central1"
@@ -38,7 +39,7 @@ def function_fading_flame(request: Request) -> None:
 
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)
-    execution = executions.Execution(argument=json.dumps(data))
+    execution = executions.Execution(argument=json.dumps(r))
 
     # Execute the workflow.
     response = execution_client.create_execution(parent=parent, execution=execution)
@@ -48,4 +49,6 @@ def function_fading_flame(request: Request) -> None:
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
-    function_fading_flame()
+    # Load all data
+    request_obj = Request.from_values(json={"date": "2008-10-31T17:04:32.0000000Z"})
+    function_fading_flame(request_obj) # type: ignore
