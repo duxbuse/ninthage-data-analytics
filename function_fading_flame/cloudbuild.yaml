@@ -7,11 +7,11 @@ steps:
 - id: Deploy function_fading_flame
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
-  - gcloud
-  - functions
-  - deploy
-  - function_fading_flame
-  - --region=${_REGION}
-  - --source=./function_fading_flame/
-  - --trigger-bucket=tournament-lists
-  - --runtime=python39
+      - gcloud
+      - functions
+      - deploy
+      - function_game_report
+      - --region=${_REGION}
+      - --source=./function_fading_flame/
+      - --trigger-http
+      - --runtime=python39
