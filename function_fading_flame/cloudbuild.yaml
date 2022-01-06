@@ -10,7 +10,7 @@ steps:
       - gcloud
       - functions
       - deploy
-      - function_game_report
+      - function_fading_flame
       - --region=${_REGION}
       - --source=./function_fading_flame/
       - --trigger-http
