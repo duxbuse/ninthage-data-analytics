@@ -1,4 +1,4 @@
-from google.cloud import workflows_v1beta
+import google.cloud.workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 from flask.wrappers import Request
@@ -34,7 +34,7 @@ def function_fading_flame(request: Request) -> None:
 
     # Set up API clients.
     execution_client = executions_v1beta.ExecutionsClient()
-    workflows_client = workflows_v1beta.WorkflowsClient()
+    workflows_client = google.cloud.workflows_v1beta.WorkflowsClient()
 
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)

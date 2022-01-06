@@ -1,5 +1,5 @@
 from flask.wrappers import Request
-from google.cloud import storage
+import google.cloud.storage
 import requests
 from pathlib import Path
 
@@ -38,7 +38,7 @@ def upload_file(request: Request):
 
 def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
     """Uploads a file to the bucket."""
-    storage_client = storage.Client()
+    storage_client = google.cloud.storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
