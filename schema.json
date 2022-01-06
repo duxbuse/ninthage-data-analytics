@@ -47,6 +47,11 @@
         "type": "INTEGER"
     },
     {
+        "mode": "NULLABLE",
+        "name": "fading_flame_player_id",
+        "type": "STRING"
+    },
+    {
         "fields": [
             {
                 "mode": "NULLABLE",
@@ -71,6 +76,11 @@
             {
                 "mode": "NULLABLE",
                 "name": "game_uuid",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "fading_flame_game_id",
                 "type": "STRING"
             },
             {

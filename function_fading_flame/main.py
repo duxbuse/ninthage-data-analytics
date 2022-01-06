@@ -2,7 +2,7 @@ import google.cloud.workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 from flask.wrappers import Request
-from datetime import datetime, timezone
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import requests
 import json
@@ -24,8 +24,8 @@ def function_fading_flame(request: Request) -> None:
     url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={formatted_since_date}"
     response = requests.get(url, timeout=10)
     r = response.json()
-
-    data = r
+    data = {}
+    data["games"] = r
     # add name so we can tell its fading flame data
     data["name"] = "fading flame"
 

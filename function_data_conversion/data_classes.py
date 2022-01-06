@@ -127,6 +127,8 @@ Objectives = {
     "6 SECURE TARGET": "Secure Target",
 }
 
+
+# When updating this also remember to update fading_flame.py faction mappings
 Army_names = {
     "BEAST HERDS": "Beast Herds",
     "BH": "Beast Herds",
@@ -212,6 +214,7 @@ class Round:
     secondary_points: Optional[int] = None
     round_number: Optional[int] = None
     game_uuid: UUID = field(default_factory=lambda: uuid4())
+    fading_flame_game_id: Optional[str] = None
     won_secondary: Optional[bool] = None
     deployed_first: Optional[bool] = None
     deployed_everything: Optional[bool] = None
@@ -238,6 +241,7 @@ class ArmyEntry:
     data_source: Optional[Data_sources] = None
     tourney_keeper_TournamentPlayerId: Optional[int] = None
     tourney_keeper_PlayerId: Optional[int] = None
+    fading_flame_player_id: Optional[str] = None
     calculated_total_tournament_points: Optional[int] = None
     calculated_total_tournament_secondary_points: Optional[int] = None
     reported_total_army_points: Optional[int] = None

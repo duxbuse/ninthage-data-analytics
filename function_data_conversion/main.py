@@ -8,6 +8,7 @@ from fuzzywuzzy import fuzz
 from os import remove
 from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
 from game_report import armies_from_report
+from fading_flame import armies_from_fading_flame
 from tourney_keeper import get_recent_tournaments
 from utility_functions import Docx_to_line_list
 from multi_error import Multi_Error
@@ -49,6 +50,9 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
     upload_bucket = "tournament-lists-json"
 
+    # break these into separate functions
+
+    # Uploaded word doc
     if data.get("bucket"):
         bucket_name = data["bucket"]
 
@@ -82,6 +86,16 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     elif data.get("player1_army"):
         try:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
+
+        except Multi_Error as e:
+            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            return {"message": [str(x) for x in e.errors]}, 400
+        except Exception as e:
+            return {"message": [str(e)]}, 501
+    # Fading Flame data
+    elif file_name == "fading flame":
+        try:
+            list_of_armies = armies_from_fading_flame(data)
 
         except Multi_Error as e:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")

@@ -26,7 +26,7 @@ def write_report_to_json(file_path: Path, report: dict):
         jsonFile.write(json.dumps(report))
 
 def store_raw_report(report:dict):
-    file_name = Path(str(uuid4()))
+    file_name = Path(str(uuid4()) + ".json")
     local_file = "/tmp" / file_name
     write_report_to_json(file_path=local_file, report=report)
 
