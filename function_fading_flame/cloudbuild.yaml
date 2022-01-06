@@ -8,6 +8,7 @@ steps:
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
+      - beta
       - functions
       - deploy
       - function_fading_flame
