@@ -5,6 +5,7 @@ import google.cloud.workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 import json
+from os import remove
 from uuid import uuid4
 from pathlib import Path
 
@@ -26,11 +27,12 @@ def write_report_to_json(file_path: Path, report: dict):
 
 def store_raw_report(report:dict):
     file_name = Path(str(uuid4()))
-    local_file = "tmp" / file_name
+    local_file = "/tmp" / file_name
     write_report_to_json(file_path=local_file, report=report)
 
     bucket_name = "manual-game-reports"
     upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=file_name)
+    remove(local_file)
 
 def function_game_report(request: Request):
     form_data = request.form.to_dict(flat=False)
