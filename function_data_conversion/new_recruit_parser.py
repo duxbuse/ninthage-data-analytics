@@ -25,7 +25,7 @@ class new_recruit_parser:
                 f"Army Block has to few lines for validation.\nRequires at minimum name, army, and 4 units.\n\nWhole army list = {lines}"
             )
 
-        url = "https://www.newrecruit.eu/api/listcheck"
+        url = "https://api.newrecruit.eu/api/listcheck"
 
         # flatten lines into single string
         flattened_list = ""
@@ -118,12 +118,11 @@ class new_recruit_parser:
             if army_name:
                 new_army.army = army_name
 
-        # TODO: skipping validation untill flammy has a bigger server
-        # validation_errors = self.validate(lines)
-        # if validation_errors:
+        validation_errors = self.validate(lines)
+        if validation_errors:
 
-        #     new_army.validated = not validation_errors
-        #     new_army.validation_errors = validation_errors
+            new_army.validated = not validation_errors
+            new_army.validation_errors = validation_errors
 
         return new_army
 
