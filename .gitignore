@@ -142,3 +142,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#other stuff to ignore
+function_data_conversion/fading_flame-test.json

@@ -10,29 +10,28 @@ from data_classes import (
 )
 
 faction_mapping = {
-    "1": Army_names["BEAST HERDS"],
-    "3": Army_names["DREAD ELVES"],
-    "4": Army_names["DWARVEN HOLDS"],
-    "5": Army_names["DAEMON LEGIONS"],
-    "6": Army_names["EMPIRE OF SONNSTAHL"],
-    "7": Army_names["HIGHBORN ELVES"],
-    "8": Army_names["INFERNAL DWARVES"],
-    "9": Army_names["KINGDOM OF EQUITAINE"],
-    "10": Army_names["OGRE KHANS"],
-    "11": Army_names["ORCS AND GOBLINS"],
-    "12": Army_names["SAURIAN ANCIENTS"],
-    "13": Army_names["SYLVAN ELVES"],
-    "14": Army_names["UNDYING DYNASTIES"],
-    "15": Army_names["VAMPIRE COVENANT"],
-    "16": Army_names["VERMIN SWARM"],
-    "17": Army_names["WARRIORS OF THE DARK GODS"],
-    "18": Army_names["ASKLANDERS"],
-    "19": Army_names["CULTISTS"],
-    "20": Army_names["HOBGOBLINS"],
-    "21": Army_names["MAKHAR"],
+    1: Army_names["BEAST HERDS"],
+    2:Army_names["DREAD ELVES"],
+    3: Army_names["DWARVEN HOLDS"],
+    4: Army_names["DAEMON LEGIONS"],
+    5: Army_names["EMPIRE OF SONNSTAHL"],
+    6: Army_names["HIGHBORN ELVES"],
+    7: Army_names["INFERNAL DWARVES"],
+    8: Army_names["KINGDOM OF EQUITAINE"],
+    9: Army_names["OGRE KHANS"],
+    10: Army_names["ORCS AND GOBLINS"],
+    11: Army_names["SAURIAN ANCIENTS"],
+    12: Army_names["SYLVAN ELVES"],
+    13: Army_names["UNDYING DYNASTIES"],
+    14: Army_names["VAMPIRE COVENANT"],
+    15: Army_names["VERMIN SWARM"],
+    16: Army_names["WARRIORS OF THE DARK GODS"],
+    17: Army_names["ASKLANDERS"],
+    18: Army_names["CULTISTS"],
+    19: Army_names["HOBGOBLINS"],
+    20: Army_names["MAKHAR"],
 }
-
-# objective_mapping = {
+#objective_mapping = {
 #     "1": Objectives["1 HOLD THE GROUND"],
 #     "3": Objectives["2 BREAKTHROUGH"],
 #     "4": Objectives["3 SPOILS OF WAR"],
@@ -51,27 +50,33 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
     for game in games:
         # Strip out important information
         game_id:str = game.get("id")
+        game_result = game.get("result", {})
+        if not game_result:
+            raise ValueError("No result is a big issue")
 
-        game_date = datetime.strptime(game.get("result", {}).get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
 
-        player1 = game.get("player1", {})
-        player2 = game.get("player2", {})
+        player1 = game_result.get("player1", {})
+        player2 = game_result.get("player2", {})
 
         player1_id:str = player1.get("id")
         player1_vps:int = player1.get("victoryPoints")
         player1_bps:int = player1.get("battlePoints")
-        player1_won_sec:bool = game.get("result", {}).get("secondaryObjective") == 1
+        player1_won_sec:bool = game_result.get("secondaryObjective") == 1
 
         player2_id:str = player2.get("id")
         player2_vps:int = player2.get("victoryPoints")
         player2_bps:int = player2.get("battlePoints")
-        player2_won_sec:bool = game.get("result", {}).get("secondaryObjective") == 2
+        player2_won_sec:bool = game_result.get("secondaryObjective") == 2
 
-        player1_list_no_army:str = game.get("player1List", {}).get("list")
-        player1_faction:str = faction_mapping[game.get("player1List", {}).get("faction")]
+        if not game_result.get("player1List") or not game_result.get("player2List"):
+            errors.append(ValueError(f"No armies lists found\nGame id = {game_id}"))
+            continue
+        player1_list_no_army:str = game_result.get("player1List", {}).get("list", {})
+        player1_faction:str = faction_mapping[game_result.get("player1List", {}).get("faction")]
 
-        player2_list_no_army:str = game.get("player2List", {}).get("list")
-        player2_faction:str = faction_mapping[game.get("player2List", {}).get("faction")]
+        player2_list_no_army:str = game_result.get("player2List", {}).get("list")
+        player2_faction:str = faction_mapping[game_result.get("player2List", {}).get("faction")]
 
         # build up compliant list of lines to be read in
         lines = "\n".join([player1_faction, player1_list_no_army, player2_faction, player2_list_no_army]).split("\n")
@@ -81,8 +86,10 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
 
             if not list_of_armies or len(list_of_armies) == 0:
                 errors.append(ValueError(f"No armies found\nGame id = {game_id}"))
+                continue
             if len(list_of_armies) == 1:
-                errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}\nGame id = {game_id}"))
+                errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed.\nGame id = {game_id}"))
+                continue
 
             player1_armyEntry = list_of_armies[0]
             player2_armyEntry = list_of_armies[1]
@@ -126,3 +133,12 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         raise Multi_Error(errors)
 
     return list_of_all_armies
+
+
+
+if __name__ == "__main__":
+    import json
+    with open("function_data_conversion\\fading_flame-test.json", "r") as json_file:
+                data = json.load(json_file)
+    output = armies_from_fading_flame(data)
+    print(output)

@@ -36,7 +36,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         if len(list_of_armies) == 2:
             player2_army = list_of_armies[1]
         else:
-            raise ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}")
+            raise ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed.")
 
     player1_round = None
     if any(
