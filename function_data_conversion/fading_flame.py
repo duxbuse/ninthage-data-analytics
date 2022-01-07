@@ -52,7 +52,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         # Strip out important information
         game_id:str = game.get("id")
 
-        game_date = datetime.strptime(game.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        game_date = datetime.strptime(game.get("result", {}).get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
 
         player1 = game.get("player1", {})
         player2 = game.get("player2", {})
