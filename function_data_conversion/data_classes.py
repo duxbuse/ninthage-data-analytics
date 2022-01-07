@@ -111,7 +111,7 @@ Maps = {
 Deployments = {
     "OTHER": "Other",
     "1 FRONTLINE CLASH": "Frontline Clash",
-    "2 DAWN ASSULT": "Dawn Assault",
+    "2 DAWN ASSAULT": "Dawn Assault",
     "3 COUNTER THRUST": "Counter Thrust",
     "4 ENCIRCLE": "Encircle",
     "5 REFUSED FLANK": "Refused Flank",
