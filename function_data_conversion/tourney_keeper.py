@@ -200,7 +200,7 @@ def Convert2_TKid_to_uuid(
     for army in list_of_armies:
         if TKID_1 == army.tourney_keeper_TournamentPlayerId:
             army1_uuid = army.army_uuid
-        elif TKID_2 == army.tourney_keeper_TournamentPlayerId:
+        if TKID_2 == army.tourney_keeper_TournamentPlayerId:
             army2_uuid = army.army_uuid
 
     if not army1_uuid:
