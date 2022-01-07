@@ -61,6 +61,8 @@ def function_fading_flame(request: Request):
     response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
+    return f"Data from {since_date} to {now} loaded.", 200
+
 
 def upload_blob(bucket_name:str, file_path:str, destination_blob_name:str) -> None:
     """Uploads a file to the bucket."""
