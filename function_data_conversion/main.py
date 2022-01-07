@@ -92,18 +92,20 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            print(f"None Multi Error: {str(type(e))}, {str(e)}")
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
     # Fading Flame data
     elif file_name == "fading_flame.json":
         try:
-            downloaded_docx_blob = download_blob("fading-flame", file_name)
-            downloaded_docx_blob.download_to_filename(download_file_path)
-            print(
-                f"Downloaded {file_name} from fading-flame to {download_file_path}"
-            )
+            downloaded_FF_blob = download_blob("fading-flame", file_name)
+            downloaded_FF_blob.download_to_filename(download_file_path)
+            if downloaded_FF_blob:
+                print(
+                    f"Downloaded {file_name} from fading-flame to {download_file_path}"
+                )
             with open(download_file_path, "r") as json_file:
                 data = json.load(json_file)
+                print(f"Loaded data")
             remove(download_file_path)
             list_of_armies = armies_from_fading_flame(data)
 
@@ -111,6 +113,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
     else:
         return {
@@ -174,8 +177,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
 
 if __name__ == "__main__":
-    json_message = {"data": {'deployment_selected': ['2 Dawn Assault'], 'dropped_all': ['player2'], 'game_date': ['2022-01-06'], 'map_selected': ['A8'], 'name': 'manual game report', 'objective_selected': ['1 Hold the Ground'], 'player1_army': ["Warriors of the Dark Gods\r\n485 - Sorcerer, Wizard Master, Evocation, Light Armour, Magical Heirloom, Ranger's Boots\r\n340 - Barbarian Chief, General, Black Steed (Prized Stallion), Shield, Heavy Armour, Hand Weapon (Burning Portent), Potion of Swiftness\r\n295 - Barbarian Chief, Shadow Chaser, Heavy Armour (Thrice-Forged), Paired Weapons (Shield Breaker)\r\n235 - Barbarian Chief, War Dais, Heavy Armour, Paired Weapons (Symbol of Slaughter), Rod of Battle\r\n385 - 40 Barbarians, Throwing Weapons, Paired Weapons, Standard Bearer (Wasteland Torch), Musician, Champion\r\n295 - 30 Barbarians, Shield, Standard Bearer (Legion Standard), Musician, Champion\r\n220 - 10 Fallen\r\n520 - 8 Warrior Knights, Lance, Pride, Standard Bearer (Stalker's Standard), Musician, Champion\r\n409 - 3 Chosen Knights, Wrath\r\n330 - 4 Wretched Ones\r\n320 - Battleshrine\r\n300 - Marauding Giant, Tribal Warspear\r\n200 - Chimera\r\n165 - 5 Flayers, Shield\r\n4499\r\n"], 'player1_magic': ['H', 'E1', 'E2', 'E3', 'E5', 'O6'], 'player1_name': ['Tom'], 'player1_score': ['16'], 'player1_vps': [''], 'player2_army': ["Kingdom of Equitaine\r\n505 - Equitan Lord, Pegasus Charger, Shield, Lance (Divine Judgement), Basalt Infusion, Sacred Chalice, Paladin, Honour\r\n485 - Damsel, Destrier, Wizard Master, Shamanism, Binding Scroll\r\n395 - Damsel, General, Revered Unicorn, Wizard Adept, Divination, Crystal Ball, Sainted\r\n340 - Folk Hero, Destrier, Paired Weapons, Battle Standard Bearer (Aether Icon, Aether Icon), Light Armour (Essence of Mithril), Bannerman, Castellan, Faith\r\n670 - 15 Feudal Knights, Champion (Knight Banneret), Musician, Standard Bearer (Stalker's Standard)\r\n275 - 6 Feudal Knights, Champion, Musician\r\n275 - 6 Feudal Knights, Champion, Musician\r\n650 - 5 Pegasus Knights, Champion (Knight Banneret (Oriflamme)), Standard Bearer (Banner of Speed)\r\n340 - 6 Sky Heralds, Paired Weapons, Champion\r\n135 - 5 Yeoman Outriders, Bow\r\n430 - The Lady's Courtier, Courtier of the Dawn\r\n4500"], 'player2_magic': ['H', 'DV3', 'DV4', 'S1', 'S2', 'S6'], 'player2_name': ['Erdem'], 'player2_score': ['4'], 'player2_vps': [''], 'who_deployed': ['player2'], 'who_started': ['player2'], 'won_secondary': ['player1']}}
-
+    # json_message = {"data": {'deployment_selected': ['2 Dawn Assault'], 'dropped_all': ['player2'], 'game_date': ['2022-01-06'], 'map_selected': ['A8'], 'name': 'manual game report', 'objective_selected': ['1 Hold the Ground'], 'player1_army': ["Warriors of the Dark Gods\r\n485 - Sorcerer, Wizard Master, Evocation, Light Armour, Magical Heirloom, Ranger's Boots\r\n340 - Barbarian Chief, General, Black Steed (Prized Stallion), Shield, Heavy Armour, Hand Weapon (Burning Portent), Potion of Swiftness\r\n295 - Barbarian Chief, Shadow Chaser, Heavy Armour (Thrice-Forged), Paired Weapons (Shield Breaker)\r\n235 - Barbarian Chief, War Dais, Heavy Armour, Paired Weapons (Symbol of Slaughter), Rod of Battle\r\n385 - 40 Barbarians, Throwing Weapons, Paired Weapons, Standard Bearer (Wasteland Torch), Musician, Champion\r\n295 - 30 Barbarians, Shield, Standard Bearer (Legion Standard), Musician, Champion\r\n220 - 10 Fallen\r\n520 - 8 Warrior Knights, Lance, Pride, Standard Bearer (Stalker's Standard), Musician, Champion\r\n409 - 3 Chosen Knights, Wrath\r\n330 - 4 Wretched Ones\r\n320 - Battleshrine\r\n300 - Marauding Giant, Tribal Warspear\r\n200 - Chimera\r\n165 - 5 Flayers, Shield\r\n4499\r\n"], 'player1_magic': ['H', 'E1', 'E2', 'E3', 'E5', 'O6'], 'player1_name': ['Tom'], 'player1_score': ['16'], 'player1_vps': [''], 'player2_army': ["Kingdom of Equitaine\r\n505 - Equitan Lord, Pegasus Charger, Shield, Lance (Divine Judgement), Basalt Infusion, Sacred Chalice, Paladin, Honour\r\n485 - Damsel, Destrier, Wizard Master, Shamanism, Binding Scroll\r\n395 - Damsel, General, Revered Unicorn, Wizard Adept, Divination, Crystal Ball, Sainted\r\n340 - Folk Hero, Destrier, Paired Weapons, Battle Standard Bearer (Aether Icon, Aether Icon), Light Armour (Essence of Mithril), Bannerman, Castellan, Faith\r\n670 - 15 Feudal Knights, Champion (Knight Banneret), Musician, Standard Bearer (Stalker's Standard)\r\n275 - 6 Feudal Knights, Champion, Musician\r\n275 - 6 Feudal Knights, Champion, Musician\r\n650 - 5 Pegasus Knights, Champion (Knight Banneret (Oriflamme)), Standard Bearer (Banner of Speed)\r\n340 - 6 Sky Heralds, Paired Weapons, Champion\r\n135 - 5 Yeoman Outriders, Bow\r\n430 - The Lady's Courtier, Courtier of the Dawn\r\n4500"], 'player2_magic': ['H', 'DV3', 'DV4', 'S1', 'S2', 'S6'], 'player2_name': ['Erdem'], 'player2_score': ['4'], 'player2_vps': [''], 'who_deployed': ['player2'], 'who_started': ['player2'], 'won_secondary': ['player1']}}
+    json_message = {'data': {'name': 'fading_flame.json'}}
     request_obj = Request.from_values(json=json_message)
     (results, code) = function_data_conversion(request_obj)
     if code != 200 and results.get("message"):

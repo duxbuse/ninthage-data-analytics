@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from multi_error import Multi_Error
 from converter import Convert_lines_to_army_list
 from data_classes import (
     Round,
@@ -7,7 +7,6 @@ from data_classes import (
     Data_sources,
     ArmyEntry,
     Army_names,
-    Objectives,
 )
 
 faction_mapping = {
@@ -45,10 +44,11 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
     event_name:str = data.get("name")
     games:list = data.get("games")
 
+    errors: list[Exception] = []
+
     list_of_all_armies:list[ArmyEntry] = []
 
     for game in games:
-
         # Strip out important information
         game_id:str = game.get("id")
 
@@ -75,49 +75,54 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
 
         # build up compliant list of lines to be read in
         lines = "\n".join([player1_faction, player1_list_no_army, player2_faction, player2_list_no_army]).split("\n")
+        try:
+            list_of_armies = Convert_lines_to_army_list(event_name, lines)
+        
 
-        list_of_armies = Convert_lines_to_army_list(event_name, lines)
+            if not list_of_armies or len(list_of_armies) == 0:
+                errors.append(ValueError(f"No armies found\nGame id = {game_id}"))
+            if len(list_of_armies) == 1:
+                errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}\nGame id = {game_id}"))
 
-        if not list_of_armies or len(list_of_armies) == 0:
-            raise ValueError(f"No armies found\nGame id = {game_id}")
-        if len(list_of_armies) == 1:
-            raise ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}\nGame id = {game_id}")
-
-        player1_armyEntry = list_of_armies[0]
-        player2_armyEntry = list_of_armies[1]
-
-
-        # Set data and round data
-        player1_armyEntry.fading_flame_player_id = player1_id
-        player1_armyEntry.event_date = game_date
-        player1_armyEntry.data_source = Data_sources.FADING_FLAMES
-        player1_armyEntry.event_type = Event_types.CASUAL
-        player1_armyEntry.round_performance = [Round(
-            opponent=player2_armyEntry.army_uuid,
-            result=player1_bps,
-            secondary_points=player1_vps,
-            round_number=1,
-            fading_flame_game_id=game_id,
-            won_secondary=player1_won_sec
-        )]
-        player1_armyEntry.calculate_total_tournament_points()
-
-        player2_armyEntry.fading_flame_player_id = player2_id
-        player2_armyEntry.event_date = game_date
-        player2_armyEntry.data_source = Data_sources.FADING_FLAMES
-        player2_armyEntry.event_type = Event_types.CASUAL
-        player2_armyEntry.round_performance = [Round(
-            opponent=player1_armyEntry.army_uuid,
-            result=player2_bps,
-            secondary_points=player2_vps,
-            round_number=1,
-            fading_flame_game_id=game_id,
-            won_secondary=player2_won_sec
-        )]
-        player2_armyEntry.calculate_total_tournament_points()
+            player1_armyEntry = list_of_armies[0]
+            player2_armyEntry = list_of_armies[1]
 
 
-        list_of_all_armies.extend(list_of_armies)
+            # Set data and round data
+            player1_armyEntry.fading_flame_player_id = player1_id
+            player1_armyEntry.event_date = game_date
+            player1_armyEntry.data_source = Data_sources.FADING_FLAMES
+            player1_armyEntry.event_type = Event_types.CASUAL
+            player1_armyEntry.round_performance = [Round(
+                opponent=player2_armyEntry.army_uuid,
+                result=player1_bps,
+                secondary_points=player1_vps,
+                round_number=1,
+                fading_flame_game_id=game_id,
+                won_secondary=player1_won_sec
+            )]
+            player1_armyEntry.calculate_total_tournament_points()
 
+            player2_armyEntry.fading_flame_player_id = player2_id
+            player2_armyEntry.event_date = game_date
+            player2_armyEntry.data_source = Data_sources.FADING_FLAMES
+            player2_armyEntry.event_type = Event_types.CASUAL
+            player2_armyEntry.round_performance = [Round(
+                opponent=player1_armyEntry.army_uuid,
+                result=player2_bps,
+                secondary_points=player2_vps,
+                round_number=1,
+                fading_flame_game_id=game_id,
+                won_secondary=player2_won_sec
+            )]
+            player2_armyEntry.calculate_total_tournament_points()
+
+
+            list_of_all_armies.extend(list_of_armies)
+        except Multi_Error as e:
+            errors.extend(e.errors)
+
+    if errors:
+        raise Multi_Error(errors)
 
     return list_of_all_armies
