@@ -97,10 +97,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     # Fading Flame data
     elif file_name == "fading_flame.json":
         try:
-            downloaded_docx_blob = download_blob("fading_flame", file_name)
+            downloaded_docx_blob = download_blob("fading-flame", file_name)
             downloaded_docx_blob.download_to_filename(download_file_path)
             print(
-                f"Downloaded {file_name} from fading_flame to {download_file_path}"
+                f"Downloaded {file_name} from fading-flame to {download_file_path}"
             )
             with open(download_file_path, "r") as json_file:
                 data = json.load(json_file)

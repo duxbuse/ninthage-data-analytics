@@ -82,7 +82,7 @@ def store_data(data:dict) -> dict:
     local_file = "/tmp/" + file_name
     write_report_to_json(file_path=local_file, data=data)
 
-    bucket_name = "fading_flame"
+    bucket_name = "fading-flame"
     upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=file_name)
     remove(local_file)
     return {"name": file_name}
