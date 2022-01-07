@@ -1,8 +1,10 @@
 import google.cloud.workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
+import google.cloud.storage
 from flask.wrappers import Request
 from datetime import datetime
+from os import remove
 from dateutil.relativedelta import relativedelta
 import requests
 import json
@@ -24,7 +26,7 @@ def function_fading_flame(request: Request):
     url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={formatted_since_date}"
     
     try:
-        # need to blank the user agent as the default is automatically blocked
+        
         response = http.get(
             url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=10
         )
@@ -41,6 +43,8 @@ def function_fading_flame(request: Request):
     # add name so we can tell its fading flame data
     data["name"] = "fading flame"
 
+    stored_data = store_data(data)
+
     project = "ninthage-data-analytics"
     location = "us-central1"
     workflow = "workflow_parse_lists"
@@ -51,12 +55,37 @@ def function_fading_flame(request: Request):
 
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)
-    execution = executions.Execution(argument=json.dumps(r))
+    execution = executions.Execution(argument=json.dumps(stored_data))
 
     # Execute the workflow.
     response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
+
+def upload_blob(bucket_name:str, file_path:str, destination_blob_name:str) -> None:
+    """Uploads a file to the bucket."""
+    storage_client = google.cloud.storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(file_path)
+
+    print("File {} uploaded to {}.".format(destination_blob_name, bucket_name))
+
+
+def write_report_to_json(file_path: str, data: dict):
+    with open(file_path, "w") as jsonFile:
+        jsonFile.write(json.dumps(data))
+
+def store_data(data:dict) -> dict:
+    file_name = "fading_flame.json"
+    local_file = "/tmp/" + file_name
+    write_report_to_json(file_path=local_file, data=data)
+
+    bucket_name = "fading_flame"
+    upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=file_name)
+    remove(local_file)
+    return {"name": file_name}
 
 if __name__ == "__main__":
     from dotenv import load_dotenv

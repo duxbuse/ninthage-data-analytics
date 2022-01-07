@@ -30,9 +30,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     list_of_armies = Convert_lines_to_army_list(event_name, lines)
     if len(list_of_armies) == 0:
         raise ValueError("No armies found")
-    player1_army = list_of_armies[
-        0
-    ]
+    player1_army = list_of_armies[0]
     player2_army = None
     if data.get("player2_army", [None])[0]:
         if len(list_of_armies) == 2:

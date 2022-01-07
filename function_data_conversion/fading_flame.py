@@ -7,10 +7,7 @@ from data_classes import (
     Data_sources,
     ArmyEntry,
     Army_names,
-    Maps,
-    Deployments,
     Objectives,
-    Magic,
 )
 
 faction_mapping = {
@@ -36,13 +33,13 @@ faction_mapping = {
     "21": Army_names["MAKHAR"],
 }
 
-objective_mapping = {
-    "1": Objectives["1 HOLD THE GROUND"],
-    "3": Objectives["2 BREAKTHROUGH"],
-    "4": Objectives["3 SPOILS OF WAR"],
-    "5": Objectives["5 CAPTURE THE FLAGS"],
-    "6": Objectives["6 SECURE TARGET"],
-}
+# objective_mapping = {
+#     "1": Objectives["1 HOLD THE GROUND"],
+#     "3": Objectives["2 BREAKTHROUGH"],
+#     "4": Objectives["3 SPOILS OF WAR"],
+#     "5": Objectives["5 CAPTURE THE FLAGS"],
+#     "6": Objectives["6 SECURE TARGET"],
+# }
 
 def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
     event_name:str = data.get("name")
@@ -57,18 +54,18 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
 
         game_date = datetime.strptime(game.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
 
-        sec_objective:str = objective_mapping[game.get("result", {}).get("secondaryObjective")]
-
         player1 = game.get("player1", {})
         player2 = game.get("player2", {})
 
         player1_id:str = player1.get("id")
         player1_vps:int = player1.get("victoryPoints")
         player1_bps:int = player1.get("battlePoints")
+        player1_won_sec:bool = game.get("result", {}).get("secondaryObjective") == 1
 
         player2_id:str = player2.get("id")
         player2_vps:int = player2.get("victoryPoints")
         player2_bps:int = player2.get("battlePoints")
+        player2_won_sec:bool = game.get("result", {}).get("secondaryObjective") == 2
 
         player1_list_no_army:str = game.get("player1List", {}).get("list")
         player1_faction:str = faction_mapping[game.get("player1List", {}).get("faction")]
@@ -101,7 +98,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
             secondary_points=player1_vps,
             round_number=1,
             fading_flame_game_id=game_id,
-            objective_selected=sec_objective
+            won_secondary=player1_won_sec
         )]
         player1_armyEntry.calculate_total_tournament_points()
 
@@ -115,7 +112,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
             secondary_points=player2_vps,
             round_number=1,
             fading_flame_game_id=game_id,
-            objective_selected=sec_objective
+            won_secondary=player2_won_sec
         )]
         player2_armyEntry.calculate_total_tournament_points()
 

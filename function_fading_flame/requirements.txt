@@ -1,2 +1,3 @@
 google-cloud-workflows==1.5.0
 python-dateutil
+google-cloud-storage

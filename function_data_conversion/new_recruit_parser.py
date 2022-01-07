@@ -41,7 +41,7 @@ class new_recruit_parser:
         request_data = {"list": flattened_list}
 
         try:
-            response = http.post(url, data=request_data, timeout=2)
+            response = http.post(url, data=request_data, timeout=20)
         except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 
