@@ -38,6 +38,13 @@
       background-repeat: repeat-y;
       min-height: 100vh;
     }
+    pre {
+      background: #efefff;
+      word-wrap: break-word;
+      box-decoration-break: clone;
+      padding: .1rem .3rem .2rem;
+      border-radius: .2rem;
+    }
   </style>
   <title>9th Age Data Analytics</title>
 </head>
@@ -45,7 +52,7 @@
 <body>
   <div id="bg" class="bg-image">
     <div class="mask">
-      <div class="container">
+      <div class="container-fluid">
         <!-- Title info -->
         <div class="row justify-content-center">
           <div class="col-md-3 mt-4">
@@ -72,10 +79,13 @@
               4494
               ">
                 <label for="player1_army">Player 1's List *</label>
-                <textarea class="form-control shadow" name="player1_army" rows="3" required
+                <textarea id="player1_army" class="form-control shadow" name="player1_army" rows="3" required
                   placeholder="new recruit format - first line must be army name"></textarea>
               </div>
-
+              <div class="form-group mt-4 d-block d-none">
+                <label id="player1_army_formatted_label">Player 1's List Formatted</label>
+                <pre id="player1_army_formatted"></pre>
+              </div>
 
 
               <div class="form-group mt-4">
@@ -225,8 +235,13 @@
               4494
               ">
                 <label for="player2_army">Player 2's List</label>
-                <textarea class="form-control shadow" name="player2_army" rows="3"
+                <textarea id="player2_army" class="form-control shadow" name="player2_army" rows="3"
                   placeholder="new recruit format - first line must be army name"></textarea>
+              </div>
+
+              <div class="form-group mt-4 d-block d-none">
+                <label id="player2_army_formatted_label">Player 2's List Formatted</label>
+                <pre id="player2_army_formatted"></pre>
               </div>
 
               <div class="form-group mt-4">
@@ -449,8 +464,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
-  <!-- Allow users to uncheck the radio buttons in case of miss click -->
   <script>
+    // Allow users to uncheck the radio buttons in case of miss click
     window.onload = function () {
       document.querySelectorAll("INPUT[type='radio']").forEach(function (rd) {
         rd.addEventListener("mousedown", function () {
@@ -463,7 +478,51 @@
           }
         })
       })
+      
+      // Display results from formatter
+      console.log("adding event listeners")
+      const player1_army = document.getElementById("player1_army");
+      player1_army.addEventListener("focusin", showWaitingMessage);
+      player1_army.addEventListener("focusout", showDisplayFormattedArmy);
+
+      const player2_army = document.getElementById("player2_army");
+      player2_army.addEventListener("focusin", showWaitingMessage);
+      player2_army.addEventListener("focusout", showDisplayFormattedArmy);
     }
+
+    const waitingMessage = " -- Waiting for focus change"
+
+    function showWaitingMessage(evt){
+      console.log("hiding " + evt.currentTarget.id);
+      const label = document.getElementById(evt.currentTarget.id+"_formatted_label");
+      label.innerText += waitingMessage;
+    }
+
+    function showDisplayFormattedArmy(evt){
+      console.log("showing " + evt.currentTarget.id);
+      const formatted = document.getElementById(evt.currentTarget.id+"_formatted");
+      const label = document.getElementById(evt.currentTarget.id+"_formatted_label");
+      formatArmy(evt.currentTarget.value).then(formattedArmy => {
+        formatted.innerText = formattedArmy;
+        label.innerText = label.innerText.replace(waitingMessage, "");
+        formatted.parentElement.classList.remove('d-none');
+      })
+    }
+
+    async function formatArmy (data) {
+      const options = {
+        method: "POST",
+        headers: new Headers({'content-type': 'application/json', "Accept": "application/json", "User-Agent": "ninthage-data-reporter/1.1.0"}),
+        body: JSON.stringify({"data": data})
+        // mode: 'no-cors'
+      };
+      console.log("fetching")
+      let response = await fetch("https://www.9thbuilder.com/en/api/v1/builder/imports/format", options);
+      console.log(response)
+      let json_data = await response.json();
+      return json_data.formated;
+}
+
   </script>
 </body>
 
