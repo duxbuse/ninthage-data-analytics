@@ -11,9 +11,9 @@ from data_classes import (
 
 faction_mapping = {
     1: Army_names["BEAST HERDS"],
-    2:Army_names["DREAD ELVES"],
-    3: Army_names["DWARVEN HOLDS"],
-    4: Army_names["DAEMON LEGIONS"],
+    2: Army_names["DAEMON LEGIONS"],
+    3: Army_names["DREAD ELVES"],
+    4: Army_names["DWARVEN HOLDS"],
     5: Army_names["EMPIRE OF SONNSTAHL"],
     6: Army_names["HIGHBORN ELVES"],
     7: Army_names["INFERNAL DWARVES"],
@@ -27,9 +27,9 @@ faction_mapping = {
     15: Army_names["VERMIN SWARM"],
     16: Army_names["WARRIORS OF THE DARK GODS"],
     17: Army_names["ASKLANDERS"],
-    18: Army_names["CULTISTS"],
-    19: Army_names["HOBGOBLINS"],
-    20: Army_names["MAKHAR"],
+    18: Army_names["MAKHAR"],
+    19: Army_names["CULTISTS"],
+    20: Army_names["HOBGOBLINS"],
 }
 #objective_mapping = {
 #     "1": Objectives["1 HOLD THE GROUND"],
@@ -38,6 +38,13 @@ faction_mapping = {
 #     "5": Objectives["5 CAPTURE THE FLAGS"],
 #     "6": Objectives["6 SECURE TARGET"],
 # }
+
+def remove_army_names_from_list(army_list:str) -> list[str]:
+    cleaned_list:list[str] = []
+    for x in army_list.split("\n"):
+        if not Army_names.get(x.strip().upper(), None):
+            cleaned_list.append(x)
+    return cleaned_list
 
 def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
     event_name:str = data.get("name")
@@ -48,6 +55,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
     list_of_all_armies:list[ArmyEntry] = []
 
     for game in games:
+        # --------------------------------------------
         # Strip out important information
         game_id:str = game.get("id")
         game_result = game.get("result", {})
@@ -72,14 +80,21 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         if not game_result.get("player1List") or not game_result.get("player2List"):
             errors.append(ValueError(f"No armies lists found\nGame id = {game_id}"))
             continue
-        player1_list_no_army:str = game_result.get("player1List", {}).get("list", {})
+        player1_list_no_army:list[str] = remove_army_names_from_list(game_result.get("player1List", {}).get("list", {}))
+        if game_result.get("player1List", {}).get("faction") == 0:
+            # This means that it was a free win and so a non game, so we ignore it
+            continue
         player1_faction:str = faction_mapping[game_result.get("player1List", {}).get("faction")]
 
-        player2_list_no_army:str = game_result.get("player2List", {}).get("list")
+        player2_list_no_army:list[str] = remove_army_names_from_list(game_result.get("player2List", {}).get("list"))
+        if game_result.get("player2List", {}).get("faction") == 0:
+            # This means that it was a free win and so a non game, so we ignore it
+            continue
         player2_faction:str = faction_mapping[game_result.get("player2List", {}).get("faction")]
 
+        # --------------------------------------------
         # build up compliant list of lines to be read in
-        lines = "\n".join([player1_faction, player1_list_no_army, player2_faction, player2_list_no_army]).split("\n")
+        lines:list[str] = [player1_id, player1_faction] + player1_list_no_army + [player2_id, player2_faction] + player2_list_no_army
         try:
             list_of_armies = Convert_lines_to_army_list(event_name, lines)
         
@@ -94,7 +109,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
             player1_armyEntry = list_of_armies[0]
             player2_armyEntry = list_of_armies[1]
 
-
+            # --------------------------------------------
             # Set data and round data
             player1_armyEntry.fading_flame_player_id = player1_id
             player1_armyEntry.event_date = game_date
@@ -124,7 +139,8 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
             )]
             player2_armyEntry.calculate_total_tournament_points()
 
-
+            # --------------------------------------------
+            # return new formed army lists
             list_of_all_armies.extend(list_of_armies)
         except Multi_Error as e:
             errors.extend(e.errors)
