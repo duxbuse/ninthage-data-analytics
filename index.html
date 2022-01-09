@@ -38,6 +38,7 @@
       background-repeat: repeat-y;
       min-height: 100vh;
     }
+
     pre {
       background: #efefff;
       word-wrap: break-word;
@@ -478,7 +479,7 @@
           }
         })
       })
-      
+
       // Display results from formatter
       console.log("adding event listeners")
       const player1_army = document.getElementById("player1_army");
@@ -492,16 +493,16 @@
 
     const waitingMessage = " -- Waiting for focus change"
 
-    function showWaitingMessage(evt){
+    function showWaitingMessage(evt) {
       console.log("hiding " + evt.currentTarget.id);
-      const label = document.getElementById(evt.currentTarget.id+"_formatted_label");
+      const label = document.getElementById(evt.currentTarget.id + "_formatted_label");
       label.innerText += waitingMessage;
     }
 
-    function showDisplayFormattedArmy(evt){
+    function showDisplayFormattedArmy(evt) {
       console.log("showing " + evt.currentTarget.id);
-      const formatted = document.getElementById(evt.currentTarget.id+"_formatted");
-      const label = document.getElementById(evt.currentTarget.id+"_formatted_label");
+      const formatted = document.getElementById(evt.currentTarget.id + "_formatted");
+      const label = document.getElementById(evt.currentTarget.id + "_formatted_label");
       formatArmy(evt.currentTarget.value).then(formattedArmy => {
         formatted.innerText = formattedArmy;
         label.innerText = label.innerText.replace(waitingMessage, "");
@@ -509,19 +510,18 @@
       })
     }
 
-    async function formatArmy (data) {
+    async function formatArmy(data) {
       const options = {
         method: "POST",
-        headers: new Headers({'content-type': 'application/json', "Accept": "application/json", "User-Agent": "ninthage-data-reporter/1.1.0"}),
-        body: JSON.stringify({"data": data})
-        // mode: 'no-cors'
+        headers: new Headers({ 'content-type': 'application/json', "Accept": "application/json", "User-Agent": "ninthage-data-reporter/1.1.0" }),
+        body: JSON.stringify({ "data": data })
       };
       console.log("fetching")
       let response = await fetch("https://www.9thbuilder.com/en/api/v1/builder/imports/format", options);
-      console.log(response)
+      // console.log(response)
       let json_data = await response.json();
       return json_data.formated;
-}
+    }
 
   </script>
 </body>
