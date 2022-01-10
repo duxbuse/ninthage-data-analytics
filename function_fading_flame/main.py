@@ -3,7 +3,7 @@ from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 import google.cloud.storage
 from flask.wrappers import Request
-from datetime import datetime
+from datetime import datetime, timezone
 from os import remove
 from dateutil.relativedelta import relativedelta
 import requests
@@ -19,8 +19,16 @@ def function_fading_flame(request: Request):
 
     API_KEY = getenv("API_KEY")
 
-    now = datetime.now()
-    since_date = now + relativedelta(months=-1)
+    # If supplied retrieve data from certain time onwards
+    if request.json and request.json.get("since"):
+        # beginning of FF time = 2008-10-31T17:04:32.0000000Z
+        since_date = datetime.strptime(request.json.get("since"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+    else:
+        # just get the last month data
+        now = datetime.now()
+        since_date = now + relativedelta(months=-1)
+
+
     formatted_since_date = since_date.isoformat(timespec="microseconds") + "Z"
 
     url = f"https://fading-flame.com/match-data?secret={API_KEY}&since={formatted_since_date}"
