@@ -19,16 +19,13 @@ class new_recruit_parser:
     def validate(self, lines: List[str]) -> list[str]:
         # This takes 52% of exec time
         """
-        TODO: Known issues:
-        if some units are on the same line we can still read it in but validation will fail
-
         """
         if len(lines) < 6:  # minimum is name, army, and 4 units
             raise ValueError(
                 f"Army Block has to few lines for validation.\nRequires at minimum name, army, and 4 units.\n\nWhole army list = {lines}"
             )
 
-        url = "https://www.newrecruit.eu/api/listcheck"
+        url = "https://api.newrecruit.eu/api/listcheck"
 
         # flatten lines into single string
         flattened_list = ""
@@ -44,7 +41,7 @@ class new_recruit_parser:
         request_data = {"list": flattened_list}
 
         try:
-            response = http.post(url, data=request_data, timeout=2)
+            response = http.post(url, data=request_data, timeout=20)
         except requests.exceptions.Timeout:  # Parent timeout class as there are a few ways to timeout
             return ["Validation Timeout"]
 

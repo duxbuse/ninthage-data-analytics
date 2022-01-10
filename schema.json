@@ -47,6 +47,11 @@
         "type": "INTEGER"
     },
     {
+        "mode": "NULLABLE",
+        "name": "fading_flame_player_id",
+        "type": "STRING"
+    },
+    {
         "fields": [
             {
                 "mode": "NULLABLE",
@@ -71,6 +76,11 @@
             {
                 "mode": "NULLABLE",
                 "name": "game_uuid",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "fading_flame_game_id",
                 "type": "STRING"
             },
             {
@@ -130,6 +140,11 @@
     },
     {
         "mode": "NULLABLE",
+        "name": "data_source",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
         "name": "event_size",
         "type": "INTEGER"
     },
@@ -174,6 +189,11 @@
         "mode": "NULLABLE",
         "name": "calculated_total_tournament_points",
         "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "list_as_str",
+        "type": "STRING"
     },
     {
         "mode": "NULLABLE",

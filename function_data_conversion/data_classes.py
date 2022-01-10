@@ -13,11 +13,17 @@ class Parsers(Enum):
 
 
 @unique
+class Data_sources(Enum):
+    TOURNEY_KEEPER = auto()
+    NEW_RECRUIT = auto()
+    FADING_FLAMES = auto()
+    MANUAL = auto()
+
+@unique
 class Event_types(Enum):
     SINGLES = auto()
     TEAMS = auto()
     CASUAL = auto()
-
 
 Magic = {
     "H": "Hereditary",
@@ -105,7 +111,7 @@ Maps = {
 Deployments = {
     "OTHER": "Other",
     "1 FRONTLINE CLASH": "Frontline Clash",
-    "2 DAWN ASSULT": "Dawn Assault",
+    "2 DAWN ASSAULT": "Dawn Assault",
     "3 COUNTER THRUST": "Counter Thrust",
     "4 ENCIRCLE": "Encircle",
     "5 REFUSED FLANK": "Refused Flank",
@@ -121,6 +127,8 @@ Objectives = {
     "6 SECURE TARGET": "Secure Target",
 }
 
+
+# When updating this also remember to update fading_flame.py faction mappings
 Army_names = {
     "BEAST HERDS": "Beast Herds",
     "BH": "Beast Herds",
@@ -148,6 +156,7 @@ Army_names = {
     "ORCS & GOBLINS": "Orcs and Goblins",
     "ONG": "Orcs and Goblins",
     "O&G": "Orcs and Goblins",
+    "OG": "Orcs and Goblins",
     "SAURIAN ANCIENTS": "Saurian Ancients",
     "SA": "Saurian Ancients",
     "SYLVAN ELVES": "Sylvan Elves",
@@ -205,6 +214,7 @@ class Round:
     secondary_points: Optional[int] = None
     round_number: Optional[int] = None
     game_uuid: UUID = field(default_factory=lambda: uuid4())
+    fading_flame_game_id: Optional[str] = None
     won_secondary: Optional[bool] = None
     deployed_first: Optional[bool] = None
     deployed_everything: Optional[bool] = None
@@ -226,9 +236,12 @@ class ArmyEntry:
     ingest_date: Optional[datetime] = None
     event_type: Optional[Event_types] = None
     list_placing: Optional[int] = None
+    list_as_str: Optional[str] = None
     event_size: Optional[int] = None
+    data_source: Optional[Data_sources] = None
     tourney_keeper_TournamentPlayerId: Optional[int] = None
     tourney_keeper_PlayerId: Optional[int] = None
+    fading_flame_player_id: Optional[str] = None
     calculated_total_tournament_points: Optional[int] = None
     calculated_total_tournament_secondary_points: Optional[int] = None
     reported_total_army_points: Optional[int] = None

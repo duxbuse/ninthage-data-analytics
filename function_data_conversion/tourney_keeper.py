@@ -8,8 +8,9 @@ from unicodedata import category
 from unidecode import unidecode
 from uuid import UUID, uuid4
 from fuzzywuzzy import fuzz
-from data_classes import ArmyEntry, Tk_info, Event_types, Round
+from data_classes import ArmyEntry, Tk_info, Event_types, Data_sources, Round
 from functools import cache
+import re
 
 http = requests.Session()
 
@@ -127,6 +128,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
         message = response.json()["Message"]
         data = json.loads(message)
         return data
+    # print(f"Failed to download player data for {tournamentPlayerId}")
     return None
 
 
@@ -161,23 +163,30 @@ def Get_players_names_from_games(games: dict) -> dict:
         for future in concurrent.futures.as_completed(futures):
             try:
                 details = future.result()
-                tournament_player_id = details.get("TournamentPlayerId")
-                player_name = details.get("PlayerName")
-                tk_player_id = details.get("PlayerId")
-                primary_codex = details.get("PrimaryCodex")
-                team_name = details.get("TeamName")
-                team_id = details.get("TeamId")
+                if details:
+                    tournament_player_id = details.get("TournamentPlayerId")
+                    player_name:str = details.get("PlayerName")
+                    tk_player_id = details.get("PlayerId")
+                    team_name = details.get("TeamName")
+                    team_id = details.get("TeamId")
+                    active = details.get("Active")
 
-                output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id}
-            except Exception:
+                    primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
+                    if primary_codex is None:
+                        primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
+
+                    dummy_players = r"player\d"
+                    if re.fullmatch(dummy_players, player_name):
+                        # Skip dummy players
+                        print(f"Dummy player {player_name} skipped")
+                        continue
+
+                    output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
+                else:
+                   raise ValueError(f"Tourney Keeper yielded no data for {Id}")
+            except Exception as e:
                 # TODO: I think this should be a raise ValueError not a print
-                print(
-                f"Id: {tournament_player_id} from {unique_player_tkIds}, is not found on TK"
-            )
-
-    if len(output) != len(unique_player_tkIds):
-        print(f"I think this is fucked")
-        raise ValueError(f"Some TK players have been lost due. This is probably due to poor network conditions")
+                print(e)
 
     return output
 
@@ -191,7 +200,7 @@ def Convert2_TKid_to_uuid(
     for army in list_of_armies:
         if TKID_1 == army.tourney_keeper_TournamentPlayerId:
             army1_uuid = army.army_uuid
-        elif TKID_2 == army.tourney_keeper_TournamentPlayerId:
+        if TKID_2 == army.tourney_keeper_TournamentPlayerId:
             army2_uuid = army.army_uuid
 
     if not army1_uuid:
@@ -222,7 +231,7 @@ def load_tk_info(tournament_name: str) -> Tk_info:
             event_type = Event_types.SINGLES
 
         event_date = datetime.strptime(
-            tourney_keeper_info.get("Start"), "%Y-%m-%yT%H:%M:%S"
+            tourney_keeper_info.get("Start"), "%Y-%m-%dT%H:%M:%S"
         ).replace(tzinfo=timezone.utc)
         tournament_games = Get_games_for_tournament(tourney_keeper_info.get("Id"))
         player_list = Get_players_names_from_games(tournament_games)
@@ -244,67 +253,80 @@ def load_tk_info(tournament_name: str) -> Tk_info:
 
 
 def append_tk_game_data(
-    tournament_games: dict, list_of_armies: List[ArmyEntry]
+    tk_info: Tk_info, list_of_armies: List[ArmyEntry]
 ) -> None:
-    # extract TK game results if avaliable
-    for game in tournament_games:
-        (player1_uuid, player2_uuid) = Convert2_TKid_to_uuid(
-            game.get("Player1Id"), game.get("Player2Id"), list_of_armies
-        )
+    if tk_info.game_list and tk_info.player_list:
+        # extract TK game results if avaliable
+        for game in tk_info.game_list:
+            player1 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player1Id")), {})
+            player2 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player2Id")), {})
 
-        round_number = int(game.get("Round"))
-        game_uuid = uuid4()
+            
 
-        player1_result = int(game.get("Player1Result"))
-        player2_result = int(game.get("Player2Result"))
+            # Check that non active players have lists. If not skip this game data since only 1 player from the round will be recorded and so averages will be thrown off.
+            if not player1.get("Active") and not any(x.player_name == player1.get("Player_name") for x in list_of_armies):
+                continue
 
-        player1_secondary = int(game.get("Player1SecondaryResult"))
-        player2_secondary = int(game.get("Player2SecondaryResult"))
+            if not player2.get("Active") and not any(x.player_name == player2.get("Player_name") for x in list_of_armies):
+                continue
 
-        player1_round = Round(
-            opponent=player2_uuid,
-            result=player1_result,
-            secondary_points=player1_secondary,
-            round_number=round_number,
-            game_uuid=game_uuid,
-        )
-        player2_round = Round(
-            opponent=player1_uuid,
-            result=player2_result,
-            secondary_points=player2_secondary,
-            round_number=round_number,
-            game_uuid=game_uuid,
-        )
+            (player1_uuid, player2_uuid) = Convert2_TKid_to_uuid(
+                game.get("Player1Id"), game.get("Player2Id"), list_of_armies
+            )
 
+            round_number = int(game.get("Round"))
+            game_uuid = uuid4()
+
+            player1_result = int(game.get("Player1Result"))
+            player2_result = int(game.get("Player2Result"))
+
+            player1_secondary = int(game.get("Player1SecondaryResult"))
+            player2_secondary = int(game.get("Player2SecondaryResult"))
+
+            player1_round = Round(
+                opponent=player2_uuid,
+                result=player1_result,
+                secondary_points=player1_secondary,
+                round_number=round_number,
+                game_uuid=game_uuid,
+            )
+            player2_round = Round(
+                opponent=player1_uuid,
+                result=player2_result,
+                secondary_points=player2_secondary,
+                round_number=round_number,
+                game_uuid=game_uuid,
+            )
+
+            for army in list_of_armies:
+                army.data_source = Data_sources.TOURNEY_KEEPER
+                if army.army_uuid == player1_uuid:
+                    if not army.round_performance:
+                        army.round_performance = []
+                    army.round_performance.append(player1_round)
+                elif army.army_uuid == player2_uuid:
+                    if not army.round_performance:
+                        army.round_performance = []
+                    army.round_performance.append(player2_round)
+
+        # Calculate who won
         for army in list_of_armies:
-            # TODO: instead of list of armies it should be a dict of armies with the uuid as the key
-            if army.army_uuid == player1_uuid:
-                if not army.round_performance:
-                    army.round_performance = []
-                army.round_performance.append(player1_round)
-            elif army.army_uuid == player2_uuid:
-                if not army.round_performance:
-                    army.round_performance = []
-                army.round_performance.append(player2_round)
+            army.calculate_total_tournament_points()
 
-    # Calculate who won
-    for army in list_of_armies:
-        army.calculate_total_tournament_points()
-
-    # sort armies based on performace then set the placing based on that order
-    if all([x.calculated_total_tournament_secondary_points for x in list_of_armies]):
-        list_of_armies.sort(
-            key=lambda x: (
-                x.calculated_total_tournament_points,
-                x.calculated_total_tournament_secondary_points,
-            ),
-            reverse=True,
-        )
-    else:
-        # sometimes secondary points are not recorded and so we can not sort on that field
-        list_of_armies.sort(
-            key=lambda x: (x.calculated_total_tournament_points,),
-            reverse=True,
-        )
-    for index, army in enumerate(list_of_armies):
-        army.list_placing = index + 1  # have to account for 0 index lists
+        # sort armies based on performace then set the placing based on that order
+        if all([x.calculated_total_tournament_secondary_points for x in list_of_armies]):
+            list_of_armies.sort(
+                key=lambda x: (
+                    x.calculated_total_tournament_points,
+                    x.calculated_total_tournament_secondary_points,
+                ),
+                reverse=True,
+            )
+        else:
+            # sometimes secondary points are not recorded and so we can not sort on that field
+            list_of_armies.sort(
+                key=lambda x: (x.calculated_total_tournament_points,),
+                reverse=True,
+            )
+        for index, army in enumerate(list_of_armies):
+            army.list_placing = index + 1  # have to account for 0 index lists

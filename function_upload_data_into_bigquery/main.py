@@ -1,6 +1,7 @@
 from typing import Union
-from google.cloud import bigquery
-from google.cloud import storage
+import google.cloud.bigquery
+import google.cloud.bigquery.table
+import google.cloud.storage
 from google.api_core.exceptions import BadRequest
 from flask.wrappers import Request
 from pathlib import Path
@@ -12,7 +13,7 @@ from google.cloud.storage.blob import Blob
 
 def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
     """Downloads a file from the bucket."""
-    storage_client = storage.Client()
+    storage_client = google.cloud.storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.get_blob(blob_name)
 
@@ -24,7 +25,7 @@ def delete_blob(bucket_name: str, blob_name: str) -> None:
     # bucket_name = "your-bucket-name"
     # blob_name = "your-object-name"
 
-    storage_client = storage.Client()
+    storage_client = google.cloud.storage.Client()
 
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -51,7 +52,7 @@ def function_upload_data_into_bigquery(
 
         # Running on gcp
         if is_remote:
-            client = bigquery.Client()
+            client = google.cloud.bigquery.Client()
             downloaded_json_blob = download_blob(bucket_name, filename)
             file_path = f"/tmp/{filename}"
             if downloaded_json_blob:
@@ -69,7 +70,7 @@ def function_upload_data_into_bigquery(
             credentials = service_account.Credentials.from_service_account_file(
                 key_path
             )
-            client = bigquery.Client(credentials=credentials)
+            client = google.cloud.bigquery.Client(credentials=credentials)
 
         # skip uploads for test files
         if "t9a-data-test" in filename:
@@ -92,14 +93,14 @@ def function_upload_data_into_bigquery(
         if tournament_name != "manual game report":
             delete_result = client.query(query_string).result()
 
-            if not isinstance(delete_result, bigquery.table._EmptyRowIterator):
+            if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
                 raise ValueError(f"Delete failed for {tournament_name}")
 
         # Save new data
         dataset_ref = client.dataset(dataset_id)
         table_ref = dataset_ref.table(table_id)
-        job_config = bigquery.LoadJobConfig()
-        job_config.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
+        job_config = google.cloud.bigquery.LoadJobConfig()
+        job_config.source_format = google.cloud.bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
         job_config.autodetect = True
 
         with open(file_path, "rb") as source_file:

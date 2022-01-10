@@ -28,6 +28,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
 
     # if tk_info.player_count != len(tk_info.player_list):
         # TODO: enable this when tk is submitting the right data for player count
+        # This will happen as tk reports all players not just active players
         # errors.append(ValueError(f"TK giving bad data. Players registered:{tk_info.player_count} does not equal people who played:{len(tk_info.player_list)}"))
 
 
@@ -110,17 +111,22 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
                                 # This is already handeled above with the message of all duplicated players so does not need handeling here
                                 pass
 
-                errors.append(
-                    ValueError(
-                        f"Lists read: {len(army_list)}\nPlayers registered on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {unique_from_tk}"
+                # if all the "missing" tk names are not active then ignore this error
+                if any(missing_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active")]):
+                    errors.append(
+                        ValueError(
+                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
+                        )
                     )
-                )
+        # If we have tk data but zipping player id's failed
+        elif tk_info.event_id:
+            errors.append(ValueError(f"No tkdata was loaded into armies"))
     else:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
     try:
-        if tk_info.game_list:
-            append_tk_game_data(tk_info.game_list, army_list)
+        if tk_info.game_list and tk_info.player_list:
+            append_tk_game_data(tk_info, army_list)
     except ValueError as e:
         errors.append(e)
 
@@ -182,6 +188,7 @@ def parse_army_block(
     army.event_size = event_size
     army.player_name = armyblock[0].strip(" -–")
     army.tournament = tournament_name
+    army.list_as_str = "\n".join(armyblock)
     army.calculate_total_points()
 
     army.event_date = tk_info.event_date
@@ -219,7 +226,7 @@ def parse_army_block(
                 top_picks = [
                     x
                     for x in top_picks
-                    if x[0][1].get("Primary_Codex", army.army) == army.army
+                    if Army_names[x[0][1].get("Primary_Codex", army.army).upper()] == army.army
                 ]
 
                 if len(top_picks) > 1:
@@ -230,7 +237,7 @@ def parse_army_block(
                     raise ValueError(
                         f"None of the tk matches for {army.player_name} played {army.army} as found in the word docx."
                     )
-
+            # set current army to be the top pick
             army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
                 "TournamentPlayerId"
             )
@@ -298,5 +305,9 @@ if __name__ == "__main__":
                 f"{len(list_of_armies)} army lists written to {new_path} in {round(file_stop - file_start)} seconds"
             )
             print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
+            if all(x.tourney_keeper_PlayerId for x in list_of_armies):
+                print(f"Tk Info loaded")
+            else:
+                print(f"TK Not loaded")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")

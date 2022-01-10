@@ -1,7 +1,6 @@
 from os import getenv
 import requests
 from flask.wrappers import Request
-from dotenv import load_dotenv
 
 from http400 import handle_400
 from http408 import handle_408
@@ -78,6 +77,8 @@ def function_discord_error_reporting(request: Request):
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
     load_dotenv()
     json_message = {
         "data": {

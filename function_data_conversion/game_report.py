@@ -4,6 +4,7 @@ from converter import Convert_lines_to_army_list
 from data_classes import (
     Round,
     Event_types,
+    Data_sources,
     ArmyEntry,
     Maps,
     Deployments,
@@ -29,15 +30,13 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     list_of_armies = Convert_lines_to_army_list(event_name, lines)
     if len(list_of_armies) == 0:
         raise ValueError("No armies found")
-    player1_army = list_of_armies[
-        0
-    ]
+    player1_army = list_of_armies[0]
     player2_army = None
     if data.get("player2_army", [None])[0]:
         if len(list_of_armies) == 2:
             player2_army = list_of_armies[1]
         else:
-            raise ValueError(f"2 armies were supplied but only 1 passed conversion\n{list_of_armies[0].player_name} playing {list_of_armies[0].army}")
+            raise ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed.")
 
     player1_round = None
     if any(
@@ -179,8 +178,11 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
 
     player1_army.calculate_total_tournament_points()
     player1_army.event_type = Event_types.CASUAL
+    player1_army.data_source = Data_sources.MANUAL
     if player2_army:
         player2_army.calculate_total_tournament_points()
         player2_army.event_type = Event_types.CASUAL
+        player2_army.data_source = Data_sources.MANUAL
+
 
     return list_of_armies

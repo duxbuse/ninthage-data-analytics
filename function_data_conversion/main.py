@@ -1,13 +1,15 @@
 import traceback
-from google.cloud import storage
+import google.cloud.storage
 from pathlib import Path
 from typing import Union
 from google.cloud.storage.blob import Blob
 from flask.wrappers import Request
 from fuzzywuzzy import fuzz
 from os import remove
+import json
 from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
 from game_report import armies_from_report
+from fading_flame import armies_from_fading_flame
 from tourney_keeper import get_recent_tournaments
 from utility_functions import Docx_to_line_list
 from multi_error import Multi_Error
@@ -15,7 +17,7 @@ from multi_error import Multi_Error
 
 def download_blob(bucket_name, blob_name) -> Union[Blob, None]:
     """Downloads a file from a bucket."""
-    storage_client = storage.Client()
+    storage_client = google.cloud.storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.get_blob(blob_name)
 
@@ -24,7 +26,7 @@ def download_blob(bucket_name, blob_name) -> Union[Blob, None]:
 
 def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
     """Uploads a file to the bucket."""
-    storage_client = storage.Client()
+    storage_client = google.cloud.storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
@@ -41,7 +43,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     """
 
     data = request.json["data"]
-    print(f"request.json = {data}")
+    print(f"{request.json=}")
 
     list_of_armies = []
     file_name = data["name"]
@@ -49,6 +51,9 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
     upload_bucket = "tournament-lists-json"
 
+    # break these into separate functions
+
+    # Uploaded word doc
     if data.get("bucket"):
         bucket_name = data["bucket"]
 
@@ -78,6 +83,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                     f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
                 ]
             }, 400
+    # manual game report
     elif data.get("player1_army"):
         try:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
@@ -86,6 +92,28 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            return {"message": [str(e)]}, 501
+    # Fading Flame data
+    elif file_name == "fading_flame.json":
+        try:
+            downloaded_FF_blob = download_blob("fading-flame", file_name)
+            downloaded_FF_blob.download_to_filename(download_file_path)
+            if downloaded_FF_blob:
+                print(
+                    f"Downloaded {file_name} from fading-flame to {download_file_path}"
+                )
+            with open(download_file_path, "r") as json_file:
+                data = json.load(json_file)
+                print(f"Loaded data")
+            remove(download_file_path)
+            list_of_armies = armies_from_fading_flame(data)
+
+        except Multi_Error as e:
+            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            return {"message": [str(x) for x in e.errors]}, 400
+        except Exception as e:
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
     else:
         return {
@@ -149,8 +177,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
 
 if __name__ == "__main__":
-    json_message = {'data': {'deployment_selected': ['3 Counter Thrust'], 'game_date': ['2021-12-10'], 'map_selected': [''], 'name': 'manual game report', 'objective_selected': ['5 Capture the Flags'], 'player1_army': ["++ Dwarven Holds (Dwarven Holds 2021) [4,500pts] ++\r\n\r\n+ Characters +\r\n\r\nThane [290pts]: Ancestral Memory, Army General, Crossbow (3+), Hand Weapon, Shield\r\n. Runic Special Items: Rune of Denial - Dominant, 2x Rune of Shielding\r\n\r\n+ Core +\r\n\r\nClan Marksmen [298pts]: 16x Clan Marksman, Crossbow (4+)\r\n\r\nClan Marksmen [280pts]: 15x Clan Marksman, Crossbow (4+)\r\n\r\nClan Marksmen [280pts]: 15x Clan Marksman, Crossbow (4+)\r\n\r\nClan Marksmen [272pts]: 14x Clan Marksman, Crossbow (4+), Standard Bearer\r\n\r\n+ Engines of War +\r\n\r\nField Artillery [250pts]: Cannon (4+)\r\n\r\nField Artillery [300pts]\r\n. Catapult (4+): Rune Crafted\r\n\r\n+ Special +\r\n\r\nKing's Guard [653pts]: Champion, 28x King's Guard, Musician, Standard Bearer\r\n. Runic Banner Enchantment: Banner of Discipline\r\n\r\nKing's Guard [653pts]: Champion, 28x King's Guard, Musician, Standard Bearer\r\n. Runic Banner Enchantment: Banner of Discipline\r\n\r\nKing's Guard [674pts]: Champion, 29x King's Guard, Musician, Standard Bearer\r\n. Runic Banner Enchantment: Banner of Discipline\r\n\r\nSeekers [550pts]: Champion, Musician, 25x Seeker\r\n\r\n++ Total: [4,500pts] ++\r\n\r\nCreated with BattleScribe (https://battlescribe.net)"], 'player1_name': ['Sander'], 'player1_score': ['0'], 'player1_vps': [''], 'player2_army': ["Vermin Swarm\r\n685 - Bloodfur Legate, General, Triumphal Platform, Greater Eagle Standard (Sacred Aquila), Paired Weapons (Hero's Heart), Crown of the Wizard King, Cowl of the Apostate\r\n475 - Swarm Priest, Sacred Platform (Whispering Bell, Great Weapon), Wizard Adept, Witchcraft, Rod of Battle, Caelysian Pantheon\r\n320 - Swarm Priest, Wizard Adept, Thaumaturgy, Light Armour (Destiny's Call), Hand Weapon (Swarm Master), Holy Triumvirate, Cult of Errahman\r\n260 - Swarm Priest, Wizard Adept, Thaumaturgy, Orator's Toga, Holy Triumvirate, Cult of Errahman\r\n575 - 50 Blackfur Veterans, Champion, Musician, Standard Bearer with Eagle Standard (Bell of the Deep Roads)\r\n349 - 44 Vermin Legionaries, Shield and Spear, Champion, Musician, Standard Bearer with Eagle Standard (Legion Standard)\r\n220 - 55 Vermin Slaves, Musician\r\n510 - 11 Fetthis Brutes, Champion\r\n475 - 39 Plague Disciples, Great Weapon, Champion, Musician, Standard Bearer (Banner of the Relentless Company)\r\n445 - 39 Plague Disciples, Great Weapon, Champion, Musician, Standard Bearer (Legion Standard)\r\n185 - 4 Experimental Weapon Teams, Jezail and Shield\r\n4499"], 'player2_name': ['Niek'], 'player2_score': ['20'], 'player2_vps': [''], 'won_secondary': ['player2']}}
-
+    # json_message = {"data": {'deployment_selected': ['2 Dawn Assault'], 'dropped_all': ['player2'], 'game_date': ['2022-01-06'], 'map_selected': ['A8'], 'name': 'manual game report', 'objective_selected': ['1 Hold the Ground'], 'player1_army': ["Warriors of the Dark Gods\r\n485 - Sorcerer, Wizard Master, Evocation, Light Armour, Magical Heirloom, Ranger's Boots\r\n340 - Barbarian Chief, General, Black Steed (Prized Stallion), Shield, Heavy Armour, Hand Weapon (Burning Portent), Potion of Swiftness\r\n295 - Barbarian Chief, Shadow Chaser, Heavy Armour (Thrice-Forged), Paired Weapons (Shield Breaker)\r\n235 - Barbarian Chief, War Dais, Heavy Armour, Paired Weapons (Symbol of Slaughter), Rod of Battle\r\n385 - 40 Barbarians, Throwing Weapons, Paired Weapons, Standard Bearer (Wasteland Torch), Musician, Champion\r\n295 - 30 Barbarians, Shield, Standard Bearer (Legion Standard), Musician, Champion\r\n220 - 10 Fallen\r\n520 - 8 Warrior Knights, Lance, Pride, Standard Bearer (Stalker's Standard), Musician, Champion\r\n409 - 3 Chosen Knights, Wrath\r\n330 - 4 Wretched Ones\r\n320 - Battleshrine\r\n300 - Marauding Giant, Tribal Warspear\r\n200 - Chimera\r\n165 - 5 Flayers, Shield\r\n4499\r\n"], 'player1_magic': ['H', 'E1', 'E2', 'E3', 'E5', 'O6'], 'player1_name': ['Tom'], 'player1_score': ['16'], 'player1_vps': [''], 'player2_army': ["Kingdom of Equitaine\r\n505 - Equitan Lord, Pegasus Charger, Shield, Lance (Divine Judgement), Basalt Infusion, Sacred Chalice, Paladin, Honour\r\n485 - Damsel, Destrier, Wizard Master, Shamanism, Binding Scroll\r\n395 - Damsel, General, Revered Unicorn, Wizard Adept, Divination, Crystal Ball, Sainted\r\n340 - Folk Hero, Destrier, Paired Weapons, Battle Standard Bearer (Aether Icon, Aether Icon), Light Armour (Essence of Mithril), Bannerman, Castellan, Faith\r\n670 - 15 Feudal Knights, Champion (Knight Banneret), Musician, Standard Bearer (Stalker's Standard)\r\n275 - 6 Feudal Knights, Champion, Musician\r\n275 - 6 Feudal Knights, Champion, Musician\r\n650 - 5 Pegasus Knights, Champion (Knight Banneret (Oriflamme)), Standard Bearer (Banner of Speed)\r\n340 - 6 Sky Heralds, Paired Weapons, Champion\r\n135 - 5 Yeoman Outriders, Bow\r\n430 - The Lady's Courtier, Courtier of the Dawn\r\n4500"], 'player2_magic': ['H', 'DV3', 'DV4', 'S1', 'S2', 'S6'], 'player2_name': ['Erdem'], 'player2_score': ['4'], 'player2_vps': [''], 'who_deployed': ['player2'], 'who_started': ['player2'], 'won_secondary': ['player1']}}
+    json_message = {'data': {'name': 'fading_flame.json'}}
     request_obj = Request.from_values(json=json_message)
     (results, code) = function_data_conversion(request_obj)
     if code != 200 and results.get("message"):
