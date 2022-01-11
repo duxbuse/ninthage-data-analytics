@@ -14,13 +14,6 @@ def fetch_static_data(request: Request):
     req.add_header("Authorization", f"Bearer {id_token}")
     response = urllib.request.urlopen(req)
 
-    print(response.read())
+    # response.read() This takes to long and makes discord assume nothing happened
 
-    return "looks good", 200
-
-
-
-    # if r.status_code == 200:
-    #     return "Static data loading has begun"
-    # else:
-    #     return "Static data loading has failed"
+    return "Static data loading has begun", 200

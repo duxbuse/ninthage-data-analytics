@@ -83,6 +83,7 @@ def push_to_bq(local_file: str):
     FROM `ninthage-data-analytics.{dataset_id}.{source}`
     WHERE true
     """
+    print(f"Deleting old dat for {source}")
     delete_result = client.query(query_string).result()
 
     if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
