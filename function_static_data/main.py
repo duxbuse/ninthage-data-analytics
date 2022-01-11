@@ -78,15 +78,15 @@ def push_to_bq(local_file: str):
 
     # ---------------------------------------
     # Clear data that we are overwritting
-    # query_string = f"""
-    # DELETE
-    # FROM `ninthage-data-analytics.{dataset_id}.{source}`
-    # WHERE true
-    # """
-    # delete_result = client.query(query_string).result()
+    query_string = f"""
+    DELETE
+    FROM `ninthage-data-analytics.{dataset_id}.{source}`
+    WHERE true
+    """
+    delete_result = client.query(query_string).result()
 
-    # if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
-    #     raise ValueError(f"Delete failed for {source}")
+    if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
+        raise ValueError(f"Delete failed for {source}")
 
     # ---------------------------------------
     # Save new data
