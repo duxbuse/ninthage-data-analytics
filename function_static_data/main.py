@@ -106,13 +106,13 @@ def push_to_bq(local_file: str):
 
         try:
             job.result()  # Waits for table load to complete.
+            print(
+                "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, source)
+            )
         except BadRequest:
             print(f"Upload job failed: {job.errors=}")
-            return {"message": [err["message"] for err in job.errors or []]}, 400
+            raise ValueError({"message": [err["message"] for err in job.errors or []]}, 400)
 
-        print(
-            "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, source)
-        )
 
 def store_data(endpoint:str, data:dict):
     local_file = "/tmp/" + endpoint + ".json"
