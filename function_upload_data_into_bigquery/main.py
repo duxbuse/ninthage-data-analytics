@@ -90,7 +90,8 @@ def function_upload_data_into_bigquery(
         WHERE `tournament` = "{tournament_name}"
         """
         # Dont delete if its a manual report because its not the same event
-        if tournament_name != "manual game report":
+        dont_delete = ["manual game report", "fading flame"]
+        if tournament_name not in dont_delete:
             delete_result = client.query(query_string).result()
 
             if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
