@@ -21,7 +21,7 @@ def function_fading_flame(request: Request):
 
     # If supplied retrieve data from certain time onwards
     if request.json and request.json.get("since"):
-        # beginning of FF time = 2008-10-31T17:04:32.0000000Z
+        # beginning of FF time = {"since": "2008-10-31T17:04:32.1Z"}
         since_date = datetime.strptime(request.json.get("since"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
     else:
         # just get the last month data
@@ -36,7 +36,7 @@ def function_fading_flame(request: Request):
     try:
         
         response = http.get(
-            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=10
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=30
         )
     except requests.exceptions.ReadTimeout as err:
         return "timeout", 400
