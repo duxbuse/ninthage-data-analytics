@@ -146,7 +146,9 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
             errors.extend(e.errors)
 
     if errors:
-        raise Multi_Error(errors)
+        # If we raise the errors we never load anything
+        # raise Multi_Error(errors)
+        print(Multi_Error(errors))
 
     return list_of_all_armies
 
