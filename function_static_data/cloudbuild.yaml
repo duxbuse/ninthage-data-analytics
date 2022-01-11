@@ -1,0 +1,18 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function_static_data
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+      - gcloud
+      - beta
+      - functions
+      - deploy
+      - function_static_data
+      - --region=${_REGION}
+      - --source=./function_static_data/
+      - --trigger-http
+      - --runtime=python39

@@ -1,3 +1,4 @@
 pynacl
 flask
 google-cloud-storage
+google-auth
