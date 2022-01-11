@@ -4,7 +4,7 @@ import requests
 from flask import jsonify
 from security_headers import check_security_headers
 from discord_command_upload import upload_file
-from discord_command_validate import validate
+from discord_command_fetch_static_data import fetch_static_data
 from discord_command_list_events import list_events
 
 
@@ -33,7 +33,7 @@ def function_discord_bot(request: Request):
 
 registered_commands = {
     "upload": upload_file,
-    # "validate" : validate,
+    "fetch-static-data" : fetch_static_data,
     # "list_events": list_events
 }
 
