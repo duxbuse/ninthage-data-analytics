@@ -11,12 +11,14 @@ def fetch_static_data(request: Request):
     auth_req = google.auth.transport.requests.Request()
     id_token = google.oauth2.id_token.fetch_id_token(auth_req, url)
 
+    print(id_token)
+
     req.add_header("Authorization", f"Bearer {id_token}")
     response = urllib.request.urlopen(req)
 
-    # return response.read()
+    return response.read()
 
-    print("worked fine")
+    # print("worked fine")
 
 
 
