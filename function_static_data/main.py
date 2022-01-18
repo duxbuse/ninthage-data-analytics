@@ -16,11 +16,12 @@ def function_static_data(request: Request):
 
     url = f"https://www.9thbuilder.com/en/api/v1/data_analytics/ninth_ages/"
     sections = [
-        "versions",
-        "armies",
-        "organisations",
-        "units",
-        "magic_paths"
+        # "versions",
+        # "armies",
+        # "organisations",
+        # "units",
+        # "magic_paths",
+        "special_items",
     ]
     for endpoint in sections:
         try:
@@ -31,7 +32,7 @@ def function_static_data(request: Request):
                     "Content-Type": "application/json",
                     "User-Agent": "ninthage-data-analytics/1.1.0",
                 },
-                timeout=20,
+                timeout=30,
             ) 
         except requests.exceptions.ReadTimeout as err:
             raise err
@@ -83,7 +84,7 @@ def push_to_bq(local_file: str):
     FROM `ninthage-data-analytics.{dataset_id}.{source}`
     WHERE true
     """
-    print(f"Deleting old dat for {source}")
+    print(f"Deleting old data for {source}")
     delete_result = client.query(query_string).result()
 
     if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
