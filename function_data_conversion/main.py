@@ -75,7 +75,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 return {"message": [str(x) for x in e.errors]}, 400
             except Exception as e:
                 tb1 = traceback.TracebackException.from_exception(e)
-                print(f"Captured non multi error:\n {''.join(tb1.format())}")
+                print(f"Captured non multi error:{e}\n {''.join(tb1.format())}")
                 return {"message": [str(e)]}, 501
         else:
             return {
