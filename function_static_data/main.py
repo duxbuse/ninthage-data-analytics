@@ -16,12 +16,13 @@ def function_static_data(request: Request):
 
     url = f"https://www.9thbuilder.com/en/api/v1/data_analytics/ninth_ages/"
     sections = [
-        # "versions",
-        # "armies",
-        # "organisations",
-        # "units",
-        # "magic_paths",
+        "versions",
+        "armies",
+        "organisations",
+        "units",
+        "magic_paths",
         "special_items",
+        "banners",
     ]
     for endpoint in sections:
         try:
@@ -123,7 +124,8 @@ def store_data(endpoint:str, data:dict):
 
     if isinstance(data.get(endpoint, {}), list):
         write_dicts_to_json(file_path=local_file, data=data.get(endpoint,[{}]))
-
+    else:
+        raise ValueError(f"Data from {endpoint} is not a list")
     # Push data to BQ
     push_to_bq(local_file)
     # Clean up
