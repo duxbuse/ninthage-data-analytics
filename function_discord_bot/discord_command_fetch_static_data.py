@@ -1,5 +1,5 @@
 from flask.wrappers import Request
-import requests
+from requests import get
 from threading import Thread
 import google.auth.transport.requests
 import google.oauth2.id_token
@@ -12,7 +12,7 @@ def fetch_static_data(request: Request):
     headers={
             "Authorization": f"Bearer {id_token}",
         }
-    Thread(target=requests.get, args=(url, headers)).start()
+    Thread(target=get, args=(url,), kwargs={'headers': headers}).start()
     # response.read() This takes to long and makes discord assume nothing happened
 
     return "Static data loading has begun", 200
