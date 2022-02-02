@@ -164,6 +164,7 @@ Army_names = {
     "UNDYING DYNASTIES": "Undying Dynasties",
     "UD": "Undying Dynasties",
     "VAMPIRE COVENANT": "Vampire Covenant",
+    "VAMPIRE COVENANTS": "Vampire Covenant",
     "VC": "Vampire Covenant",
     "VERMIN SWARM": "Vermin Swarm",
     "VS": "Vermin Swarm",
