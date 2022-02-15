@@ -20,7 +20,9 @@ def function_static_data(request: Request):
         "armies",
         "organisations",
         "units",
-        "magic_paths"
+        "magic_paths",
+        "special_items",
+        "banners",
     ]
     for endpoint in sections:
         try:
@@ -31,7 +33,7 @@ def function_static_data(request: Request):
                     "Content-Type": "application/json",
                     "User-Agent": "ninthage-data-analytics/1.1.0",
                 },
-                timeout=20,
+                timeout=30,
             ) 
         except requests.exceptions.ReadTimeout as err:
             raise err
@@ -83,7 +85,7 @@ def push_to_bq(local_file: str):
     FROM `ninthage-data-analytics.{dataset_id}.{source}`
     WHERE true
     """
-    print(f"Deleting old dat for {source}")
+    print(f"Deleting old data for {source}")
     delete_result = client.query(query_string).result()
 
     if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
@@ -122,7 +124,8 @@ def store_data(endpoint:str, data:dict):
 
     if isinstance(data.get(endpoint, {}), list):
         write_dicts_to_json(file_path=local_file, data=data.get(endpoint,[{}]))
-
+    else:
+        raise ValueError(f"Data from {endpoint} is not a list")
     # Push data to BQ
     push_to_bq(local_file)
     # Clean up

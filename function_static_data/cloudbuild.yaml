@@ -16,3 +16,4 @@ steps:
       - --source=./function_static_data/
       - --trigger-http
       - --runtime=python39
+      - --timeout=540

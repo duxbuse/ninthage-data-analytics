@@ -47,7 +47,7 @@ def function_upload_data_into_bigquery(
 
         filename = request_body["file_name"]
         bucket_name = request_body["bucket_name"]
-        dataset_id = "all_lists"
+        dataset_id = "list_data"
         table_id = "tournament_lists"
 
         # Running on gcp
@@ -86,7 +86,7 @@ def function_upload_data_into_bigquery(
         tournament_name = Path(filename).stem
         query_string = f"""
         DELETE
-        FROM `ninthage-data-analytics.all_lists.tournament_lists`
+        FROM `ninthage-data-analytics.{dataset_id}.{table_id}`
         WHERE `tournament` = "{tournament_name}"
         """
         # Dont delete if its a manual report because its not the same event
@@ -108,7 +108,7 @@ def function_upload_data_into_bigquery(
             job = client.load_table_from_file(
                 source_file,
                 table_ref,
-                location="US",  # Must match the destination dataset location.
+                location="us-central1",  # Must match the destination dataset location.
                 job_config=job_config,
             )  # API request
 
