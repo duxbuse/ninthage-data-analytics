@@ -1,0 +1,3 @@
+flask
+google-cloud-workflows==1.5.0
+google-cloud-storage

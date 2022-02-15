@@ -41,7 +41,7 @@ def function_game_report(request: Request):
     # adding the file name to the workflow input
     form_data[ # type: ignore
         "name"
-    ] = "manual game report"  # type: ignore
+    ] = "manual_game_report"  # type: ignore
     print(f"{form_data=}")
 
     store_raw_report(form_data)

@@ -10,6 +10,7 @@ import json
 from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
 from game_report import armies_from_report
 from fading_flame import armies_from_fading_flame
+from warhall import armies_from_warhall
 from tourney_keeper import get_recent_tournaments
 from utility_functions import Docx_to_line_list
 from multi_error import Multi_Error
@@ -84,7 +85,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 ]
             }, 400
     # manual game report
-    elif data.get("player1_army"):
+    elif file_name == "manual_game_report":
         try:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
 
@@ -108,6 +109,27 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 print(f"Loaded data")
             remove(download_file_path)
             list_of_armies = armies_from_fading_flame(data)
+
+        except Multi_Error as e:
+            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            return {"message": [str(x) for x in e.errors]}, 400
+        except Exception as e:
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            return {"message": [str(e)]}, 501
+    elif file_name == "warhall":
+        file_name = data.get("file_name", "")# actually random file name
+        try:
+            downloaded_warhall_blob = download_blob("warhall", file_name)
+            downloaded_warhall_blob.download_to_filename(download_file_path)
+            if downloaded_warhall_blob:
+                print(
+                    f"Downloaded {file_name} from warhall to {download_file_path}"
+                )
+            with open(download_file_path, "r") as json_file:
+                data = json.load(json_file)
+                print(f"Loaded data")
+            remove(download_file_path)
+            list_of_armies = armies_from_warhall(data)
 
         except Multi_Error as e:
             print(f"Multi_Error2: {[str(x) for x in e.errors]}")
