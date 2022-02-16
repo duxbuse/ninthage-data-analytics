@@ -90,7 +90,7 @@ def function_upload_data_into_bigquery(
         WHERE `tournament` = "{tournament_name}"
         """
         # Dont delete if its a manual report because its not the same event
-        dont_delete = ["manual game report", "fading flame"]
+        dont_delete = ["manual game report", "fading flame", "warhall"]
         if tournament_name not in dont_delete:
             delete_result = client.query(query_string).result()
 
