@@ -8,8 +8,6 @@ from os import remove
 from uuid import uuid4
 from pathlib import Path
 
-# TODO: USE PYDANTIC TO TYPE CHECK THE INPUT
-
 def function_warhall_report(request: Request):
     """Cloud function to handle when warhall game data is provide in a post request
 
