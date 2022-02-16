@@ -84,6 +84,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                     f"Uploaded file:{file_name} was not of extension '.docx' so is being ignored."
                 ]
             }, 400
+    
     # manual game report
     elif file_name == "manual_game_report":
         try:
@@ -95,6 +96,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         except Exception as e:
             print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
+    
     # Fading Flame data
     elif file_name == "fading_flame.json":
         try:
@@ -116,6 +118,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         except Exception as e:
             print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
+    
+    # Warhall data
     elif file_name == "warhall":
         file_name = data.get("file_name", "")# actually random file name
         try:

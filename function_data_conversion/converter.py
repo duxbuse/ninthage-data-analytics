@@ -19,7 +19,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
     errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
-
+    # TODO: skip this for obviously non tk events like warhall 
     try:
         tk_info = load_tk_info(event_name)
     except ValueError as e:

@@ -1,4 +1,3 @@
-from multi_error import Multi_Error
 from converter import Convert_lines_to_army_list
 from data_classes import (
     Round,
@@ -10,14 +9,11 @@ from data_classes import (
     Maps,
     Objectives,
 )
-from pydantic import BaseModel, ValidationError, validator
-from typing import List, Optional
-
-
+from pydantic import BaseModel, validator
 
 class warhall_player_data(BaseModel):
     ArmyName: str
-    List: List[str]
+    List: list[str]
     Objective: str
     PointDifference: int
     Result: int
@@ -44,7 +40,7 @@ class warhall_data(BaseModel):
     Deployment: str
     Map: str
     Objective: str
-    PlayersData: List[warhall_player_data]
+    PlayersData: list[warhall_player_data]
     ReportTime: int
 
     @validator("Deployment")
@@ -65,10 +61,53 @@ class warhall_data(BaseModel):
             raise ValueError(f"{Objective=} is not a valid objective")
         return Objective
 
+def mark_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
+    """
+    Calculate the dead from the warhall data
+    """
+    if not army_data.units or len(player_data.List) != len(army_data.units):
+        raise ValueError(f"{len(player_data.List)=} should be the same length as {len(army_data.units)=}")
+
+    for unit in zip(player_data.List, army_data.units):
+        if unit[0][:4] == "DEAD":
+            unit[1].dead = True
+        else:
+            unit[1].dead = False
 
 def armies_from_warhall(data:dict) -> list[ArmyEntry]:
     data_obj = warhall_data(**data)
-    pass
+    if len(data_obj.PlayersData) != 2:
+        raise ValueError(f"{data_obj.PlayersData=} Should only be 2 players")
+
+    list_of_armies = list[ArmyEntry]()
+    # load in all the army data
+    for player in data_obj.PlayersData:
+        army = Convert_lines_to_army_list("warhall", [player.ArmyName] + player.List).pop()
+        army_round = Round(
+            result=player.Result,
+            won_secondary=player.Objective == "Won",
+            map_selected=data_obj.Map,
+            deployment_selected=data_obj.Deployment,
+            objective_selected=data_obj.Objective,
+        )
+        army.round_performance = [army_round]
+        army.data_source = Data_sources.WARHALL
+        army.event_type = Event_types.CASUAL
+        army.calculate_total_points()
+        mark_dead(player, army)
+        list_of_armies.append(army)
+
+    # set each other as opponents
+    for i, army in enumerate(list_of_armies):
+        army.round_performance[0].opponent = list_of_armies[i-1].army_uuid
+        army.round_performance[0].secondary_points = list_of_armies[i-1].points_killed()
+
+    # check that caluclated secondary points == points difference
+    calculated_difference = list_of_armies[0].round_performance[0].secondary_points - list_of_armies[1].round_performance[0].secondary_points
+    if abs(calculated_difference) != abs(data_obj.PlayersData[0].PointDifference):
+        raise ValueError(f"{abs(calculated_difference)=} should be {abs(data_obj.PlayersData[0].PointDifference)=}")
+
+    return list_of_armies
 
 if __name__ == "__main__":
     example = {
@@ -124,3 +163,4 @@ if __name__ == "__main__":
     "ReportTime": 1643765781
 }
     armies = armies_from_warhall(example)
+    print(bool(armies))

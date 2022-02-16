@@ -17,6 +17,7 @@ class Data_sources(Enum):
     TOURNEY_KEEPER = auto()
     NEW_RECRUIT = auto()
     FADING_FLAMES = auto()
+    WARHALL = auto()
     MANUAL = auto()
 
 @unique
@@ -204,6 +205,7 @@ class UnitEntry:
     points: int  # 300
     quantity: int  # 25
     name: str  # spearmen
+    dead: Optional[bool] = None
     unit_uuid: UUID = field(default_factory=lambda: uuid4())
     upgrades: Optional[list[str]] = None  # musician and banner
 
@@ -269,6 +271,17 @@ class ArmyEntry:
             Found Units: {[(x.name, x.points) for x in self.units or []]}
             """
             )
+
+    def points_killed(self) -> int:
+        points = 0
+        for x in self.units or []:
+            if x.dead:
+                points += x.points
+                if "general" in str(x.upgrades):
+                    points += 200
+                if "battle standard bearer" in str(x.upgrades):
+                    points += 200
+        return points
 
     def calculate_total_tournament_points(self) -> None:
         if self.round_performance:
