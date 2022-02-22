@@ -23,6 +23,11 @@
             },
             {
                 "mode": "NULLABLE",
+                "name": "dead",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
                 "name": "quantity",
                 "type": "INTEGER"
             },

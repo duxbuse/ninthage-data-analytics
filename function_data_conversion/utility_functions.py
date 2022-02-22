@@ -83,6 +83,41 @@ def Is_int(n) -> bool:
     else:
         return float(n).is_integer()
 
+def scrub_list(d):
+    scrubbed_list = []
+    for i in d:
+        if isinstance(i, dict):
+            i = scrub_dict(i)
+        scrubbed_list.append(i)
+    return scrubbed_list
+
+def scrub_dict(d):
+    new_dict = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            v = scrub_dict(v)
+        if isinstance(v, list):
+            v = scrub_list(v)
+        if not v in (u'', None, {}, []):
+            new_dict[k] = v
+    return new_dict
+
+def write_dicts_to_json(file_path: Path, data: list[dict]):
+    with open(file_path, "w") as jsonFile:
+        pass
+    with open(file_path, "a") as jsonFile:
+        for item in data:
+            no_nulls = scrub_dict(item)
+            if "null" in no_nulls:
+                print("nulls found in json file")
+                jsonFile.close
+                raise ValueError(
+                    f"""
+                    Invalid List - null value found in
+                    ArmyString: {no_nulls}
+                    """
+                )
+            jsonFile.write(jsons.dumps(no_nulls)+"\n")
 
 def Write_army_lists_to_json_file(
     file_path: Path, list_of_armies: List[ArmyEntry]
@@ -93,27 +128,7 @@ def Write_army_lists_to_json_file(
         file_path (string): path to write new file to
         list_of_armies (list[ArmyEntry]): list of ArmyEntry objects to be written to file
     """
-    with open(file_path, "w") as jsonFile:
+    # convert list of armies to a dict
+    data: list[dict] = [jsons.loads(jsons.dumps(x)) for x in list_of_armies]
 
-        for army in list_of_armies:
-
-            no_nulls = {k: v for k, v in vars(army).items() if v is not None}
-            if no_nulls.get("round_performance"):
-                no_nulls["round_performance"] = [
-                    {k: v for k, v in vars(x).items() if v is not None}
-                    for x in no_nulls["round_performance"]
-                ]
-            army_as_string = jsons.dumps(no_nulls) + "\n"
-            if "null" in army_as_string:  # TODO: need to remove field if null
-                jsonFile.close
-                raise ValueError(
-                    f"""
-                    Invalid List - null value found in
-                    Army: {army.army}
-                    Player: {army.player_name}
-                    Tournament: {army.tournament}
-                    ArmyString: {army_as_string}
-                    """
-                )
-            else:
-                jsonFile.write(army_as_string)
+    write_dicts_to_json(file_path, data)
