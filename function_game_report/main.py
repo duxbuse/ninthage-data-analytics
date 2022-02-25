@@ -46,6 +46,11 @@ def function_game_report(request: Request):
 
     store_raw_report(form_data)
 
+    run_workflow(form_data)
+
+    return render_template("index.html")
+
+def run_workflow(form_data):
     project = "ninthage-data-analytics"
     location = "us-central1"
     workflow = "workflow_parse_lists"
@@ -60,10 +65,14 @@ def function_game_report(request: Request):
 
     # Execute the workflow.
     response = execution_client.create_execution(parent=parent, execution=execution)
-    print(f"Created execution: {response.name}")
-
-    return render_template("index.html")
-
+    print(f"Created execution: {response.name}\n")
 
 if __name__ == "__main__":
-    pass
+    # This will reload all historical games
+    # from google.cloud import storage
+
+    # client = storage.Client()
+    # for blob in client.list_blobs('manual-game-reports'):
+    #     report = blob.download_as_string()
+    #     print(report)
+    #     run_workflow(json.loads(report))
