@@ -73,7 +73,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     return None
 
 
-def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
+def Get_games_for_tournament(tourney_id: int) -> Union[list, None]:
     url = f"https://tourneykeeper.net/WebAPI/Game/GetGamesForTournament?tournamentId={tourney_id}"
     try:
         # need to blank the user agent as the default is automatically blocked
@@ -89,9 +89,19 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     success = response.json()["Success"]
     if success:
         data = json.loads(message)["Games"]
+        # remove any games with dodgy results
+        data = [game for game in data if result_validation(game["Player1Result"], game["Player2Result"])]
         return data
     return None
 
+def result_validation(p1_result: int, p2_result:int) -> bool:
+    if not 0 <= p1_result <= 20:
+        return False
+    if not 0 <= p2_result <= 20:
+        return False
+    if not p1_result + p2_result == 20:
+        return False
+    return True
 
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
