@@ -69,10 +69,10 @@ def run_workflow(form_data):
 
 if __name__ == "__main__":
     # This will reload all historical games
-    # from google.cloud import storage
+    from google.cloud import storage
 
-    # client = storage.Client()
-    # for blob in client.list_blobs('manual-game-reports'):
-    #     report = blob.download_as_string()
-    #     print(report)
-    #     run_workflow(json.loads(report))
+    client = storage.Client()
+    for blob in client.list_blobs('manual-game-reports'):
+        report = blob.download_as_string()
+        print(report)
+        run_workflow(json.loads(report))
