@@ -323,7 +323,7 @@ def append_tk_game_data(
         for army in list_of_armies:
             army.calculate_total_tournament_points()
 
-        if any(e:=[x.player_name for x in list_of_armies if not x.calculated_total_tournament_points]):
+        if any(e:=[x.player_name for x in list_of_armies if x.calculated_total_tournament_points is None]):
             raise ValueError(f"The following players do not have performance data\n {e}")
 
         # sort armies based on performace then set the placing based on that order
