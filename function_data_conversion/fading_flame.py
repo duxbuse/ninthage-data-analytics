@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from unicodedata import decimal
 from multi_error import Multi_Error
 from converter import Convert_lines_to_army_list
 from data_classes import (
@@ -65,6 +66,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         try:
             game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
         except ValueError:
+            # Becuase fading flame doesnt 0 pad the decimal part of the date some times there is no decimal and we need to use a different format
             game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
         player1 = game_result.get("player1", {})

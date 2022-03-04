@@ -1,6 +1,7 @@
 # Game reported through web form since flattened=false everything is now a list so we need a lot of [0]
 from datetime import datetime, timezone
 from converter import Convert_lines_to_army_list
+from multi_error import Multi_Error
 from data_classes import (
     Round,
     Event_types,
@@ -14,6 +15,7 @@ from data_classes import (
 
 
 def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
+    errors: list[Exception] = []
     name1 = "name-not-provided"
     if data.get("player1_name", [None])[0]:
         name1 = data.get("player1_name")[0]
@@ -29,14 +31,14 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     lines = "\n".join([player1_list, player2_list]).split("\n")
     list_of_armies = Convert_lines_to_army_list(event_name, lines)
     if len(list_of_armies) == 0:
-        raise ValueError("No armies found")
+        errors.append(ValueError("No armies found"))
     player1_army = list_of_armies[0]
     player2_army = None
     if data.get("player2_army", [None])[0]:
         if len(list_of_armies) == 2:
             player2_army = list_of_armies[1]
         else:
-            raise ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed.")
+            errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed."))
 
     player1_round = None
     if any(
@@ -96,7 +98,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         score_total += player2_round.result
 
     if score_total > 20:
-        raise ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}")
+        errors.append(ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}"))
 
     # Set secondary points
     if data.get("player1_vps", [None])[0]:
@@ -184,5 +186,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         player2_army.event_type = Event_types.CASUAL
         player2_army.data_source = Data_sources.MANUAL
 
+    if errors:
+        raise Multi_Error(errors)
 
     return list_of_armies
