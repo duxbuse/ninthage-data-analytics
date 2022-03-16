@@ -503,72 +503,12 @@
       console.log("showing " + evt.currentTarget.id);
       const formatted = document.getElementById(evt.currentTarget.id + "_formatted");
       const label = document.getElementById(evt.currentTarget.id + "_formatted_label");
-      const Army_names = new Set(["BEAST HERDS",
-        "BH",
-        "DREAD ELVES",
-        "DE",
-        "Dwarven HoldS",
-        "DH",
-        "Dwarfs",
-        "DAEMON LEGIONS",
-        "DAEMONIC LEGIONS",
-        "DL",
-        "EMPIRE OF SONNSTAHL",
-        "EOS",
-        "HIGHBORN ELVES",
-        "HE",
-        "HBE",
-        "INFERNAL DWARVES",
-        "INFERNAL DWARFS",
-        "ID",
-        "KINGDOM OF EQUITAINE",
-        "KOE",
-        "OGRE KHANS",
-        "OK",
-        "ORCS AND GOBLINS",
-        "ORCS & GOBLINS",
-        "ONG",
-        "O&G",
-        "OG",
-        "SAURIAN ANCIENTS",
-        "SA",
-        "SYLVAN ELVES",
-        "SE",
-        "UNDYING DYNASTIES",
-        "UD",
-        "VAMPIRE COVENANT",
-        "VAMPIRE COVENANTS",
-        "VC",
-        "VERMIN SWARM",
-        "VS",
-        "THE VERMIN SWARM",
-        "WARRIORS OF THE DARK GODS",
-        "WDG",
-        "WTDG",
-        "WOTDG",
-        "ASKLANDERS",
-        "ASKLANDER",
-        "CULTISTS",
-        "CULTIST",
-        "HOBGOBLINS",
-        "HOBGOBLIN",
-        "MAKHAR",])
-
-
+      
       formatArmy(evt.currentTarget.value).then(formattedArmy => {
-        if (formattedArmy == null) {
-          formatted.innerText = formattedArmy;
-        } else if (formattedArmy.includes("ERROR:")) {
-          formatted.innerText = formattedArmy;
-        } else if (Army_names.has(formattedArmy.split('\n')[0])) {
-          formatted.innerText = formattedArmy;
-        }
-         else {
-          formatted.innerText = "ERROR: Please ensure army name is on the first line of the army.";
-        }
+        formatted.innerText = formattedArmy;
         label.innerText = label.innerText.replace(waitingMessage, "");
         formatted.parentElement.classList.remove('d-none');
-        
+
       })
     }
 
@@ -583,10 +523,19 @@
       if (response.status != 200) {
         return "ERROR: Formatting failed, please ensure army follows the new recruit format.";
       } else {
+        // Display list errors
         let json_data = await response.json();
-        return json_data.formated;
+        if (json_data.validation.hasError) {
+          returnString = ""
+          json_data.validation.errors.forEach(error => {
+            returnString = returnString.concat(error.message, "\n");
+          })
+          return returnString;
+        } else {
+          return json_data.formated;
+        }
       }
-     
+
     }
 
   </script>
