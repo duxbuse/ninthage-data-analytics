@@ -262,7 +262,7 @@ def proccess_block(
     # format block
     formated_block = format_army_block(armyblock)
     if formated_block:
-        armyblock = formated_block
+        armyblock = formated_block.formated.split("\n")
     # Select which parser to use
     parser_selected = DetectParser(armyblock)
     # parse block into army object
@@ -274,6 +274,10 @@ def proccess_block(
         ingest_date=ingest_date,
         tk_info=tk_info,
     )
+    if formated_block:
+        army.validated = not formated_block.validation.hasError
+        if formated_block.validation.hasError:
+            army.validation_errors = [x.message for x in formated_block.validation.errors]
     # save into army list
     return army
 

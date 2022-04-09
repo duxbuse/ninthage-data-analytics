@@ -118,12 +118,6 @@ class new_recruit_parser:
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(lines)
-        if validation_errors:
-
-            new_army.validated = not validation_errors
-            new_army.validation_errors = validation_errors
-
         return new_army
 
     def parse_unit_line(self, line: str) -> List[UnitEntry]:
