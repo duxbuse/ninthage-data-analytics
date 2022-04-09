@@ -6,63 +6,63 @@ http = requests.Session()
 
 
 class army_version(BaseModel):
-    id: int
-    name: str
+    id: Optional[int]
+    name: Optional[str]
 
 
 class army(BaseModel):
-    id: int
-    name: str
-    initials: str
-    army_version: army_version
+    id: Optional[int]
+    name: Optional[str]
+    initials: Optional[str]
+    army_version: Optional[army_version]
 
 
 class unit(BaseModel):
-    id: int
-    name: str
+    id: Optional[int]
+    name: Optional[str]
 
 
 class special_item(BaseModel):
-    id: int
-    name: str
+    id: Optional[int]
+    name: Optional[str]
 
 
 class option_id(BaseModel):
-    id: int
-    name: str
+    id: Optional[int]
+    name: Optional[str]
 
 
 class option(BaseModel):
-    entry: str
+    entry: Optional[str]
     fixed: Optional[str]
     name: Optional[str]
-    quantity: int
-    is_sub: bool
+    quantity: Optional[int]
+    is_sub: Optional[bool]
     option: Optional[option_id]
     special_item: Optional[special_item]
 
 
 class option_base(BaseModel):
-    entry: str
+    entry: Optional[str]
     fixed: Optional[str]
-    quantity: int
-    is_sub: bool
+    quantity: Optional[int]
+    is_sub: Optional[bool]
     options: list[option]
 
 
 class units(BaseModel):
-    entry: str
+    entry: Optional[str]
     fixed: Optional[str]
     name: Optional[str]
-    unit: unit
-    size: int
+    unit: Optional[unit]
+    size: Optional[int]
     points: Optional[int]
-    total: float
+    total: Optional[float]
     option: Optional[option_base]
 
 
 class error(BaseModel):
-    severity: str
+    severity: Optional[str]
     message: str
 
 
@@ -72,10 +72,10 @@ class validation(BaseModel):
 
 
 class formatted_army_block(BaseModel):
-    original: str
-    formated: str
-    army: army
-    units: list[units]
+    original: Optional[str]
+    formated: Optional[str]
+    army: Optional[army]
+    units: Optional[list[units]]
     validation: validation
 
 

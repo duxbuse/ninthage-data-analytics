@@ -26,12 +26,6 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         errors.append(e)
         tk_info = Tk_info()
 
-    # if tk_info.player_count != len(tk_info.player_list):
-        # TODO: enable this when tk is submitting the right data for player count
-        # This will happen as tk reports all players not just active players
-        # errors.append(ValueError(f"TK giving bad data. Players registered:{tk_info.player_count} does not equal people who played:{len(tk_info.player_list)}"))
-
-
     cleaned_lines = clean_lines(lines)
 
     armyblocks = split_lines_into_blocks(cleaned_lines)
