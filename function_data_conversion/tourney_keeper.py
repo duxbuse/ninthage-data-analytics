@@ -185,7 +185,7 @@ def Get_players_names_from_games(games: dict) -> dict:
                     if primary_codex is None:
                         primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
 
-                    dummy_players = r"(player\d|[Ss]tandin)"
+                    dummy_players = r"(player\d|[Ss]tandin[0-9]*)"
                     if re.fullmatch(dummy_players, player_name):
                         # Skip dummy players
                         print(f"Dummy player {player_name} skipped")
