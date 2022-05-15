@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 from pydantic import BaseModel
 from typing import Optional
@@ -79,14 +80,17 @@ class formatted_army_block(BaseModel):
     validation: validation
 
 
-def format_army_block(army_block: list[str]) -> Optional[formatted_army_block]:
+def format_army_block(army_block: list[str], event_date: Optional[datetime]) -> Optional[formatted_army_block]:
     data_string = "\n".join(army_block)
 
     url = f"https://www.9thbuilder.com/en/api/v1/builder/imports/format"
+    payload = {"data": data_string}
+    if event_date:
+        payload["date"] = str(event_date.timestamp())
     try:
         response = http.post(
             url,
-            json={"data": data_string},
+            json=payload,
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json",
@@ -121,5 +125,6 @@ Daemonic Legions
 165 - 5 Furies
 4999
 """
-    test = format_army_block(data.split("\n"))
+    event_date = datetime(2012,4,1,0,0)
+    test = format_army_block(data.split("\n"), event_date)
     pass

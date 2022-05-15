@@ -254,7 +254,7 @@ def proccess_block(
     tk_info: Tk_info,
 ) -> ArmyEntry:
     # format block
-    formated_block = format_army_block(armyblock)
+    formated_block = format_army_block(armyblock, Tk_info.event_date)
     if formated_block:
         armyblock = formated_block.formated.split("\n")
     # Select which parser to use

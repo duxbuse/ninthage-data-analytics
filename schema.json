@@ -212,6 +212,31 @@
     },
     {
         "mode": "NULLABLE",
+        "name": "participants_per_team",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_point_cap",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_point_min",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "country_name",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "country_flag",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
         "name": "army",
         "type": "STRING"
     }
