@@ -11,6 +11,7 @@ from data_classes import (
 )
 from pydantic import BaseModel, validator
 
+from multi_error import Multi_Error
 class warhall_player_data(BaseModel):
     ArmyName: str
     List: list[str]
@@ -49,8 +50,10 @@ class warhall_data(BaseModel):
             raise ValueError(f"{Deployment=} is not a valid deployment")
         return Deployment
 
-    @validator("Map")
+    @validator("Map", pre=True)
     def validate_map(cls, Map):
+        if isinstance(Map, int):
+            Map = str(Map)
         if Map not in Maps.values():
             raise ValueError(f"{Map=} is not a valid map")
         return Map
@@ -75,44 +78,56 @@ def mark_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
             unit[1].dead = False
 
 def armies_from_warhall(data:dict) -> list[ArmyEntry]:
-    data_obj = warhall_data(**data)
+    errors: list[Exception] = []
+    try:
+        data_obj = warhall_data(**data)
+    except ValueError as e:
+        errors.append(e)
+        raise Multi_Error(errors)
+
     if len(data_obj.PlayersData) != 2:
-        raise ValueError(f"{data_obj.PlayersData=} Should only be 2 players")
+        errors.append(ValueError(f"{data_obj.PlayersData=} Should only be 2 players"))
 
     list_of_armies = list[ArmyEntry]()
     # load in all the army data
     for player in data_obj.PlayersData:
-        army = Convert_lines_to_army_list("warhall", [player.ArmyName] + player.List).pop()
-        army_round = Round(
-            result=player.Result,
-            won_secondary=player.Objective == "Won",
-            map_selected=data_obj.Map,
-            deployment_selected=data_obj.Deployment,
-            objective_selected=data_obj.Objective,
-        )
-        army.round_performance = [army_round]
-        army.data_source = Data_sources.WARHALL
-        army.event_type = Event_types.CASUAL
-        army.calculate_total_points()
-        mark_dead(player, army)
-        list_of_armies.append(army)
+        try:
+            army = Convert_lines_to_army_list("warhall", [player.ArmyName] + player.List).pop()
+            army_round = Round(
+                result=player.Result,
+                won_secondary=player.Objective == "Won",
+                map_selected=data_obj.Map,
+                deployment_selected=data_obj.Deployment,
+                objective_selected=data_obj.Objective,
+            )
+            army.round_performance = [army_round]
+            army.data_source = Data_sources.WARHALL
+            army.event_type = Event_types.CASUAL
+            army.calculate_total_points()
+            mark_dead(player, army)
+            list_of_armies.append(army)
+        except ValueError as e:
+            errors.append(e)
 
     # set each other as opponents
     for i, army in enumerate(list_of_armies):
         army.round_performance[0].opponent = list_of_armies[i-1].army_uuid
         army.round_performance[0].secondary_points = list_of_armies[i-1].points_killed()
 
-    # check that caluclated secondary points == points difference
+    # check that calculated secondary points == points difference
     calculated_difference = list_of_armies[0].round_performance[0].secondary_points - list_of_armies[1].round_performance[0].secondary_points
     if abs(calculated_difference) != abs(data_obj.PlayersData[0].PointDifference):
-        raise ValueError(f"{abs(calculated_difference)=} should be {abs(data_obj.PlayersData[0].PointDifference)=}")
+        errors.append(ValueError(f"{abs(calculated_difference)=} should be {abs(data_obj.PlayersData[0].PointDifference)=}"))
+
+    if errors:
+        raise Multi_Error(errors)
 
     return list_of_armies
 
 if __name__ == "__main__":
     example = {
     "Deployment": "Dawn Assault",
-    "Map": "A2",
+    "Map": "2",
     "Objective": "Breakthrough",
     "PlayersData": [
         {
