@@ -53,7 +53,7 @@ class warhall_data(BaseModel):
     @validator("Map", pre=True)
     def validate_map(cls, Map):
         if isinstance(Map, int):
-            Map = str(Map)
+            Map = list(enumerate(Maps.values()))[Map][1] # convert int to string from our list of maps
         if Map not in Maps.values():
             raise ValueError(f"{Map=} is not a valid map")
         return Map
@@ -127,7 +127,7 @@ def armies_from_warhall(data:dict) -> list[ArmyEntry]:
 if __name__ == "__main__":
     example = {
     "Deployment": "Dawn Assault",
-    "Map": "2",
+    "Map": 5,
     "Objective": "Breakthrough",
     "PlayersData": [
         {
