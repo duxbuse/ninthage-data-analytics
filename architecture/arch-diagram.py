@@ -1,13 +1,12 @@
 from diagrams import Cluster, Diagram, Edge
 from diagrams.gcp.analytics import BigQuery, Dataflow
 from diagrams.gcp.compute import Functions
-from diagrams.gcp.devtools import Scheduler, Build
+from diagrams.gcp.devtools import Scheduler, Build, Tasks
 from diagrams.gcp.storage import GCS
 from diagrams.onprem.network import Internet
 from diagrams.onprem.client import Users
 from diagrams.onprem.analytics import Tableau
 from diagrams.onprem.vcs import Github
-from diagrams.programming.flowchart import MultipleDocuments
 
 diag_graph_attr = {
     "fontsize": "45",
@@ -41,7 +40,7 @@ with Diagram("ninthage-data-analytics architecture", show=False, graph_attr=diag
     with Cluster("Google Cloud Platform - GCP", graph_attr=gcp_attr):
         with Cluster("Cloud build", graph_attr=core_attr):
             cloud_build = Build("Cloud Build")
-            build_functions = MultipleDocuments("Build and deploy all\nWorkflows + Functions")
+            build_functions = Tasks("Build and deploy all\nWorkflows + Functions")
 
         # Static Data 
         static_bucket = GCS("bucket\n9th_builder_static_data")
@@ -107,6 +106,9 @@ with Diagram("ninthage-data-analytics architecture", show=False, graph_attr=diag
     with Cluster("Warhall", graph_attr=core_attr):
         warhall = Internet("Warhall")
 
+    with Cluster("Fading Flame", graph_attr=core_attr):
+        fading_flame = Internet("Fading Flame")
+
     with Cluster("Github", graph_attr=core_attr):
         manual_report = Github("Github Pages")
         repo = Github("Repository")
@@ -140,7 +142,7 @@ with Diagram("ninthage-data-analytics architecture", show=False, graph_attr=diag
     BQ_static_data >> tableau_client
 
     # Fading Flame
-    scheduler >> function_data_fading_flame >> fading_flame_bucket >> workflow_parse_lists
+    scheduler >> function_data_fading_flame >> fading_flame >> function_data_fading_flame >> fading_flame_bucket >> workflow_parse_lists
 
     # Warhall
     warhall >> function_warhall_report >> warhall_bucket >> workflow_parse_lists
