@@ -83,52 +83,60 @@ with Diagram("ninthage-data-analytics architecture", show=False, graph_attr=diag
 
 
         with Cluster("Big Query", graph_attr=core_attr):
-            BQ_static_data = BigQuery("9th_builder_static_data")
-            BQ_list_data = BigQuery("list_data")
+            BQ_static_data = BigQuery("Table\n9th_builder_static_data")
+            BQ_list_data = BigQuery("Table\nlist_data")
 
 
 
         with Cluster("Discord Bot", graph_attr=discord_attr):
-            discord_command_upload = Functions("function\ndiscord_bot\nupload.py")
+            with Cluster("", graph_attr=new_recruit_attr):
+                discord_command_upload = Functions("function\ndiscord_bot\nupload.py")
             discord_command_static = Functions("function\ndiscord_bot\nstatic_data.py")
 
     with Cluster("Discord", graph_attr=discord_attr):
         discord_client = Users("Discord Client")
 
 
-    with Cluster("9th Builder API", graph_attr=new_recruit_attr):
-        builder_DataAnalytics = Internet("api/data_analytics/* ")
+    with Cluster("9th Builder API", graph_attr=core_attr):
+        with Cluster("", graph_attr=new_recruit_attr):
+            builder_DataAnalytics = Internet("api/data_analytics/* ")
         builder_format = Internet("api/format")
 
     with Cluster("Visualizations", graph_attr=core_attr):
         tableau_client = Tableau("Tableau Client")
 
-    with Cluster("Warhall", graph_attr=core_attr):
+    with Cluster("", graph_attr=new_recruit_attr):
         warhall = Internet("Warhall")
 
-    with Cluster("Fading Flame", graph_attr=core_attr):
+    with Cluster("", graph_attr=new_recruit_attr):
+        tk = Internet("Tournament Keeper")
+
+    with Cluster("", graph_attr=new_recruit_attr):
         fading_flame = Internet("Fading Flame")
 
     with Cluster("Github", graph_attr=core_attr):
-        manual_report = Github("Github Pages")
+        with Cluster("", graph_attr=new_recruit_attr):
+            manual_report = Github("Github Pages")
         repo = Github("Repository")
 
-    with Cluster("New Recruit", graph_attr=new_recruit_attr):
-        newrecruit_tournaments = Internet("api/tournaments")
+    with Cluster("", graph_attr=new_recruit_attr):
+        newrecruit_tournaments = Internet("New Recruit")
 
 
 
     # Edges  -------------------------------------------------------------------------------------------------------
 
     # Static Flow      
-    discord_client >> discord_command_static >> function_static_data >> builder_DataAnalytics >> function_static_data >> static_bucket >> BQ_static_data
+    discord_client >> discord_command_static >> function_static_data >> builder_DataAnalytics >> function_static_data >> BQ_static_data
+    function_static_data >> static_bucket
 
     # Manual/TK Flow
-    discord_client >> discord_command_upload >> function_data_ingestion >> tournament_lists >> workflow_parse_lists
+    discord_client >> discord_command_upload >> tournament_lists >> function_data_ingestion >> workflow_parse_lists
     
     # Core workflow
     workflow_parse_lists >> function_data_conversion >> builder_format >> function_data_conversion >> tournament_lists_json >> function_data_upload_data_into_bigquery >> BQ_list_data
-   
+    function_data_conversion >> tk >> function_data_conversion
+
     # Workflow success/failure reporting
     workflow_parse_lists \
         >> Edge(color="darkgreen") \
@@ -142,16 +150,20 @@ with Diagram("ninthage-data-analytics architecture", show=False, graph_attr=diag
     BQ_static_data >> tableau_client
 
     # Fading Flame
-    scheduler >> function_data_fading_flame >> fading_flame >> function_data_fading_flame >> fading_flame_bucket >> workflow_parse_lists
+    scheduler >> function_data_fading_flame >> fading_flame >> function_data_fading_flame >> fading_flame_bucket
+    function_data_fading_flame >> workflow_parse_lists
 
     # Warhall
-    warhall >> function_warhall_report >> warhall_bucket >> workflow_parse_lists
+    warhall >> function_warhall_report >> warhall_bucket
+    function_warhall_report >> workflow_parse_lists
 
     # Manual Reports
-    manual_report >> function_game_report >> manual_game_reports_bucket >> workflow_parse_lists
+    manual_report >> function_game_report >> manual_game_reports_bucket
+    function_game_report >> workflow_parse_lists
 
     # New Recruit tournaments
-    scheduler >> function_new_recruit_tournaments >> newrecruit_tournaments >> function_new_recruit_tournaments >> newrecruit_tournaments_bucket >> workflow_parse_lists
+    scheduler >> function_new_recruit_tournaments >> newrecruit_tournaments >> function_new_recruit_tournaments >> newrecruit_tournaments_bucket
+    function_new_recruit_tournaments >> workflow_parse_lists
 
     # Cloud Build
     repo >> cloud_build >> build_functions
