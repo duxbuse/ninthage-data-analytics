@@ -193,7 +193,7 @@ def Get_players_names_from_games(games: dict) -> dict:
 
                     output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
                 else:
-                   raise ValueError(f"Tourney Keeper yielded no data for {Id}")
+                   raise ValueError(f"Tourney Keeper yielded no data for {details.get('PlayerId')}")
             except Exception as e:
                 # TODO: I think this should be a raise ValueError not a print
                 print(e)

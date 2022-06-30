@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from unicodedata import decimal
 from multi_error import Multi_Error
 from converter import Convert_lines_to_army_list
 from data_classes import (

@@ -3,6 +3,8 @@ from pathlib import Path
 from datetime import datetime, timezone
 from fuzzywuzzy import fuzz
 import concurrent.futures
+import requests
+from typing import Optional
 from multi_error import Multi_Error
 from utility_functions import (
     DetectParser,
@@ -15,11 +17,11 @@ from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
 
-def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEntry]:
+def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optional[requests.Session]) -> List[ArmyEntry]:
     errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
-    # TODO: skip this for obviously non tk events like warhall 
+    # TODO: skip this for obviously non tk events like warhall/NR
     try:
         tk_info = load_tk_info(event_name)
     except ValueError as e:
@@ -37,7 +39,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str]) -> List[ArmyEn
         for block in armyblocks:
             futures.append(
                 executor.submit(
-                    proccess_block, block, event_size, event_name, ingest_date, tk_info
+                    proccess_block, block, event_size, event_name, ingest_date, tk_info, session
                 )
             )
         for future in concurrent.futures.as_completed(futures):
@@ -188,7 +190,7 @@ def parse_army_block(
     army.event_date = tk_info.event_date
     army.event_type = tk_info.event_type
 
-    # TODO: break this logic out to its own function
+    # TODO: break this logic out to its own function - TK player matching
     if tk_info.player_list:
         # fuzzy match name from lists file and tourney keeper
         close_matches = [
@@ -252,9 +254,10 @@ def proccess_block(
     event_name: str,
     ingest_date: datetime,
     tk_info: Tk_info,
+    session: Optional[requests.Session],
 ) -> ArmyEntry:
-    # format block
-    formated_block = format_army_block(armyblock, Tk_info.event_date)
+    # format block TODO: event date is not only from TK how does NR set the date
+    formated_block = format_army_block(army_block=armyblock, event_date=Tk_info.event_date, session=session)
     if formated_block:
         armyblock = formated_block.formated.split("\n")
     # Select which parser to use

@@ -3,9 +3,6 @@ import requests
 from pydantic import BaseModel
 from typing import Optional
 
-http = requests.Session()
-
-
 class army_version(BaseModel):
     id: Optional[int]
     name: Optional[str]
@@ -80,8 +77,13 @@ class formatted_army_block(BaseModel):
     validation: validation
 
 
-def format_army_block(army_block: list[str], event_date: Optional[datetime]) -> Optional[formatted_army_block]:
+def format_army_block(army_block: list[str], event_date: Optional[datetime], session: Optional[requests.Session]) -> Optional[formatted_army_block]:
     data_string = "\n".join(army_block)
+
+    if session:
+        http = session
+    else:
+        http = requests.Session()
 
     url = f"https://www.9thbuilder.com/en/api/v1/builder/imports/format"
     payload = {"data": data_string}

@@ -1,0 +1,19 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function_fading_flame
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+      - gcloud
+      - beta
+      - functions
+      - deploy
+      - function_fading_flame
+      - --region=${_REGION}
+      - --source=./function_fading_flame/
+      - --trigger-http
+      - --runtime=python39
+      - --update-secrets=API_KEY=FADING_FLAME_KEY:latest
