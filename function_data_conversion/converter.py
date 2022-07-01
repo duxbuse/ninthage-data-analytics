@@ -17,7 +17,7 @@ from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
 
-def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optional[requests.Session]) -> List[ArmyEntry]:
+def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optional[requests.Session]=None) -> List[ArmyEntry]:
     errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
@@ -254,11 +254,11 @@ def proccess_block(
     event_name: str,
     ingest_date: datetime,
     tk_info: Tk_info,
-    session: Optional[requests.Session],
+    session: Optional[requests.Session]=None,
 ) -> ArmyEntry:
     # format block TODO: event date is not only from TK how does NR set the date
     formated_block = format_army_block(army_block=armyblock, event_date=Tk_info.event_date, session=session)
-    if formated_block:
+    if formated_block and formated_block.formated:
         armyblock = formated_block.formated.split("\n")
     # Select which parser to use
     parser_selected = DetectParser(armyblock)
