@@ -173,7 +173,7 @@ def function_new_recruit_tournaments(request: Request):
             "teams": event.teams,
         }
 
-        stored_data = store_data(file_name=event.id, data=data)
+        stored_data = store_data(data=data, event_id=event.id)
 
         execution = executions.Execution(argument=jsons.dumps(stored_data))
 
