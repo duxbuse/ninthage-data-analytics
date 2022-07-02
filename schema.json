@@ -23,6 +23,11 @@
             },
             {
                 "mode": "NULLABLE",
+                "name": "dead",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
                 "name": "quantity",
                 "type": "INTEGER"
             },
@@ -204,6 +209,56 @@
         "mode": "NULLABLE",
         "name": "calculated_total_army_points",
         "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "participants_per_team",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_point_cap_max",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_point_cap_min",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_placing",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_total_tournament_points",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_total_secondary_points",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_id",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "team_capitan",
+        "type": "BOOLEAN"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "country_name",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "country_flag",
+        "type": "STRING"
     },
     {
         "mode": "NULLABLE",

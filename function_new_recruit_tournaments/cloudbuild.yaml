@@ -1,0 +1,18 @@
+substitutions:
+  _REGION: 'us-central1'
+
+
+steps:
+
+- id: Deploy function_new_recruit_tournaments
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+      - gcloud
+      - beta
+      - functions
+      - deploy
+      - function_new_recruit_tournaments
+      - --region=${_REGION}
+      - --source=./function_new_recruit_tournaments/
+      - --trigger-http
+      - --runtime=python39

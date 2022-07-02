@@ -1,5 +1,5 @@
 # ninthage-data-analytics
-A better way for the project to ingest tournament results
+A better way for the project to ingest tournament results and make use of this data in a productive way.
 
 ## Manual Game Reporting
 [Game Reporter](https://duxbuse.github.io/ninthage-data-analytics/)
@@ -55,9 +55,4 @@ Vampire Covenant
 ```
 ## Architecture
 
-***Note:*** this is out of date.
-
-It does not include architecture of game reporter or discord error reporter
-Additionally its missing the external calls to new recruit, 9th builder and tournament keeper
-
-![Architecture Diagram](architecture/arch-diagram.drawio.svg)
+![Architecture Diagram](architecture/ninthage-data-analytics_architecture.png)

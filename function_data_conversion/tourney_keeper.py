@@ -73,7 +73,7 @@ def Get_active_players(tourney_id: int) -> Union[int, None]:
     return None
 
 
-def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
+def Get_games_for_tournament(tourney_id: int) -> Union[list, None]:
     url = f"https://tourneykeeper.net/WebAPI/Game/GetGamesForTournament?tournamentId={tourney_id}"
     try:
         # need to blank the user agent as the default is automatically blocked
@@ -89,9 +89,19 @@ def Get_games_for_tournament(tourney_id: int) -> Union[Dict, None]:
     success = response.json()["Success"]
     if success:
         data = json.loads(message)["Games"]
+        # remove any games with dodgy results
+        data = [game for game in data if result_validation(game["Player1Result"], game["Player2Result"])]
         return data
     return None
 
+def result_validation(p1_result: int, p2_result:int) -> bool:
+    if not 0 <= p1_result <= 20:
+        return False
+    if not 0 <= p2_result <= 20:
+        return False
+    if not p1_result + p2_result == 20:
+        return False
+    return True
 
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
@@ -175,7 +185,7 @@ def Get_players_names_from_games(games: dict) -> dict:
                     if primary_codex is None:
                         primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
 
-                    dummy_players = r"player\d"
+                    dummy_players = r"(player\d|[Ss]tandin[0-9]* *)"
                     if re.fullmatch(dummy_players, player_name):
                         # Skip dummy players
                         print(f"Dummy player {player_name} skipped")
@@ -183,7 +193,7 @@ def Get_players_names_from_games(games: dict) -> dict:
 
                     output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
                 else:
-                   raise ValueError(f"Tourney Keeper yielded no data for {Id}")
+                   raise ValueError(f"Tourney Keeper yielded no data for {details.get('PlayerId')}")
             except Exception as e:
                 # TODO: I think this should be a raise ValueError not a print
                 print(e)
@@ -313,7 +323,7 @@ def append_tk_game_data(
         for army in list_of_armies:
             army.calculate_total_tournament_points()
 
-        if any(e:=[x.player_name for x in list_of_armies if not x.calculated_total_tournament_points]):
+        if any(e:=[x.player_name for x in list_of_armies if x.calculated_total_tournament_points is None]):
             raise ValueError(f"The following players do not have performance data\n {e}")
 
         # sort armies based on performace then set the placing based on that order

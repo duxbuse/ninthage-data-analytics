@@ -118,12 +118,6 @@ class new_recruit_parser:
             if army_name:
                 new_army.army = army_name
 
-        validation_errors = self.validate(lines)
-        if validation_errors:
-
-            new_army.validated = not validation_errors
-            new_army.validation_errors = validation_errors
-
         return new_army
 
     def parse_unit_line(self, line: str) -> List[UnitEntry]:
@@ -208,25 +202,25 @@ class new_recruit_parser:
         ]  # Need to take a slice as then it is not linked to the original object, to avoid infinite loop
         for index, upgrade in enumerate(unit_upgrades):
             # m -> musician
-            regex = r"^(m|M|muso)$"
-            new_unit_upgrades[index] = re.sub(regex, "musician", upgrade)
+            regex = r"^(m|muso)$"
+            new_unit_upgrades[index] = re.sub(regex, "musician", upgrade, flags=re.IGNORECASE)
 
             # s -> standard bearer
-            regex = r"^(s|S|standard)$"
-            new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade)
+            regex = r"^(s|standard)$"
+            new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade, flags=re.IGNORECASE)
 
             # c -> champion
-            regex = r"^(c|C|champ)$"
-            new_unit_upgrades[index] = re.sub(regex, "champion", upgrade)
+            regex = r"^(c|champ)$"
+            new_unit_upgrades[index] = re.sub(regex, "champion", upgrade, flags=re.IGNORECASE)
 
             # bsb -> battle standard bearer
-            regex = r"^(bsb|BSB|Battlestandard|battlestandard)$"
-            new_unit_upgrades[index] = re.sub(regex, "battle standard bearer", upgrade)
+            regex = r"^(bsb|battlestandard)$"
+            new_unit_upgrades[index] = re.sub(regex, "battle standard bearer", upgrade, flags=re.IGNORECASE)
 
             # FCG -> champ+muso+standard
-            regex = r"^(fcg|FCG|gmc|GMC)$"
-            if re.match(regex, upgrade):
-                new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade)
+            regex = r"^(fcg|gmc|full command|full command group)$"
+            if re.match(regex, upgrade, flags=re.IGNORECASE):
+                new_unit_upgrades[index] = re.sub(regex, "standard bearer", upgrade, flags=re.IGNORECASE)
                 new_unit_upgrades.append("musician")
                 new_unit_upgrades.append("champion")
 

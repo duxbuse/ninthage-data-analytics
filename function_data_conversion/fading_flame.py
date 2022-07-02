@@ -62,7 +62,11 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         if not game_result:
             raise ValueError("No result is a big issue")
 
-        game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        try:
+            game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        except ValueError:
+            # Becuase fading flame doesnt 0 pad the decimal part of the date some times there is no decimal and we need to use a different format
+            game_date = datetime.strptime(game_result.get("recordedAt"), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
         player1 = game_result.get("player1", {})
         player2 = game_result.get("player2", {})
