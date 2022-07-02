@@ -188,7 +188,7 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
-def calculate_placing(data: dict[ArmyEntry], teams: list[team], rounds: int) -> list[ArmyEntry]:
+def calculate_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int) -> list[ArmyEntry]:
     """
     logic here is to loop over each team and calculate how the team performed given there are soft points and also points caps per round
     """

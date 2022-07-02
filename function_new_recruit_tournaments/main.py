@@ -92,15 +92,15 @@ class get_tournaments_response(BaseModel):
 
 
 
-def get_tournaments(start:str = "", end:str = "now") -> dict:
-    """Retrieve all tournamanets from new recruit server between the inclusive dates
+def get_tournaments(start:str = "", end:str = "now") -> list[dict]:
+    """Retrieve all tournaments from new recruit server between the inclusive dates
 
     Args:
         start (str, optional): Start date in the format of "2021-01-01". Defaults to 1 month before end date.
         end (str, optional): End date in the format of "2022-12-31". Defaults to datetime.now().
 
     Returns:
-        dict: List of tournamant data from the selected period
+        dict: List of tournament data from the selected period
     """
 
     if end == "now":
@@ -182,14 +182,14 @@ def write_report_to_json(file_path: str, data: dict):
     with open(file_path, "w") as jsonFile:
         jsonFile.write(jsons.dumps(data))
 
-def store_data(data:dict, file_name: str = "newrecruit_tournament.json") -> dict:
-    local_file = "/tmp/" + file_name
+def store_data(data:dict, event_id: str ) -> dict:
+    local_file = "/tmp/" + event_id
     write_report_to_json(file_path=local_file, data=data)
 
     bucket_name = "newrecruit_tournaments"
-    upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=file_name)
+    upload_blob(bucket_name=bucket_name, file_path=local_file, destination_blob_name=event_id)
     remove(local_file)
-    return {"name": file_name}
+    return {"name": "newrecruit_tournament.json", "event_id": event_id}
 
 if __name__ == "__main__":
     request_obj = Request.from_values()

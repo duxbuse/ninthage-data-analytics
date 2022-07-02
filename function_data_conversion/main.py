@@ -8,6 +8,7 @@ from fuzzywuzzy import fuzz
 from os import remove
 import json
 from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
+from new_recruit_tournaments import armies_from_NR_tournament
 from game_report import armies_from_report
 from fading_flame import armies_from_fading_flame
 from warhall import armies_from_warhall
@@ -121,7 +122,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     
     # Warhall data
     elif file_name == "warhall":
-        file_name = data.get("file_name", "")# actually random file name
+        file_name = data.get("file_name", "")# TODO: i think this is borked: actually random file name
         try:
             downloaded_warhall_blob = download_blob("warhall", file_name)
             downloaded_warhall_blob.download_to_filename(download_file_path)
@@ -141,6 +142,29 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         except Exception as e:
             print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
+
+    elif file_name == "newrecruit_tournament.json":
+        file_name = data.get("event_id", "")# actually random file name
+        try:
+            downloaded_newrecruit_blob = download_blob("newrecruit_tournaments", file_name)
+            downloaded_newrecruit_blob.download_to_filename(download_file_path)
+            if downloaded_newrecruit_blob:
+                print(
+                    f"Downloaded {file_name} from newrecruit_tournaments to {download_file_path}"
+                )
+            with open(download_file_path, "r") as json_file:
+                data = json.load(json_file)
+                print(f"Loaded data")
+            remove(download_file_path)
+            list_of_armies = armies_from_NR_tournament(data)
+
+        except Multi_Error as e:
+            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            return {"message": [str(x) for x in e.errors]}, 400
+        except Exception as e:
+            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            return {"message": [str(e)]}, 501
+
     else:
         return {
             "message": [
@@ -148,12 +172,13 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             ]
         }, 400
 
+    # TODO: this is a silly way to do it, all the tk_info stuff needs to be pulled out into its own file
     loaded_tk_info = any(
         army.list_placing > 0 for army in list_of_armies if army.list_placing
     )
     possible_tk_names = []
     if (
-        not loaded_tk_info and file_name != "manual game report"
+        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"]
     ):  # Find name of close events since a misname may be why nothing was loaded.
         recent_tournaments = get_recent_tournaments()
         for tournament in recent_tournaments:
