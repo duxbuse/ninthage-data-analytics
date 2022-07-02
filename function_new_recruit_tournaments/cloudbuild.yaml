@@ -4,15 +4,15 @@ substitutions:
 
 steps:
 
-- id: Deploy function_new_recruit_torunaments
+- id: Deploy function_new_recruit_tournaments
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
       - beta
       - functions
       - deploy
-      - function_new_recruit_torunaments
+      - function_new_recruit_tournaments
       - --region=${_REGION}
-      - --source=./function_new_recruit_torunaments/
+      - --source=./function_new_recruit_tournaments/
       - --trigger-http
       - --runtime=python39
