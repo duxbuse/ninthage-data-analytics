@@ -4,16 +4,15 @@ substitutions:
 
 steps:
 
-- id: Deploy function_fading_flame
+- id: Deploy function_new_recruit_torunaments
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
       - beta
       - functions
       - deploy
-      - function_fading_flame
+      - function_new_recruit_torunaments
       - --region=${_REGION}
-      - --source=./function_fading_flame/
+      - --source=./function_new_recruit_torunaments/
       - --trigger-http
       - --runtime=python39
-      - --update-secrets=API_KEY=FADING_FLAME_KEY:latest
