@@ -39,6 +39,9 @@ class team(BaseModel):
     participants: list[str]
     extra_points: Optional[list[extra_points]]
 
+    def __len__(self):
+        return len(self.participants)
+
 
 class tournaments_data(BaseModel):
     id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'

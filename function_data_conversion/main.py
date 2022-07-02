@@ -123,6 +123,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     # Warhall data
     elif file_name == "warhall":
         file_name = data.get("file_name", "")# TODO: i think this is borked: actually random file name
+        download_file_path = f"/tmp/{file_name}"
         try:
             downloaded_warhall_blob = download_blob("warhall", file_name)
             downloaded_warhall_blob.download_to_filename(download_file_path)
@@ -143,8 +144,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             print(f"Non Multi Error: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
 
+    # NEW RECRUIT TOURNAMENTS
     elif file_name == "newrecruit_tournament.json":
         file_name = data.get("event_id", "")# actually random file name
+        download_file_path = f"/tmp/new-recruit-{file_name}"
         try:
             downloaded_newrecruit_blob = download_blob("newrecruit_tournaments", file_name)
             downloaded_newrecruit_blob.download_to_filename(download_file_path)
