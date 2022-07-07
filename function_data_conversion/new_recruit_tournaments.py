@@ -32,7 +32,7 @@ class player(BaseModel):
     id_list: Optional[str]
     id_book: Optional[int]  # 8
     id_participant: str  #'619b6074bf3fd75cf2fb9a54',
-    exported_list: str
+    exported_list: Optional[str]
     name: str
     elo: Optional[elo]  # Can be None if unknown
 
@@ -188,7 +188,7 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
-def calculate_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int) -> list[ArmyEntry]:
+def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int) -> list[ArmyEntry]:
     """
     logic here is to loop over each team and calculate how the team performed given there are soft points and also points caps per round
     """
@@ -241,19 +241,25 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
     # create list of ArmyEntry objects for each player
     armies: list[ArmyEntry] = []
-    duplicate_player_list = (
+    duplicate_player_list:unique_players = (
         player_list.copy()
     )  # we copy the list so we have a unique list of players as the keys, and then we go through replacing the value with an ARMY Entry object
     for player in player_list.values():
-        armies = Convert_lines_to_army_list(
-            event_data.name, player.exported_list.split("/n"), http
-        )
-        if len(armies) == 1:
-            army = armies[0]
-        else:
-            raise Multi_Error(
-                [ValueError(f"0 or 2+ armies found for player {player.id_participant}")]
+        # Handle if no army list was provided
+        if player.exported_list:
+
+            armies = Convert_lines_to_army_list(
+                event_data.name, player.exported_list.split("/n"), http
             )
+    
+            if len(armies) == 1:
+                army = armies[0]
+            else:
+                raise Multi_Error(
+                    [ValueError(f"0 or 2+ armies found for player {player.id_participant}")]
+                )
+        else:
+            army = ArmyEntry()
 
         army.player_name = player.alias
         army.event_date = datetime.strptime(
@@ -351,13 +357,13 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                     new_round
                 ]
 
-    # list of all armyEntries from duplicate list that have round performance data
-    return calculate_placing(data=duplicate_player_list, teams=event_data.teams, rounds=event_data.rounds)
-
+    if event_data.type == 1: #team event
+        # list of all armyEntries from duplicate list that have round performance data
+        return calculate_team_placing(data=duplicate_player_list, teams=event_data.teams, rounds=event_data.rounds)
+    else:
+        return list(duplicate_player_list.values())
 
 if __name__ == "__main__":
-
-
 
     body = {"id_tournament": "624ca38ac4babc7434f75ece"}
 
