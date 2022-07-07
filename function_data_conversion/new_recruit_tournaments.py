@@ -216,7 +216,14 @@ def calculate_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int
             if player in data:
                 data[player].team_total_tournament_points = team_total_tournament_points
                 data[player].team_total_secondary_points = team_total_secondary_points
-    sorted_armies = list(list(zip(*sorted(data.items(), key=lambda x: (x[1].team_total_tournament_points, x[1].team_total_secondary_points), reverse=True)))[1])
+
+    if not (data and data.items()):
+        raise Multi_Error(
+                [ValueError(f"No games found for event ")]
+            )
+
+    sorted_data = sorted(data.items(), key=lambda x: (x[1].team_total_tournament_points, x[1].team_total_secondary_points), reverse=True)
+    sorted_armies = list(list(zip(*sorted_data))[1])
     for army in sorted_armies:
         army.team_placing = sorted_armies.index(army) + 1
 
@@ -350,7 +357,9 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
 if __name__ == "__main__":
 
-    body = {"id_tournament": "62606316c4babc7434f760c4"}
+
+
+    body = {"id_tournament": "624ca38ac4babc7434f75ece"}
 
     url = f"https://api.newrecruit.eu/api/reports"
     response = requests.post(
