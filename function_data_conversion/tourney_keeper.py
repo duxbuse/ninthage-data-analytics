@@ -266,7 +266,7 @@ def append_tk_game_data(
     tk_info: Tk_info, list_of_armies: List[ArmyEntry]
 ) -> None:
     if tk_info.game_list and tk_info.player_list:
-        # extract TK game results if avaliable
+        # extract TK game results if available
         for game in tk_info.game_list:
             player1 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player1Id")), {})
             player2 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player2Id")), {})
@@ -326,7 +326,7 @@ def append_tk_game_data(
         if any(e:=[x.player_name for x in list_of_armies if x.calculated_total_tournament_points is None]):
             raise ValueError(f"The following players do not have performance data\n {e}")
 
-        # sort armies based on performace then set the placing based on that order
+        # sort armies based on performance then set the placing based on that order
         if all([x.calculated_total_tournament_secondary_points for x in list_of_armies]):
             list_of_armies.sort(
                 key=lambda x: (

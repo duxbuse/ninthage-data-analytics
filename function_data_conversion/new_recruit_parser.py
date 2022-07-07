@@ -89,11 +89,10 @@ class new_recruit_parser:
 
     def parse_block(self, lines: List[str]) -> ArmyEntry:
         new_army = ArmyEntry()
-        # skip the first line as it is the player name and stored later. THis will prevent the cleaning process from altering the name
-        for i, line in enumerate(lines[1:]):
+        for i, line in enumerate(lines):
 
             if (
-                i == len(lines[1:]) - 1
+                i == len(lines) - 1
             ):  # last line is either the points total or last unit entry
                 total_points = self.detect_total_points(line)
                 if total_points:
