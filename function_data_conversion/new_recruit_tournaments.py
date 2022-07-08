@@ -1,4 +1,5 @@
-from typing import Optional
+from __future__ import annotations
+from typing import Dict, Optional, NewType
 from pydantic import BaseModel, Field
 from datetime import datetime
 import requests
@@ -101,8 +102,8 @@ class single_event(BaseModel):
     type: int  # 0=singles, 1=teams
 
 
-class unique_players(dict):
-    players: dict[str, player]
+# class unique_players(dict):
+#     players: dict[str, player]
 
 
 # ---------------------------
@@ -115,13 +116,11 @@ class nr_library_map_items(BaseModel):
     ord: int
     name: str
 
-
 class nr_library_map(BaseModel):
     id: str
     name: str
     id_game_system: str
     items: list[nr_library_map_items]
-
 
 # Deployment Data
 class nr_library_deployment_items(BaseModel):
@@ -129,13 +128,11 @@ class nr_library_deployment_items(BaseModel):
     ord: int
     name: str
 
-
 class nr_library_deployment(BaseModel):
     id: str
     name: str
     id_game_system: str
     items: list[nr_library_deployment_items]
-
 
 # Objective Data
 class nr_library_objective_items(BaseModel):
@@ -143,13 +140,11 @@ class nr_library_objective_items(BaseModel):
     ord: int
     name: str
 
-
 class nr_library_objective(BaseModel):
     id: str
     name: str
     id_game_system: str
     items: list[nr_library_objective_items]
-
 
 # Base Objects
 class nr_library_setup_categories(BaseModel):
@@ -157,13 +152,11 @@ class nr_library_setup_categories(BaseModel):
     deployment: nr_library_deployment
     objective: nr_library_objective
 
-
 class nr_library_entry(BaseModel):
     id: int
     name: str
     version: Optional[str]
     setup_categories: Optional[nr_library_setup_categories]
-
 
 class nr_library(BaseModel):
     __root__: list[nr_library_entry]
@@ -234,21 +227,28 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
 
     return sorted_armies
 
+def calculate_individual_placing(data: dict[str, ArmyEntry]) -> list[ArmyEntry]:
+    sorted_data = sorted(data.items(), key=lambda x: (x[1].calculated_total_tournament_points, x[1].calculated_total_tournament_secondary_points), reverse=True)
+    sorted_armies:list[ArmyEntry] = list(list(zip(*sorted_data))[1])
+    for army in sorted_armies:
+        army.team_placing = sorted_armies.index(army) + 1
+    return sorted_armies
 
 def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     event_data = single_event(**stored_data)
 
+
     # get list of unique players and their army lists {player_id: player}
-    player_list = unique_players()
+    player_list:dict[str, player] = dict()
     for tournament_game in event_data.games:
         for player in tournament_game.players:
             player_list[player.id_participant] = player
 
     # create list of ArmyEntry objects for each player
     armies: list[ArmyEntry] = []
-    duplicate_player_list:unique_players = (
-        player_list.copy()
-    )  # we copy the list so we have a unique list of players as the keys, and then we go through replacing the value with an ARMY Entry object
+
+    army_dict:dict[str, ArmyEntry] = dict.fromkeys(player_list.keys(), None)
+
     for player in player_list.values():
         # Handle if no army list was provided
         if player.exported_list:
@@ -269,7 +269,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         army.player_name = player.alias
         army.event_date = datetime.strptime(
             event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
-        )  # TODO: '2022-04-05T09:35:58.822Z' check this format is right
+        )   
         if event_data.type == 1:
             army.event_type = Event_types.TEAMS
             army.participants_per_team = event_data.participants_per_team
@@ -297,10 +297,9 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         army.country_name = event_data.country_name
         army.country_flag = event_data.country_flag
 
-        army.calculate_total_points()
-        army.calculate_total_tournament_points()
+        
 
-        duplicate_player_list[player.id_participant] = army
+        army_dict[player.id_participant] = army
 
     # append round performance
     for tournament_game in event_data.games:
@@ -313,7 +312,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 new_round.first_turn = True
 
             # Opponent, typing is all borked, cause dict is a copy but then we re write each value to be an armyEntry
-            new_round.opponent = duplicate_player_list[
+            new_round.opponent = army_dict[
                 tournament_game.players[i - 1].id_participant
             ].army_uuid
 
@@ -353,20 +352,28 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 ].pop()
 
             # Append round
+            round_performance = army_dict[player.id_participant].round_performance
             try:
-                duplicate_player_list[player.id_participant].round_performance.append(
+                assert isinstance(round_performance, list)
+                round_performance.append(
                     new_round
                 )
             except AttributeError:
-                duplicate_player_list[player.id_participant].round_performance = [
+                round_performance = [
                     new_round
                 ]
 
+    for army in army_dict.values():
+        army.calculate_total_tournament_points()
+    army_list = calculate_individual_placing(army_dict)
+
     if event_data.type == 1: #team event
         # list of all armyEntries from duplicate list that have round performance data
-        return calculate_team_placing(data=duplicate_player_list, teams=event_data.teams, rounds=event_data.rounds)
+        assert isinstance(event_data.teams, list[team])
+        assert isinstance(event_data.rounds, int)
+        return calculate_team_placing(data=army_dict, teams=event_data.teams, rounds=event_data.rounds)
     else:
-        return list(duplicate_player_list.values())
+        return army_list
 
 if __name__ == "__main__":
 
