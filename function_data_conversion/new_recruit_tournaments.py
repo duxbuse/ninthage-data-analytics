@@ -75,7 +75,12 @@ class extra_points(BaseModel):
 
 
 class team(BaseModel):
-    id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
+    def __init__(self, **data): #handle that the id might be "id" or "_id"
+        super().__init__(
+            id=data.pop("_id", None) or data.pop("id", None),
+            **data,
+        )
+    id: str #'61f9392492696257cf835c85'
     name: str
     id_captain: Optional[str]  #'5de7603e29951610d11f7401'
     participants: list[str]
@@ -365,160 +370,15 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
 if __name__ == "__main__":
 
-    body = {"id_tournament": "624ca38ac4babc7434f75ece"}
+    import json
+    # '[WHTFR] Team - Tournoi Warhall France par equipe 1' - 628b1da77efb5e97e2242694
+    # ordu onslaught singles - 6282df1f4485537e8fca47b7
+    # Winter is Coming singles - 62341093dd9da21766c3ed48
+    # Bighorn GT singles - 6202d66466a3ec2968f61b4b
+    # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
+    event_id = "628b1da77efb5e97e2242694"
+    with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
+        stored_data =json.load(f)
 
-    url = f"https://api.newrecruit.eu/api/reports"
-    response = requests.post(
-        url,
-        json=body,
-        headers={
-            "Accept": "application/json",
-            "User-Agent": "ninthage-data-analytics/1.1.0",
-        },
-    )  # need to blank the user agent as the default is automatically blocked
-    data = response.json()
-    stored_data = {
-        "name": "MAPM Mai 3 Player Team",
-        "games": data,
-        "country_name": "Germany",
-        "country_flag": "🇩🇪",
-        "participants_per_team": 3,
-        "team_point_cap": 45,
-        "team_point_min": 15,
-        "type": 1,
-        "rounds": 3,
-        "teams": [
-            {
-                "_id": "626f988e1508e850435e3266",
-                "name": "Jackass",
-                "password": "43dd1740e939160d68573d1bbaf10d3c",
-                "status": 0,
-                "participants": [
-                    "626f988e1508e850435e3265",
-                    "62725c5e7d2b567931f5c3a7",
-                    "627285ed7d2b567931f5c3d4",
-                ],
-            },
-            {
-                "_id": "62703bf11508e850435e335a",
-                "name": "Munich Model Movement",
-                "password": "a0c1b6bf7d3d9f6c2ce001dfeaa26fa8",
-                "status": 0,
-                "participants": [
-                    "62703bf11508e850435e3359",
-                    "627069d21508e850435e3378",
-                    "6270def21508e850435e33ad",
-                ],
-                "extra_points": [
-                    {
-                        "reason": "Well Painted Army",
-                        "amount": 15,
-                        "stage": 0,
-                        "pairings": False,
-                    }
-                ],
-            },
-            {
-                "_id": "6270dd651508e850435e33aa",
-                "name": "die Simulantenbande",
-                "password": "e2fc714c4727ee9395f324cd2e7f331f",
-                "status": 0,
-                "participants": [
-                    "6270dd651508e850435e33a9",
-                    "6271619d4d22f9a677e1ebf7",
-                    "62730642893b0e1632986cae",
-                ],
-                "id_captain": "6271619d4d22f9a677e1ebf7",
-                "extra_points": [
-                    {
-                        "reason": "Well Painted Army",
-                        "amount": 11,
-                        "stage": 0,
-                        "pairings": False,
-                    }
-                ],
-            },
-            {
-                "_id": "627177074d22f9a677e1ec12",
-                "name": "Holsteiner Hitzköpfe",
-                "password": "5d1f8651864fb1068405fd70b5c67eca",
-                "status": 0,
-                "participants": [
-                    "627177074d22f9a677e1ec11",
-                    "6272360d7d2b567931f5c388",
-                    "627293927d2b567931f5c3e1",
-                ],
-                "id_captain": "627177074d22f9a677e1ec11",
-                "extra_points": [
-                    {
-                        "reason": "Well Painted Army",
-                        "amount": 11,
-                        "stage": 0,
-                        "pairings": False,
-                    }
-                ],
-            },
-            {
-                "_id": "62742da4ad0a874dcdc93804",
-                "name": "Rengschburgs Gloria",
-                "password": "48598ee283437e810f2f0eb1cf66e217",
-                "status": 0,
-                "participants": [
-                    "62742da4ad0a874dcdc93803",
-                    "62743523ad0a874dcdc9380d",
-                    "6274c316ad0a874dcdc93850",
-                ],
-                "extra_points": [
-                    {
-                        "reason": "Well Painted Army",
-                        "amount": 13,
-                        "stage": 0,
-                        "pairings": False,
-                    }
-                ],
-            },
-            {
-                "_id": "6274fb61ad0a874dcdc9387b",
-                "name": "Es eskaliert eh",
-                "password": "9767adc9909f4d9363218e083e5e94d7",
-                "status": 0,
-                "participants": [
-                    "6274fb61ad0a874dcdc9387a",
-                    "6278103ff65a49d9a99ed3fa",
-                    "627dcaae9c19a4d2e8347bd3",
-                ],
-            },
-            {
-                "_id": "62766497e83131cba5282c5b",
-                "name": "Rise of the Last Rudi",
-                "status": "0",
-                "participants": [
-                    "62702e0a1508e850435e3343",
-                    "62703c941508e850435e335c",
-                    "626118e2c4babc7434f760d2",
-                ],
-                "id_captain": "626118e2c4babc7434f760d2",
-                "extra_points": [
-                    {
-                        "reason": "Well Painted Army",
-                        "amount": 15,
-                        "stage": 0,
-                        "pairings": False,
-                    }
-                ],
-            },
-            {
-                "_id": "627dbdc99c19a4d2e8347ba7",
-                "name": "Placeholder",
-                "status": 0,
-                "participants": [
-                    "627dbde79c19a4d2e8347ba8",
-                    "627dbdf59c19a4d2e8347ba9",
-                    "627dbdff9c19a4d2e8347baa",
-                ],
-            },
-        ],
-    }
-    # event_data = single_event(**stored_data)
     armies = armies_from_NR_tournament(stored_data)
     pass
