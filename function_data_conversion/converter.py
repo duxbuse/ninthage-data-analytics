@@ -117,7 +117,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
         # If we have tk data but zipping player id's failed
         elif tk_info.event_id:
             errors.append(ValueError(f"No tkdata was loaded into armies"))
-    else:
+    elif len(errors) == 0:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
     try:

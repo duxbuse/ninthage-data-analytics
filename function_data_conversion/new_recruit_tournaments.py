@@ -28,13 +28,13 @@ class elo(BaseModel):
 
 
 class player(BaseModel):
-    alias: Optional[str]  #'Juan'
-    id_member: str
+    alias: Optional[str]  #'phillybyrd'
+    id_participant: str
     id_list: Optional[str]
     id_book: Optional[int]  # 8
     id_participant: str  #'619b6074bf3fd75cf2fb9a54',
     exported_list: Optional[str]
-    name: str
+    name: Optional[str]  #'Juan'
     elo: Optional[elo]  # Can be None if unknown
 
 
@@ -71,8 +71,8 @@ class tournament_game(BaseModel):
 class extra_points(BaseModel):
     reason: str
     amount: int
-    stage: int
-    pairings: bool
+    stage: Optional[int]
+    pairings: Optional[bool]
 
 
 class team(BaseModel):
@@ -98,7 +98,7 @@ class single_event(BaseModel):
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
-    rounds: Optional[int] #3
+    rounds: Optional[list] #3
     type: int  # 0=singles, 1=teams
 
 
@@ -186,7 +186,7 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
-def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int) -> list[ArmyEntry]:
+def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds: int) -> None:
     """
     logic here is to loop over each team and calculate how the team performed given there are soft points and also points caps per round
     """
@@ -197,12 +197,12 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
             team_total_tournament_points = 0
         team_total_secondary_points = 0
 
-        for round in range(rounds):
+        for round in range(len(rounds)):
             round_total_tournament_points = 0
             round_total_secondary_points = 0
 
             for player in team.participants:
-                if player in data and round <= len(data[player].round_performance)-1:
+                if player in data and data[player].round_performance and round <= len(data[player].round_performance)-1:
                     round_total_tournament_points += data[player].round_performance[round].result
                     round_total_tournament_points = clamp(round_total_tournament_points, data[player].team_point_cap_min, data[player].team_point_cap_max)
                     round_total_secondary_points += data[player].round_performance[round].secondary_points
@@ -225,13 +225,12 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
     for army in sorted_armies:
         army.team_placing = sorted_armies.index(army) + 1
 
-    return sorted_armies
 
 def calculate_individual_placing(data: dict[str, ArmyEntry]) -> list[ArmyEntry]:
     sorted_data = sorted(data.items(), key=lambda x: (x[1].calculated_total_tournament_points, x[1].calculated_total_tournament_secondary_points), reverse=True)
     sorted_armies:list[ArmyEntry] = list(list(zip(*sorted_data))[1])
     for army in sorted_armies:
-        army.team_placing = sorted_armies.index(army) + 1
+        army.list_placing = sorted_armies.index(army) + 1
     return sorted_armies
 
 def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
@@ -252,11 +251,15 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     for player in player_list.values():
         # Handle if no army list was provided
         if player.exported_list:
+            try:
+                armies = Convert_lines_to_army_list(
+                    event_data.name, player.exported_list.split("/n"), http
+                )
+            except Multi_Error as e:
+                # basically skipping the error for now casue we cant change the armylist
+                # TODO: make this a validation error
+                print(f"Error converting army list for {player.id_participant}: {e}")
 
-            armies = Convert_lines_to_army_list(
-                event_data.name, player.exported_list.split("/n"), http
-            )
-    
             if len(armies) == 1:
                 army = armies[0]
             else:
@@ -354,7 +357,6 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             # Append round
             round_performance = army_dict[player.id_participant].round_performance
             try:
-                assert isinstance(round_performance, list)
                 round_performance.append(
                     new_round
                 )
@@ -365,15 +367,14 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
     for army in army_dict.values():
         army.calculate_total_tournament_points()
-    army_list = calculate_individual_placing(army_dict)
 
     if event_data.type == 1: #team event
         # list of all armyEntries from duplicate list that have round performance data
-        assert isinstance(event_data.teams, list[team])
-        assert isinstance(event_data.rounds, int)
-        return calculate_team_placing(data=army_dict, teams=event_data.teams, rounds=event_data.rounds)
-    else:
-        return army_list
+        assert event_data.teams is not None
+        assert event_data.rounds is not None
+        calculate_team_placing(data=army_dict, teams=event_data.teams, rounds=event_data.rounds)
+
+    return calculate_individual_placing(army_dict)
 
 if __name__ == "__main__":
 
@@ -383,7 +384,9 @@ if __name__ == "__main__":
     # Winter is Coming singles - 62341093dd9da21766c3ed48
     # Bighorn GT singles - 6202d66466a3ec2968f61b4b
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
-    event_id = "628b1da77efb5e97e2242694"
+    # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
+    # North American Team Championships 2021 - 61945055989a624fe73e77bc
+    event_id = "61945055989a624fe73e77bc"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
