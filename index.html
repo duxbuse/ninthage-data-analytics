@@ -454,7 +454,8 @@
 
           <div class="row justify-content-center">
             <div class="col-md-4 d-flex justify-content-center">
-              <button type="submit" class="btn btn-primary shadow-lg">Submit</button>
+              <button id="submit_btn" type="submit" class="btn btn-primary shadow-lg"
+                aria-disabled="false">Submit</button>
             </div>
           </div>
         </form>
@@ -489,6 +490,9 @@
       const player2_army = document.getElementById("player2_army");
       player2_army.addEventListener("focusin", showWaitingMessage);
       player2_army.addEventListener("focusout", showDisplayFormattedArmy);
+
+      // Force initial state to be valid for the second player
+      document.getElementById("player2_army_formatted").setAttribute("validated", true)
     }
 
     const waitingMessage = " -- Waiting for focus change"
@@ -503,9 +507,32 @@
       console.log("showing " + evt.currentTarget.id);
       const formatted = document.getElementById(evt.currentTarget.id + "_formatted");
       const label = document.getElementById(evt.currentTarget.id + "_formatted_label");
-      
+
       formatArmy(evt.currentTarget.value).then(formattedArmy => {
-        formatted.innerText = formattedArmy;
+        btn = document.getElementById("submit_btn");
+        formatted.setAttribute("validated", formattedArmy.validated); //store if its formatting is ok or not
+
+        if (
+          (
+            // Both are validated correctly
+            document.getElementById("player1_army_formatted").getAttribute("validated") === 'true'
+            && document.getElementById("player2_army_formatted").getAttribute("validated") === 'true'
+          )
+          ||
+          (
+            // 1 is valid and 2 is blank
+            document.getElementById("player1_army_formatted").getAttribute("validated") === 'true'
+            && document.getElementById("player2_army").value === ""
+          )
+        ) { //if both are ok
+          btn.disabled = false; //enable the submit button
+          btn.setAttribute("aria-disabled", "false");
+        } else {
+          btn.disabled = true; //there was an error, disable the submit button
+          btn.setAttribute("aria-disabled", "true");
+        }
+
+        formatted.innerText = formattedArmy.data;
         label.innerText = label.innerText.replace(waitingMessage, "");
         formatted.parentElement.classList.remove('d-none');
 
@@ -518,10 +545,11 @@
         headers: new Headers({ 'content-type': 'application/json', "Accept": "application/json", "User-Agent": "ninthage-data-reporter/1.1.0" }),
         body: JSON.stringify({ "data": data })
       };
+
       console.log("fetching")
       let response = await fetch("https://www.9thbuilder.com/en/api/v1/builder/imports/format", options);
       if (response.status != 200) {
-        return "ERROR: Formatting failed, please ensure army follows the new recruit format.";
+        return { "validated": false, "data": "ERROR: Formatting failed, please ensure army follows the new recruit format." };
       } else {
         // Display list errors
         let json_data = await response.json();
@@ -530,9 +558,10 @@
           json_data.validation.errors.forEach(error => {
             returnString = returnString.concat(error.message, "\n");
           })
-          return returnString;
+          return { "validated": false, "data": returnString };
         } else {
-          return json_data.formated;
+          // return formatted version of the army
+          return { "validated": true, "data": json_data.formated };
         }
       }
 
