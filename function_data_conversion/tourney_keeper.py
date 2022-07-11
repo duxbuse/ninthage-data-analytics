@@ -90,16 +90,28 @@ def Get_games_for_tournament(tourney_id: int) -> Union[list, None]:
     if success:
         data = json.loads(message)["Games"]
         # remove any games with dodgy results
-        data = [game for game in data if result_validation(game["Player1Result"], game["Player2Result"])]
+        data = [game for game in data if result_validation(game)]
         return data
     return None
 
-def result_validation(p1_result: int, p2_result:int) -> bool:
-    if not 0 <= p1_result <= 20:
+def result_validation(game: dict) -> bool:
+    """Remove game data with either results out side 0-20 or with no playerID's
+
+    Args:
+        game (dict): individual game data from TK
+
+    Returns:
+        bool: if game is valid
+    """
+    if not 0 <= game["Player1Result"] <= 20:
         return False
-    if not 0 <= p2_result <= 20:
+    if not 0 <= game["Player2Result"] <= 20:
         return False
-    if not p1_result + p2_result == 20:
+    if not game["Player1Result"] + game["Player2Result"] == 20:
+        return False
+    if not game.get("Player1Id", 0) > 0:
+        return False
+    if not game.get("Player2Id", 0) > 0:
         return False
     return True
 
@@ -127,7 +139,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = http.get(
-            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=5
         )
     except requests.exceptions.ReadTimeout as err:
         return None
@@ -138,7 +150,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
         message = response.json()["Message"]
         data = json.loads(message)
         return data
-    # print(f"Failed to download player data for {tournamentPlayerId}")
+    print(f"Failed to download player data for {tournamentPlayerId}")
     return None
 
 
@@ -171,32 +183,28 @@ def Get_players_names_from_games(games: dict) -> dict:
                 )
             )
         for future in concurrent.futures.as_completed(futures):
-            try:
-                details = future.result()
-                if details:
-                    tournament_player_id = details.get("TournamentPlayerId")
-                    player_name:str = details.get("PlayerName")
-                    tk_player_id = details.get("PlayerId")
-                    team_name = details.get("TeamName")
-                    team_id = details.get("TeamId")
-                    active = details.get("Active")
+            details = future.result()
+            if details:
+                tournament_player_id = details.get("TournamentPlayerId")
+                player_name:str = details.get("PlayerName")
+                tk_player_id = details.get("PlayerId")
+                team_name = details.get("TeamName")
+                team_id = details.get("TeamId")
+                active = details.get("Active")
 
-                    primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
-                    if primary_codex is None:
-                        primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
+                primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
+                if primary_codex is None:
+                    primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
 
-                    dummy_players = r"(player\d|[Ss]tandin[0-9]* *)"
-                    if re.fullmatch(dummy_players, player_name):
-                        # Skip dummy players
-                        print(f"Dummy player {player_name} skipped")
-                        continue
+                dummy_players = r"(player\d+|[Ss]tandin\dg* *|[Bb]ye ?\d+)"
+                if re.fullmatch(dummy_players, player_name):
+                    # Skip dummy players
+                    print(f"Dummy player {player_name} skipped")
+                    continue
 
-                    output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
-                else:
-                   raise ValueError(f"Tourney Keeper yielded no data for {details.get('PlayerId')}")
-            except Exception as e:
-                # TODO: I think this should be a raise ValueError not a print
-                print(e)
+                output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
+            else:
+                raise ValueError(f"Tourney Keeper yielded no data for playerID:{Id}")
 
     return output
 

@@ -104,7 +104,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
                                 unique_from_tk.remove(y)
                             except ValueError:
                                 # This happens when there are 2 player names that are the same and so the value can not be removed.
-                                # This is already handeled above with the message of all duplicated players so does not need handeling here
+                                # This is already handled above with the message of all duplicated players so does not need handling here
                                 pass
 
                 # if all the "missing" tk names are not active then ignore this error
@@ -286,7 +286,7 @@ if __name__ == "__main__":
 
     t1_start = perf_counter()
 
-    path = Path("data/list-files")
+    path = Path("../data/list-files")
 
     os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
     for file in os.listdir(path):
