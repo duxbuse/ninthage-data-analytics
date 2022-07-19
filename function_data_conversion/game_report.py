@@ -16,10 +16,16 @@ from data_classes import (
 
 def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     errors: list[Exception] = []
+    if not data:
+        raise Multi_Error([ValueError("No data provided")])
+        
     name1 = "name-not-provided"
     if data.get("player1_name", [None])[0]:
         name1 = data.get("player1_name")[0]
-    player1_list = "\n".join([name1, data.get("player1_army")[0]])
+    if data.get("player1_army") and data.get("player1_army")[0]:
+        player1_list = "\n".join([name1, data.get("player1_army")[0]])
+    else:
+        raise Multi_Error([ValueError("Player 1 army not provided")])
     player2_list = ""
     name2 = "name-not-provided"
     if data.get("player2_army", [None])[0]:
@@ -38,7 +44,11 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         if len(list_of_armies) == 2:
             player2_army = list_of_armies[1]
         else:
-            errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed."))
+            errors.append(
+                ValueError(
+                    f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed."
+                )
+            )
 
     player1_round = None
     if any(
@@ -98,7 +108,9 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         score_total += player2_round.result
 
     if score_total > 20:
-        errors.append(ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}"))
+        errors.append(
+            ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}")
+        )
 
     # Set secondary points
     if data.get("player1_vps", [None])[0]:
@@ -190,3 +202,9 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         raise Multi_Error(errors)
 
     return list_of_armies
+
+
+if __name__ == "__main__":
+    data = {"data": {"name": "manual_game_report"}}
+    armies_from_report(data=data, event_name="test-event")
+    pass

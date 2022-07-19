@@ -73,11 +73,11 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
                 list_of_armies = Convert_lines_to_army_list(event_name, lines)
             except Multi_Error as e:
-                print(f"Multi_Error1: {[str(x) for x in e.errors]}")
+                print(f"Multi_ErrorWD: {[str(x) for x in e.errors]}")
                 return {"message": [str(x) for x in e.errors]}, 400
             except Exception as e:
                 tb1 = traceback.TracebackException.from_exception(e)
-                print(f"Captured non multi error:{e}\n {''.join(tb1.format())}")
+                print(f"Non multi errorWD:{e}\n {''.join(tb1.format())}")
                 return {"message": [str(e)]}, 501
         else:
             return {
@@ -92,10 +92,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
 
         except Multi_Error as e:
-            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            print(f"Multi_ErrorGR: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            print(f"Non Multi ErrorGR: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
     
     # Fading Flame data
@@ -114,10 +114,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_fading_flame(data)
 
         except Multi_Error as e:
-            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            print(f"Multi_ErrorFF: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            print(f"Non Multi ErrorFF: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
     
     # Warhall data
@@ -138,10 +138,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_warhall(data)
 
         except Multi_Error as e:
-            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            print(f"Multi_ErrorWH: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            print(f"Non Multi ErrorWH: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
 
     # NEW RECRUIT TOURNAMENTS
@@ -162,10 +162,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_NR_tournament(data)
 
         except Multi_Error as e:
-            print(f"Multi_Error2: {[str(x) for x in e.errors]}")
+            print(f"Multi_ErrorNR: {[str(x) for x in e.errors]}")
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
-            print(f"Non Multi Error: {str(type(e))}, {str(e)}")
+            print(f"Non Multi ErrorNR: {str(type(e))}, {str(e)}")
             return {"message": [str(e)]}, 501
 
     else:
