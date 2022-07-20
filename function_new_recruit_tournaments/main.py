@@ -190,13 +190,13 @@ def function_new_recruit_tournaments(request: Request):
             "teams": event.teams,
         }
 
-        # stored_data = store_data(data=data, event_id=event.id)
+        stored_data = store_data(data=data, event_id=event.id)
 
-        # execution = executions.Execution(argument=jsons.dumps(stored_data))
+        execution = executions.Execution(argument=jsons.dumps(stored_data))
 
-        # # Execute the workflow.
-        # response = execution_client.create_execution(parent=parent, execution=execution)
-        # print(f"Event: {event.id}, Created execution: {response.name}")
+        # Execute the workflow.
+        response = execution_client.create_execution(parent=parent, execution=execution)
+        print(f"Event: {event.id}, Created execution: {response.name}")
 
     return f"{len(all_events.tournaments)} events found from {start} to {end}.", 200
 
