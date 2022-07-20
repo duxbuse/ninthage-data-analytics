@@ -227,6 +227,8 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
 
 
 def calculate_individual_placing(data: dict[str, ArmyEntry]) -> list[ArmyEntry]:
+    if not data:
+        return []
     sorted_data = sorted(data.items(), key=lambda x: (x[1].calculated_total_tournament_points, x[1].calculated_total_tournament_secondary_points), reverse=True)
     sorted_armies:list[ArmyEntry] = list(list(zip(*sorted_data))[1])
     for army in sorted_armies:
@@ -386,7 +388,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "61945055989a624fe73e77bc"
+    event_id = "626ed0a51508e850435e319f"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
