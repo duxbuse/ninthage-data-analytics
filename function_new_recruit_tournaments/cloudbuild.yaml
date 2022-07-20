@@ -15,4 +15,5 @@ steps:
       - --region=${_REGION}
       - --source=./function_new_recruit_tournaments/
       - --trigger-http
+      - --timeout=300
       - --runtime=python39
