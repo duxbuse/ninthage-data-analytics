@@ -146,8 +146,15 @@ def get_tournament_games(tournament_id: str) -> dict:
 
 
 def function_new_recruit_tournaments(request: Request):
-    start: str = ""
+    start: str = "" #format - "2022-12-31"
     end: str = "now"
+
+    if request.json:
+        if "start" in request.json:
+            start = request.json["start"]
+        if "end" in request.json:
+            end = request.json["end"]
+
     tournament_list = get_tournaments(start=start, end=end)
     all_events = get_tournaments_response(tournaments=tournament_list)
     project = "ninthage-data-analytics"
