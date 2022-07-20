@@ -49,9 +49,9 @@ class tournaments_data(BaseModel):
     short: str  #'Prueba 2'
     participants: int  # 32
     participants_per_team: int  # 8
-    team_proposals: int  # 2
-    team_point_cap: int  # 100
-    team_point_min: int  # 60
+    team_proposals: Optional[int]  # 2
+    team_point_cap: Optional[int]  # 100
+    team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
     start: str  #'2022-02-01T10:45:49.578Z'
     end: str  #'2022-02-01T10:45:49.578Z'
@@ -190,13 +190,13 @@ def function_new_recruit_tournaments(request: Request):
             "teams": event.teams,
         }
 
-        stored_data = store_data(data=data, event_id=event.id)
+        # stored_data = store_data(data=data, event_id=event.id)
 
-        execution = executions.Execution(argument=jsons.dumps(stored_data))
+        # execution = executions.Execution(argument=jsons.dumps(stored_data))
 
-        # Execute the workflow.
-        response = execution_client.create_execution(parent=parent, execution=execution)
-        print(f"Event: {event.id}, Created execution: {response.name}")
+        # # Execute the workflow.
+        # response = execution_client.create_execution(parent=parent, execution=execution)
+        # print(f"Event: {event.id}, Created execution: {response.name}")
 
     return f"{len(all_events.tournaments)} events found from {start} to {end}.", 200
 
@@ -230,5 +230,6 @@ def store_data(data: dict, event_id: str) -> dict:
 
 
 if __name__ == "__main__":
-    request_obj = Request.from_values()
-    function_new_recruit_tournaments(request_obj)
+    test_data = {"start": "2022-01-01", "end": "2022-06-31"}
+    request_obj = Request.from_values(json=test_data)
+    print(function_new_recruit_tournaments(request_obj))
