@@ -87,6 +87,13 @@ class tournaments_data(BaseModel):
         else:
             return v
 
+    @validator("participants", pre=True)
+    def participants_validator(cls, v):
+        if isinstance(v, str):
+            return 0
+        else:
+            return v
+
 
 class get_tournaments_response(BaseModel):
     tournaments: list[tournaments_data]
