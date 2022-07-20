@@ -175,6 +175,8 @@ def function_new_recruit_tournaments(request: Request):
     # Construct the fully qualified location path.
     parent = workflows_client.workflow_path(project, location, workflow)
 
+    errors = []
+
     for event in all_events.tournaments:
         data = {
             "name": event.name
@@ -190,14 +192,19 @@ def function_new_recruit_tournaments(request: Request):
             "teams": event.teams,
         }
 
-        stored_data = store_data(data=data, event_id=event.id)
-
+        try:
+            stored_data = store_data(data=data, event_id=event.id)
+        except jsons.exceptions.SerializationError as e:
+            errors.append(e)
+            continue
         execution = executions.Execution(argument=jsons.dumps(stored_data))
 
         # Execute the workflow.
         response = execution_client.create_execution(parent=parent, execution=execution)
         print(f"Event: {event.id}, Created execution: {response.name}")
 
+    if errors:
+        return f"{len(all_events.tournaments)} events found with {len(errors)}\nErrors: {str(errors)}", 400
     return f"{len(all_events.tournaments)} events found from {start} to {end}.", 200
 
 
