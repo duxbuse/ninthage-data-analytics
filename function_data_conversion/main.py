@@ -78,7 +78,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             except Exception as e:
                 tb1 = traceback.TracebackException.from_exception(e)
                 print(f"Non multi errorWD:{e}\n {''.join(tb1.format())}")
-                return {"message": [str(e)]}, 501
+                return {"message": [str(e)]}, 400
         else:
             return {
                 "message": [
@@ -96,7 +96,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
             print(f"Non Multi ErrorGR: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 501
+            return {"message": [str(e)]}, 400
     
     # Fading Flame data
     elif file_name == "fading_flame.json":
@@ -118,7 +118,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
             print(f"Non Multi ErrorFF: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 501
+            return {"message": [str(e)]}, 400
     
     # Warhall data
     elif file_name == "warhall":
@@ -142,7 +142,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
             print(f"Non Multi ErrorWH: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 501
+            return {"message": [str(e)]}, 400
 
     # NEW RECRUIT TOURNAMENTS
     elif file_name == "newrecruit_tournament.json":
@@ -166,7 +166,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             return {"message": [str(x) for x in e.errors]}, 400
         except Exception as e:
             print(f"Non Multi ErrorNR: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 501
+            return {"message": [str(e)]}, 400
 
     else:
         return {
