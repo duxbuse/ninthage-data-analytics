@@ -1,3 +1,4 @@
+from asyncio import events
 import google.cloud.workflows_v1beta
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
@@ -176,8 +177,11 @@ def function_new_recruit_tournaments(request: Request):
     parent = workflows_client.workflow_path(project, location, workflow)
 
     errors = []
+    events_proccessed = 0
 
     for event in all_events.tournaments:
+        if event.id_game_system not in [5, 6]: #hardcoded magic numbers for 9thage 2021 and 2022
+            continue
         data = {
             "name": event.name
             or event.short
@@ -202,10 +206,11 @@ def function_new_recruit_tournaments(request: Request):
         # Execute the workflow.
         response = execution_client.create_execution(parent=parent, execution=execution)
         print(f"Event: {event.id}, Created execution: {response.name}")
+        events_proccessed += 1
 
     if errors:
-        return f"{len(all_events.tournaments)} events found with {len(errors)}\nErrors: {str(errors)}", 400
-    return f"{len(all_events.tournaments)} events found from {start} to {end}.", 200
+        return f"{events_proccessed} events found with {len(errors)}\nErrors: {str(errors)}", 400
+    return f"{events_proccessed} events found from {start} to {end}.", 200
 
 
 def upload_blob(bucket_name: str, file_path: str, destination_blob_name: str) -> None:

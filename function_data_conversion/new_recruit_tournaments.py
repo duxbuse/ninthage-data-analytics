@@ -388,7 +388,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "626ed0a51508e850435e319f"
+    event_id = "62947cf2707f76f796db67ed"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
