@@ -255,10 +255,10 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         if player.exported_list:
             try:
                 armies = Convert_lines_to_army_list(
-                    event_data.name, player.exported_list.split("/n"), http
+                    event_data.name, player.exported_list.split("\n"), http
                 )
             except Multi_Error as e:
-                # basically skipping the error for now casue we cant change the armylist
+                # basically skipping the error for now cause we cant change the armylist
                 # TODO: make this a validation error
                 print(f"Error converting army list for {player.id_participant}: {e}")
 
@@ -266,8 +266,9 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 army = armies[0]
             else:
                 raise Multi_Error(
-                    [ValueError(f"0 or 2+ armies found for player {player.id_participant}")]
+                    [ValueError(f"{len(armies)} armies found for player {player.id_participant}\nPlayer list: \n{player.exported_list}")]
                 )
+
         else:
             army = ArmyEntry()
 
@@ -322,10 +323,10 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             ].army_uuid
 
             # Won secondary objective
-            if tournament_game.score[i].BP <= tournament_game.score[i].BPObj:
-                new_round.won_secondary = False
-            elif tournament_game.score[i].BP > tournament_game.score[i].BPObj:
+            if tournament_game.score[i].BP < tournament_game.score[i].BPObj:
                 new_round.won_secondary = True
+            elif tournament_game.score[i].BP >= tournament_game.score[i].BPObj:
+                new_round.won_secondary = False
 
             # Save result
             new_round.result = tournament_game.score[i].BPObj
@@ -357,13 +358,12 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 ].pop()
 
             # Append round
-            round_performance = army_dict[player.id_participant].round_performance
             try:
-                round_performance.append(
+                army_dict[player.id_participant].round_performance.append(
                     new_round
                 )
             except AttributeError:
-                round_performance = [
+                army_dict[player.id_participant].round_performance = [
                     new_round
                 ]
 
@@ -388,7 +388,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "62947cf2707f76f796db67ed"
+    event_id = "6282df1f4485537e8fca47b7"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
