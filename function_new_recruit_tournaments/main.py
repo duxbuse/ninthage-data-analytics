@@ -1,17 +1,16 @@
-from asyncio import events
+from datetime import datetime
+from os import remove
+from typing import Optional
+
+import google.cloud.storage
 import google.cloud.workflows_v1beta
+import jsons
+import requests
+from dateutil.relativedelta import relativedelta
+from flask.wrappers import Request
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
-import google.cloud.storage
-from flask.wrappers import Request
-from datetime import datetime
-from typing import Optional
-from os import remove
-from dateutil.relativedelta import relativedelta
-import requests
-import jsons
 from pydantic import BaseModel, Field, validator
-
 
 http = requests.Session()
 
@@ -180,7 +179,7 @@ def function_new_recruit_tournaments(request: Request):
     events_proccessed = 0
 
     for event in all_events.tournaments:
-        if event.id_game_system not in [5, 6]: #hardcoded magic numbers for 9thage 2021 and 2022
+        if event.id_game_system not in [5, 6]: #Skip non 9th age events, hardcoded magic numbers for 9thage 2021 and 2022
             continue
         data = {
             "name": event.name
@@ -195,7 +194,8 @@ def function_new_recruit_tournaments(request: Request):
             "type": event.type,
             "teams": event.teams,
         }
-
+        if data["games"] is None: #Skip events that have no games played
+            continue
         try:
             stored_data = store_data(data=data, event_id=event.id)
         except jsons.exceptions.SerializationError as e:

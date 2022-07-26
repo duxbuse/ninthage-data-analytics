@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Optional, NewType
 from pydantic import BaseModel, Field
-from datetime import datetime
+import datetime
 import requests
 from functools import cache
 from multi_error import Multi_Error
@@ -272,8 +272,10 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         else:
             army = ArmyEntry()
 
+        army.tournament = event_data.name
         army.player_name = player.alias
-        army.event_date = datetime.strptime(
+        army.ingest_date = datetime.datetime.now(datetime.timezone.utc)
+        army.event_date = datetime.datetime.strptime(
             event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
         )   
         if event_data.type == 1:

@@ -1,7 +1,6 @@
 from typing import List
 from pathlib import Path
 from datetime import datetime, timezone
-from fuzzywuzzy import fuzz
 import concurrent.futures
 import requests
 from typing import Optional
@@ -12,7 +11,6 @@ from utility_functions import (
     clean_lines,
 )
 from parser_protocol import Parser
-from tourney_keeper import load_tk_info, append_tk_game_data
 from data_classes import ArmyEntry, Army_names, Tk_info
 from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
@@ -21,12 +19,6 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
     errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
-    # TODO: skip this for obviously non tk events like warhall/NR
-    try:
-        tk_info = load_tk_info(event_name)
-    except ValueError as e:
-        errors.append(e)
-        tk_info = Tk_info()
 
     cleaned_lines = clean_lines(lines)
 
@@ -39,7 +31,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
         for block in armyblocks:
             futures.append(
                 executor.submit(
-                    proccess_block, block, event_size, event_name, ingest_date, tk_info, session
+                    proccess_block, block, event_size, event_name, ingest_date, session
                 )
             )
         for future in concurrent.futures.as_completed(futures):
@@ -48,83 +40,8 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
             except ValueError as e:
                 errors.append(e)
 
-    if army_list:
-
-        zipped = list(
-            zip(
-                *[
-                    (x.player_name, x.tourney_keeper_TournamentPlayerId)
-                    for x in army_list
-                    if x.tourney_keeper_TournamentPlayerId
-                ]
-            )
-        )
-        if len(zipped) == 2:
-            matched_player_names = zipped[0]
-            matched_player_tkids = zipped[1]
-            # check to make sure that all players are uniquely identified in tk
-            if len(set(matched_player_tkids)) != len(matched_player_tkids):
-                double_matches = set(
-                    [
-                        x
-                        for x in matched_player_tkids
-                        if matched_player_tkids.count(x) > 1
-                    ]
-                )
-                doubles_with_name = set(
-                    [
-                        x
-                        for x in zip(matched_player_names, matched_player_tkids)
-                        if x[1] in double_matches
-                    ]
-                )
-
-                errors.append(
-                    ValueError(
-                        f"""Players duplicated in word file and not uniquely mapped to tk:\n {doubles_with_name}"""
-                    )
-                )
-
-            if (
-                tk_info.player_list
-                and len(tk_info.player_list) != len(matched_player_tkids)
-            ):
-                # If we have the player count from TK then we can check that the number of lists we read in are equal
-                from_file = [x.player_name for x in army_list]
-                from_tk = [x["Player_name"] for x in tk_info.player_list.values()]
-
-                # difference doesn't work here because we are fuzz matching
-                unique_from_file = from_file[:]
-                unique_from_tk = from_tk[:]
-                for x in from_file:
-                    for y in from_tk:
-                        if fuzz.token_sort_ratio(x, y) == 100:
-                            try:
-                                unique_from_file.remove(x)
-                                unique_from_tk.remove(y)
-                            except ValueError:
-                                # This happens when there are 2 player names that are the same and so the value can not be removed.
-                                # This is already handled above with the message of all duplicated players so does not need handling here
-                                pass
-
-                # if all the "missing" tk names are not active then ignore this error
-                if any(missing_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active")]):
-                    errors.append(
-                        ValueError(
-                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
-                        )
-                    )
-        # If we have tk data but zipping player id's failed
-        elif tk_info.event_id:
-            errors.append(ValueError(f"No tkdata was loaded into armies"))
-    elif len(errors) == 0:
+    if len(army_list) == 0:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
-
-    try:
-        if tk_info.game_list and tk_info.player_list:
-            append_tk_game_data(tk_info, army_list)
-    except ValueError as e:
-        errors.append(e)
 
     if errors:
         raise Multi_Error(errors)
@@ -177,7 +94,6 @@ def parse_army_block(
     tournament_name: str,
     event_size: int,
     ingest_date: datetime,
-    tk_info: Tk_info,
 ) -> ArmyEntry:
     army = parser.parse_block(armyblock)
     army.ingest_date = ingest_date
@@ -186,66 +102,6 @@ def parse_army_block(
     army.tournament = tournament_name
     army.list_as_str = "\n".join(armyblock)
     army.calculate_total_points()
-
-    army.event_date = tk_info.event_date
-    army.event_type = tk_info.event_type
-
-    # TODO: break this logic out to its own function - TK player matching
-    if tk_info.player_list:
-        # fuzzy match name from lists file and tourney keeper
-        close_matches = [
-            (
-                item,
-                ratio,
-            )
-            for item in tk_info.player_list.items()
-            if (
-                ratio := fuzz.token_sort_ratio(item[1]["Player_name"], army.player_name)
-            )
-            > 50
-        ]
-        if len(close_matches) > 0:
-            sorted_by_fuzz_ratio = sorted(
-                close_matches, key=lambda tup: tup[1], reverse=True
-            )
-
-            if (
-                sorted_by_fuzz_ratio[0][1] != 100
-            ):  # only report when there are a few options and the top pick isn't 100
-                raise ValueError(
-                    f"No perfect matches for '{army.player_name}' in {sorted_by_fuzz_ratio}"
-                )
-
-            top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
-            if len(top_picks) > 1:
-                # reduce number of top picks down by army played
-                top_picks = [
-                    x
-                    for x in top_picks
-                    if Army_names[x[0][1].get("Primary_Codex", army.army).upper()] == army.army
-                ]
-
-                if len(top_picks) > 1:
-                    raise ValueError(
-                        f"These {len(top_picks)} players are indistinguishable: {top_picks}"
-                    )
-                elif len(top_picks) == 0:
-                    raise ValueError(
-                        f"None of the tk matches for {army.player_name} played {army.army} as found in the word docx."
-                    )
-            # set current army to be the top pick
-            army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
-                "TournamentPlayerId"
-            )
-            army.tourney_keeper_PlayerId = top_picks[0][0][0]
-
-        else:
-            extra_info = "\n".join(armyblock)
-            raise ValueError(
-                f"""Player: "{army.player_name}" not on TK
-                Extra info: {extra_info}"""
-            )
-
     return army
 
 def proccess_block(
@@ -253,7 +109,6 @@ def proccess_block(
     event_size: int,
     event_name: str,
     ingest_date: datetime,
-    tk_info: Tk_info,
     session: Optional[requests.Session]=None,
 ) -> ArmyEntry:
     # format block TODO: event date is not only from TK how does NR set the date
@@ -269,7 +124,6 @@ def proccess_block(
         tournament_name=event_name,
         event_size=event_size,
         ingest_date=ingest_date,
-        tk_info=tk_info,
     )
     if formated_block:
         army.validated = not formated_block.validation.hasError
