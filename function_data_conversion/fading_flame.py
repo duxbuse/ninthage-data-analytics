@@ -89,7 +89,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         # build up compliant list of lines to be read in
         lines:list[str] = [player1_id, player1_faction] + player1_list_no_army + [player2_id, player2_faction] + player2_list_no_army
         try:
-            list_of_armies = Convert_lines_to_army_list(event_name, lines)
+            list_of_armies = Convert_lines_to_army_list(event_name=event_name, event_date=game_date, lines=lines)
         
 
             if not list_of_armies or len(list_of_armies) == 0:

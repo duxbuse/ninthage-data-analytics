@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, validator
 
 from converter import Convert_lines_to_army_list
@@ -73,6 +74,7 @@ def mark_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
 
 def armies_from_warhall(data:dict) -> list[ArmyEntry]:
     errors: list[Exception] = []
+    now = datetime.now()
     try:
         data_obj = warhall_data(**data)
     except ValueError as e:
@@ -86,7 +88,7 @@ def armies_from_warhall(data:dict) -> list[ArmyEntry]:
     # load in all the army data
     for player in data_obj.PlayersData:
         try:
-            army = Convert_lines_to_army_list("warhall", [player.ArmyName] + player.List).pop()
+            army = Convert_lines_to_army_list(event_name="warhall", event_date=now, lines=[player.ArmyName] + player.List).pop()
             army_round = Round(
                 result=player.Result,
                 won_secondary=player.Objective == "Won",
@@ -97,6 +99,7 @@ def armies_from_warhall(data:dict) -> list[ArmyEntry]:
             army.round_performance = [army_round]
             army.data_source = Data_sources.WARHALL
             army.event_type = Event_types.CASUAL
+            army.event_date = now
             army.calculate_total_points()
             mark_dead(player, army)
             list_of_armies.append(army)

@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import requests
 
-from data_classes import Army_names, ArmyEntry, Tk_info
+from data_classes import Army_names, ArmyEntry
 from multi_error import Multi_Error
 from new_recruit_parser import new_recruit_parser
 from ninth_builder import format_army_block
@@ -14,7 +14,7 @@ from utility_functions import (DetectParser, Write_army_lists_to_json_file,
                                clean_lines)
 
 
-def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optional[requests.Session]=None) -> List[ArmyEntry]:
+def Convert_lines_to_army_list(event_name: str, event_date: Optional[datetime], lines: List[str], session: Optional[requests.Session]=None) -> List[ArmyEntry]:
     errors: List[Exception] = []
 
     army_list: List[ArmyEntry] = []
@@ -30,7 +30,7 @@ def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optio
         for block in armyblocks:
             futures.append(
                 executor.submit(
-                    proccess_block, block, event_size, event_name, ingest_date, session
+                    proccess_block, block, event_size, event_name, ingest_date, event_date, session
                 )
             )
         for future in concurrent.futures.as_completed(futures):
@@ -108,10 +108,10 @@ def proccess_block(
     event_size: int,
     event_name: str,
     ingest_date: datetime,
+    event_date: Optional[datetime],
     session: Optional[requests.Session]=None,
 ) -> ArmyEntry:
-    # format block TODO: event date is not only from TK how does NR set the date
-    formated_block = format_army_block(army_block=armyblock, event_date=Tk_info.event_date, session=session)
+    formated_block = format_army_block(army_block=armyblock, event_date=event_date, session=session)
     if formated_block and formated_block.formated:
         armyblock = formated_block.formated.split("\n")
     # Select which parser to use

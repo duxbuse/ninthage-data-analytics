@@ -488,8 +488,8 @@ def verify_tk_data(army_list: list[ArmyEntry], tk_info: Tk_info):
     
 
 def armies_from_docx(event_name: str, lines: list[str]) -> List[ArmyEntry]:
-    armies = Convert_lines_to_army_list(event_name=event_name, lines=lines)
     tk_info = load_tk_info(event_name)
+    armies = Convert_lines_to_army_list(event_name=event_name, event_date=tk_info.event_date, lines=lines)
     if tk_info and tk_info.game_list and tk_info.player_list: #game was found on tk
         for army in armies:
             match_player_to_tk_name(tk_info=tk_info, army=army)

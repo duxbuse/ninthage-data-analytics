@@ -35,8 +35,15 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
 
         player2_list = "\n".join([name2, data.get("player2_army")[0]])
 
+    if data.get("game_date", [None])[0]:  # 2021-12-24'
+        game_date = datetime.strptime(data.get("game_date")[0], "%Y-%m-%d").replace(
+            tzinfo=timezone.utc
+        )
+    else:
+        game_date = None
+
     lines = "\n".join([player1_list, player2_list]).split("\n")
-    list_of_armies = Convert_lines_to_army_list(event_name, lines)
+    list_of_armies = Convert_lines_to_army_list(event_name=event_name, event_date=game_date, lines=lines)
     if len(list_of_armies) == 0:
         errors.append(ValueError("No armies found"))
     player1_army = list_of_armies[0]
@@ -144,11 +151,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         player2_round.first_turn = True
 
     # Game date
-    if data.get("game_date", [None])[0]:  # 2021-12-24'
-        game_date = datetime.strptime(data.get("game_date")[0], "%Y-%m-%d").replace(
-            tzinfo=timezone.utc
-        )
-
+    if game_date:  # 2021-12-24'
         player1_army.event_date = game_date
         if player2_army:
             player2_army.event_date = game_date

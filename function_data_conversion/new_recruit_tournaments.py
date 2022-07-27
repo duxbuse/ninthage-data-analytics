@@ -246,12 +246,16 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
     army_dict:dict[str, ArmyEntry] = dict.fromkeys(player_list.keys(), None)
 
+    event_date = datetime.datetime.strptime(
+            event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
+        )   
+
     for player in player_list.values():
         # Handle if no army list was provided
         if player.exported_list:
             try:
                 armies = Convert_lines_to_army_list(
-                    event_data.name, player.exported_list.split("\n"), http
+                    event_name=event_data.name, event_date=event_date, lines=player.exported_list.split("\n"), session=http
                 )
             except Multi_Error as e:
                 # basically skipping the error for now cause we cant change the armylist
@@ -271,9 +275,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         army.tournament = event_data.name
         army.player_name = player.alias
         army.ingest_date = datetime.datetime.now(datetime.timezone.utc)
-        army.event_date = datetime.datetime.strptime(
-            event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
-        )   
+        army.event_date = event_date
         if event_data.type == 1:
             army.event_type = Event_types.TEAMS
             army.participants_per_team = event_data.participants_per_team
