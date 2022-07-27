@@ -183,7 +183,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     )
     possible_tk_names = []
     if (
-        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"]
+        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"] #TODO: since the NR names now have the ID appended to the name I think this is triggering falsely
     ):  # Find name of close events since a misname may be why nothing was loaded.
         recent_tournaments = get_recent_tournaments()
         for tournament in recent_tournaments:
