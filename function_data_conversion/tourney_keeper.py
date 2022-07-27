@@ -1,18 +1,20 @@
-from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Union, Tuple
-import requests
-from urllib.parse import quote
 import concurrent.futures
 import json
-from unicodedata import category
-from unidecode import unidecode
-from uuid import UUID, uuid4
-from fuzzywuzzy import fuzz
-from data_classes import ArmyEntry, Army_names, Tk_info, Event_types, Data_sources, Round
-from functools import cache
 import re
-from converter import Convert_lines_to_army_list
+from datetime import datetime, timedelta, timezone
+from functools import cache
+from typing import Dict, List, Tuple, Union
+from unicodedata import category
+from urllib.parse import quote
+from uuid import UUID, uuid4
 
+import requests
+from fuzzywuzzy import fuzz
+from unidecode import unidecode
+
+from converter import Convert_lines_to_army_list
+from data_classes import (Army_names, ArmyEntry, Data_sources, Event_types,
+                          Round, Tk_info)
 
 http = requests.Session()
 
@@ -498,9 +500,10 @@ def armies_from_docx(event_name: str, lines: list[str]) -> List[ArmyEntry]:
 if __name__ == "__main__":
     """Used for testing locally"""
     import os
-    from time import perf_counter
-    from utility_functions import Docx_to_line_list
     from pathlib import Path
+    from time import perf_counter
+
+    from utility_functions import Docx_to_line_list
 
 
     t1_start = perf_counter()

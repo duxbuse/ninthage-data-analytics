@@ -1,24 +1,25 @@
 # Game reported through web form since flattened=false everything is now a list so we need a lot of [0]
 from datetime import datetime, timezone
+
 from converter import Convert_lines_to_army_list
-from multi_error import Multi_Error
 from data_classes import (
-    Round,
-    Event_types,
-    Data_sources,
     ArmyEntry,
-    Maps,
+    Data_sources,
     Deployments,
-    Objectives,
+    Event_types,
     Magic,
+    Maps,
+    Objectives,
+    Round,
 )
+from multi_error import Multi_Error
 
 
 def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     errors: list[Exception] = []
     if not data:
         raise Multi_Error([ValueError("No data provided")])
-        
+
     name1 = "name-not-provided"
     if data.get("player1_name", [None])[0]:
         name1 = data.get("player1_name")[0]

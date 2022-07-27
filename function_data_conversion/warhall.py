@@ -1,17 +1,11 @@
-from converter import Convert_lines_to_army_list
-from data_classes import (
-    Round,
-    Event_types,
-    Data_sources,
-    ArmyEntry,
-    Deployments,
-    Army_names,
-    Maps,
-    Objectives,
-)
 from pydantic import BaseModel, validator
 
+from converter import Convert_lines_to_army_list
+from data_classes import (Army_names, ArmyEntry, Data_sources, Deployments,
+                          Event_types, Maps, Objectives, Round)
 from multi_error import Multi_Error
+
+
 class warhall_player_data(BaseModel):
     ArmyName: str
     List: list[str]

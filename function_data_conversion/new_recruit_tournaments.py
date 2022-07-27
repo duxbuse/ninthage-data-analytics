@@ -1,18 +1,15 @@
 from __future__ import annotations
-from typing import Dict, Optional, NewType
-from pydantic import BaseModel, Field
-import datetime
-import requests
-from functools import cache
-from multi_error import Multi_Error
-from converter import Convert_lines_to_army_list
-from data_classes import (
-    Round,
-    Event_types,
-    Data_sources,
-    ArmyEntry,
-)
 
+import datetime
+from functools import cache
+from typing import Optional
+
+import requests
+from pydantic import BaseModel, Field
+
+from converter import Convert_lines_to_army_list
+from data_classes import ArmyEntry, Data_sources, Event_types, Round
+from multi_error import Multi_Error
 
 http = requests.Session()
 
@@ -29,7 +26,6 @@ class elo(BaseModel):
 
 class player(BaseModel):
     alias: Optional[str]  #'phillybyrd'
-    id_participant: str
     id_list: Optional[str]
     id_book: Optional[int]  # 8
     id_participant: str  #'619b6074bf3fd75cf2fb9a54',
@@ -383,6 +379,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 if __name__ == "__main__":
 
     import json
+
     # '[WHTFR] Team - Tournoi Warhall France par equipe 1' - 628b1da77efb5e97e2242694
     # ordu onslaught singles - 6282df1f4485537e8fca47b7
     # Winter is Coming singles - 62341093dd9da21766c3ed48

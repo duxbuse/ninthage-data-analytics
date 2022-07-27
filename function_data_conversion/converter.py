@@ -1,19 +1,18 @@
-from typing import List
-from pathlib import Path
-from datetime import datetime, timezone
 import concurrent.futures
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import List, Optional
+
 import requests
-from typing import Optional
+
+from data_classes import Army_names, ArmyEntry, Tk_info
 from multi_error import Multi_Error
-from utility_functions import (
-    DetectParser,
-    Write_army_lists_to_json_file,
-    clean_lines,
-)
-from parser_protocol import Parser
-from data_classes import ArmyEntry, Army_names, Tk_info
-from ninth_builder import format_army_block
 from new_recruit_parser import new_recruit_parser
+from ninth_builder import format_army_block
+from parser_protocol import Parser
+from utility_functions import (DetectParser, Write_army_lists_to_json_file,
+                               clean_lines)
+
 
 def Convert_lines_to_army_list(event_name: str, lines: List[str], session: Optional[requests.Session]=None) -> List[ArmyEntry]:
     errors: List[Exception] = []
@@ -136,6 +135,7 @@ if __name__ == "__main__":
     """Used for testing locally"""
     import os
     from time import perf_counter
+
     from utility_functions import Docx_to_line_list
 
     t1_start = perf_counter()

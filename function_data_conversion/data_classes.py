@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum, auto, unique
 from typing import Optional
 from uuid import UUID, uuid4
-from enum import Enum, unique, auto
 
 
 @unique

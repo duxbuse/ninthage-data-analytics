@@ -9,12 +9,12 @@ from flask.wrappers import Request
 from fuzzywuzzy import fuzz
 from google.cloud.storage.blob import Blob
 
-from converter import Convert_lines_to_army_list, Write_army_lists_to_json_file
+from converter import Write_army_lists_to_json_file
 from fading_flame import armies_from_fading_flame
 from game_report import armies_from_report
 from multi_error import Multi_Error
 from new_recruit_tournaments import armies_from_NR_tournament
-from tourney_keeper import get_recent_tournaments, armies_from_docx
+from tourney_keeper import armies_from_docx, get_recent_tournaments
 from utility_functions import Docx_to_line_list
 from warhall import armies_from_warhall
 
