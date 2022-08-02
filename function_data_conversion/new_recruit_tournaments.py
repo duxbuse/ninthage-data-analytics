@@ -90,7 +90,7 @@ class single_event(BaseModel):
 
     country_name: Optional[str]
     country_flag: Optional[str]
-    participants_per_team: int
+    participants_per_team: Optional[int]
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
