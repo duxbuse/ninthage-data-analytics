@@ -28,8 +28,8 @@ class country_data(BaseModel):
 class extra_points(BaseModel):
     reason: str
     amount: int
-    stage: int
-    pairings: bool
+    stage: Optional[int]
+    pairings: Optional[bool]
 
 
 class team(BaseModel):
