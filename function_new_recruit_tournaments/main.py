@@ -71,7 +71,7 @@ class tournaments_data(BaseModel):
     roundNumber: int  # 3
     confirmed_participants: Optional[int]  # 0
     type: int  # 0=singles, 1=teams
-    currentRound: int  # 1
+    currentRound: Optional[int]  # 1
     country: country_data
     id_game_system: int  # 5 = 9thage 2021, 6 = 9thage 2022
     id_owner: list[str]  # ['601d932bf5fdcf2f56534c4c']
