@@ -203,7 +203,7 @@ def function_new_recruit_tournaments(request: Request):
             "type": event.type,
             "teams": event.teams,
         }
-        if data["games"] is None: #Skip events that have no games played
+        if not data["games"]: #Skip events that have no games played
             no_games_played += 1
             continue
         try:
