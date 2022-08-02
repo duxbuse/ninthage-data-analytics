@@ -234,7 +234,7 @@ def calculate_individual_placing(data: dict[str, ArmyEntry]) -> list[ArmyEntry]:
 def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     event_data = single_event(**stored_data)
 
-    if event_data.games is None:
+    if not event_data.games:
         raise Multi_Error([ValueError(f"No games found for event: {event_data.name}")])
 
     # get list of unique players and their army lists {player_id: player}
@@ -391,7 +391,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "62c87b1fea603143989462fd"
+    event_id = "60de0dde9b688559ed92fae1"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
