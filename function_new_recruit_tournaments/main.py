@@ -31,6 +31,9 @@ class extra_points(BaseModel):
     stage: Optional[int]
     pairings: Optional[bool]
 
+    def __len__(self):
+        return 1
+
 
 class team(BaseModel):
     id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
