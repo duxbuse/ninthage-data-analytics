@@ -99,7 +99,7 @@ def function_upload_data_into_bigquery(
         query_string = f"""
         DELETE
         FROM `ninthage-data-analytics.{dataset_id}.{table_id}`
-        WHERE `tournament` = "{tournament_name} AND data_source = "{data_source}"
+        WHERE `tournament` = "{tournament_name}" AND data_source = "{data_source}"
         """
         # Dont delete if its a manual report because its not the same event
         dont_delete = ["manual game report", "fading flame", "warhall"]
