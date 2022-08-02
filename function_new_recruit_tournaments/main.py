@@ -55,7 +55,7 @@ class tournaments_data(BaseModel):
     teams: Optional[list[team]]
     start: str  #'2022-02-01T10:45:49.578Z'
     end: str  #'2022-02-01T10:45:49.578Z'
-    status: int  # 0
+    status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
     showlists: bool  # False
     discord_notify_reports: bool  # False
     address: str  #'<p></p>'
