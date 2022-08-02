@@ -69,7 +69,7 @@ class tournaments_data(BaseModel):
     group_win_condition: Optional[int]  # 0
     group_letters: Optional[bool]  # False
     roundNumber: int  # 3
-    confirmed_participants: int  # 0
+    confirmed_participants: Optional[int]  # 0
     type: int  # 0=singles, 1=teams
     currentRound: int  # 1
     country: country_data
