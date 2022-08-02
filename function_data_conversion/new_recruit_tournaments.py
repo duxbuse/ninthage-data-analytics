@@ -235,7 +235,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     event_data = single_event(**stored_data)
 
     if not event_data.games:
-        raise Multi_Error([ValueError(f"No games found for event: {event_data.name}")])
+        raise Multi_Error([ValueError(f"No games found for event: '{event_data.name}'")])
 
     # get list of unique players and their army lists {player_id: player}
     player_list:dict[str, player] = dict()
