@@ -209,6 +209,7 @@ def function_new_recruit_tournaments(request: Request):
         try:
             stored_data = store_data(data=data, event_id=event.id)
         except jsons.exceptions.SerializationError as e:
+            print(f"Error serializing data for event {event.id}\n{data=}")
             errors.append(e)
             continue
         execution = executions.Execution(argument=jsons.dumps(stored_data))
