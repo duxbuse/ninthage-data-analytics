@@ -46,9 +46,9 @@ class team(BaseModel):
 class tournaments_data(BaseModel):
     id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
     name: str  #'Prueba 2'
-    short: str  #'Prueba 2'
+    short: Optional[str]  #'Prueba 2'
     participants: int  # 32
-    participants_per_team: int  # 8
+    participants_per_team: Optional[int]  # 8
     team_proposals: Optional[int]  # 2
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
@@ -57,17 +57,17 @@ class tournaments_data(BaseModel):
     end: str  #'2022-02-01T10:45:49.578Z'
     status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
     showlists: bool  # False
-    discord_notify_reports: bool  # False
+    discord_notify_reports: Optional[bool]  # False
     address: str  #'<p></p>'
     price: Optional[int]  # 15
     currency: str  #'EUR'
     description: str  #'<p></p>'
     rules: str  #'<p></p>'
     tables: int  # 8
-    group_size: int  # 3, this group data is for events that have group stages then finals
-    group_winners: int  # 1
-    group_win_condition: int  # 0
-    group_letters: bool  # False
+    group_size: Optional[int]  # 3, this group data is for events that have group stages then finals
+    group_winners: Optional[int]  # 1
+    group_win_condition: Optional[int]  # 0
+    group_letters: Optional[bool]  # False
     roundNumber: int  # 3
     confirmed_participants: int  # 0
     type: int  # 0=singles, 1=teams
@@ -255,6 +255,7 @@ def store_data(data: dict, event_id: str) -> dict:
 
 
 if __name__ == "__main__":
+    #first t9a game was 2021-07-10
     test_data = {"start": "2022-07-29", "end": "2022-07-31"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
