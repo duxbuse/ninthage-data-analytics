@@ -165,10 +165,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
         except Multi_Error as e:
             print(f"File Name: {file_name}, Multi_ErrorNR: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors]}, 400
+            return {"message": [str(x) for x in e.errors], "name": file_name}, 400
         except Exception as e:
             print(f"File Name: {file_name}, Non Multi ErrorNR: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 400
+            return {"message": [str(e)], "name": file_name}, 400
 
     else:
         return {
@@ -183,7 +183,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     )
     possible_tk_names = []
     if (
-        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"] #TODO: since the NR names now have the ID appended to the name I think this is triggering falsely
+        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"]
     ):  # Find name of close events since a misname may be why nothing was loaded.
         recent_tournaments = get_recent_tournaments()
         for tournament in recent_tournaments:
@@ -192,6 +192,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 possible_tk_names.append((tournament, ratio))
     else:
         possible_tk_names = ["N/A"]
+        loaded_tk_info = "N/A"
 
     validation_count = sum(1 for i in list_of_armies if i.validated)
     validation_errors = [

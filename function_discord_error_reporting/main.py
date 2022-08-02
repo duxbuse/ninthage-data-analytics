@@ -14,7 +14,8 @@ def function_discord_error_reporting(request: Request):
         if not request.json.get("data") and not request.json.get("data").get("name"):
             pass  # TODO: We should raise an exception here, but we also want to submit this info back to discord
 
-        FILE_NAME = request.json["data"]["name"]
+        # If we add some additional custom file name use that rather than the generic one
+        FILE_NAME = request.json["error"]["name"] | request.json["data"]["name"]
         json_message = {
             "content": "",
             "embeds": [

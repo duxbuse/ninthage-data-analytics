@@ -177,9 +177,18 @@ def function_new_recruit_tournaments(request: Request):
 
     errors = []
     events_proccessed = 0
+    print(f"Processing {len(all_events.tournaments)} tournaments")
+
+    not_t9a = 0
+    not_closed = 0
+    no_games_played = 0
 
     for event in all_events.tournaments:
         if event.id_game_system not in [5, 6]: #Skip non 9th age events, hardcoded magic numbers for 9thage 2021 and 2022
+            not_t9a += 1
+            continue
+        if event.status != 3: #Event is not closed and so not ready for ingestion, hardcoded magic number for closed
+            not_closed += 1
             continue
         data = {
             "name": event.name
@@ -195,6 +204,7 @@ def function_new_recruit_tournaments(request: Request):
             "teams": event.teams,
         }
         if data["games"] is None: #Skip events that have no games played
+            no_games_played += 1
             continue
         try:
             stored_data = store_data(data=data, event_id=event.id)
@@ -209,7 +219,10 @@ def function_new_recruit_tournaments(request: Request):
         events_proccessed += 1
 
     if errors:
+        print(f"{not_t9a=}, {not_closed=}, {no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
         return f"{events_proccessed} events found with {len(errors)}\nErrors: {str(errors)}", 400
+
+    print(f"{not_t9a=}, {not_closed=}, {no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
     return f"{events_proccessed} events found from {start} to {end}.", 200
 
 
@@ -242,6 +255,6 @@ def store_data(data: dict, event_id: str) -> dict:
 
 
 if __name__ == "__main__":
-    test_data = {"start": "2022-01-01", "end": "2022-06-31"}
+    test_data = {"start": "2022-07-29", "end": "2022-07-31"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
