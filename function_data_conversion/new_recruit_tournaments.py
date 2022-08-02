@@ -35,9 +35,9 @@ class player(BaseModel):
 
 
 class setup(BaseModel):
-    map: int
-    deployment: int
-    objective: int
+    map: Optional[int]
+    deployment: Optional[int]
+    objective: Optional[int]
 
 
 class score(BaseModel):
@@ -56,7 +56,7 @@ class tournament_game(BaseModel):
     date: str  #'2021-11-27T00:00:00.000Z'
     id_tourny: str  #'619224dbc77ccb1989c33cba'
     id_match: str  #'61a25160d7c66d711486cc19'
-    setup: setup
+    setup: Optional[setup]
     id_game_system: int  # 5
     players: list[player]
     score: list[score]
@@ -338,26 +338,30 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
 
             # Save setup data
             if library_data.setup_categories:
-                new_round.map_selected = (
-                    [
-                        x.name
-                        for x in library_data.setup_categories.map.items
-                        if x.id == tournament_game.setup.map
-                    ]
-                    .pop()
-                    .replace("map", "")
-                    .strip()
-                )
-                new_round.deployment_selected = [
-                    x.name
-                    for x in library_data.setup_categories.deployment.items
-                    if x.id == tournament_game.setup.deployment
-                ].pop()
-                new_round.objective_selected = [
-                    x.name
-                    for x in library_data.setup_categories.objective.items
-                    if x.id == tournament_game.setup.objective
-                ].pop()
+                if tournament_game.setup:
+                    if tournament_game.setup.map:
+                        new_round.map_selected = (
+                            [
+                                x.name
+                                for x in library_data.setup_categories.map.items
+                                if x.id == tournament_game.setup.map
+                            ]
+                            .pop()
+                            .replace("map", "")
+                            .strip()
+                        )
+                    if tournament_game.setup.deployment:
+                        new_round.deployment_selected = [
+                            x.name
+                            for x in library_data.setup_categories.deployment.items
+                            if x.id == tournament_game.setup.deployment
+                        ].pop()
+                    if tournament_game.setup.objective:
+                        new_round.objective_selected = [
+                            x.name
+                            for x in library_data.setup_categories.objective.items
+                            if x.id == tournament_game.setup.objective
+                        ].pop()
 
             # Append round
             try:

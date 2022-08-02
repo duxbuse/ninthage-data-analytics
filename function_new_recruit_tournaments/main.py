@@ -32,7 +32,7 @@ class extra_points(BaseModel):
     pairings: Optional[bool]
 
     def __len__(self):
-        return 1
+        return 0 #some weird shit to make the serialisation work
 
 
 class team(BaseModel):
@@ -43,7 +43,7 @@ class team(BaseModel):
     extra_points: Optional[list[extra_points]]
 
     def __len__(self):
-        return len(self.participants)
+        return len(self.participants) #some weird shit to make the serialisation work
 
 
 class tournaments_data(BaseModel):
