@@ -247,7 +247,7 @@
     },
     {
         "mode": "NULLABLE",
-        "name": "team_capitan",
+        "name": "team_captain",
         "type": "BOOLEAN"
     },
     {
