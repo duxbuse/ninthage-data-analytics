@@ -1,16 +1,20 @@
-from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Union, Tuple
-import requests
-from urllib.parse import quote
 import concurrent.futures
 import json
-from unicodedata import category
-from unidecode import unidecode
-from uuid import UUID, uuid4
-from fuzzywuzzy import fuzz
-from data_classes import ArmyEntry, Tk_info, Event_types, Data_sources, Round
-from functools import cache
 import re
+from datetime import datetime, timedelta, timezone
+from functools import cache
+from typing import Dict, List, Tuple, Union
+from unicodedata import category
+from urllib.parse import quote
+from uuid import UUID, uuid4
+
+import requests
+from fuzzywuzzy import fuzz
+from unidecode import unidecode
+
+from converter import Convert_lines_to_army_list
+from data_classes import (Army_names, ArmyEntry, Data_sources, Event_types,
+                          Round, Tk_info)
 
 http = requests.Session()
 
@@ -90,16 +94,28 @@ def Get_games_for_tournament(tourney_id: int) -> Union[list, None]:
     if success:
         data = json.loads(message)["Games"]
         # remove any games with dodgy results
-        data = [game for game in data if result_validation(game["Player1Result"], game["Player2Result"])]
+        data = [game for game in data if result_validation(game)]
         return data
     return None
 
-def result_validation(p1_result: int, p2_result:int) -> bool:
-    if not 0 <= p1_result <= 20:
+def result_validation(game: dict) -> bool:
+    """Remove game data with either results out side 0-20 or with no playerID's
+
+    Args:
+        game (dict): individual game data from TK
+
+    Returns:
+        bool: if game is valid
+    """
+    if not 0 <= game["Player1Result"] <= 20:
         return False
-    if not 0 <= p2_result <= 20:
+    if not 0 <= game["Player2Result"] <= 20:
         return False
-    if not p1_result + p2_result == 20:
+    if not game["Player1Result"] + game["Player2Result"] == 20:
+        return False
+    if not game.get("Player1Id", 0) > 0:
+        return False
+    if not game.get("Player2Id", 0) > 0:
         return False
     return True
 
@@ -127,7 +143,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
     try:
         # need to blank the user agent as the default is automatically blocked
         response = http.get(
-            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=2
+            url, headers={"Accept": "application/json", "User-Agent": "ninthage-data-analytics/1.1.0"}, timeout=5
         )
     except requests.exceptions.ReadTimeout as err:
         return None
@@ -138,7 +154,7 @@ def Get_Player_Army_Details(tournamentPlayerId: int) -> Union[Dict, None]:
         message = response.json()["Message"]
         data = json.loads(message)
         return data
-    # print(f"Failed to download player data for {tournamentPlayerId}")
+    print(f"Failed to download player data for {tournamentPlayerId}")
     return None
 
 
@@ -152,7 +168,7 @@ def Get_players_names_from_games(games: dict) -> dict:
         Key = tk_player_id
         dict: {1234: {TournamentPlayerId: 5678, Player_name: bob}}
     """
-    # interate over all games and produce list of unique player ids
+    # iterate over all games and produce list of unique player ids
     unique_player_tkIds = set()
     for game in games:
         unique_player_tkIds.add(game.get("Player1Id"))
@@ -171,32 +187,28 @@ def Get_players_names_from_games(games: dict) -> dict:
                 )
             )
         for future in concurrent.futures.as_completed(futures):
-            try:
-                details = future.result()
-                if details:
-                    tournament_player_id = details.get("TournamentPlayerId")
-                    player_name:str = details.get("PlayerName")
-                    tk_player_id = details.get("PlayerId")
-                    team_name = details.get("TeamName")
-                    team_id = details.get("TeamId")
-                    active = details.get("Active")
+            details = future.result()
+            if details:
+                tournament_player_id = details.get("TournamentPlayerId")
+                player_name:str = details.get("PlayerName")
+                tk_player_id = details.get("PlayerId")
+                team_name = details.get("TeamName")
+                team_id = details.get("TeamId")
+                active = details.get("Active")
 
-                    primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
-                    if primary_codex is None:
-                        primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
+                primary_codex = next((x.get("Player1PrimaryCodex") for x in games if x.get("Player1Id") == tournament_player_id), None)
+                if primary_codex is None:
+                    primary_codex = next((x.get("Player2PrimaryCodex") for x in games if x.get("Player2Id") == tournament_player_id), None)
 
-                    dummy_players = r"(player\d|[Ss]tandin[0-9]* *)"
-                    if re.fullmatch(dummy_players, player_name):
-                        # Skip dummy players
-                        print(f"Dummy player {player_name} skipped")
-                        continue
+                dummy_players = r"(player\d+|[Ss]tandin\dg* *|[Bb]ye ?\d+)"
+                if re.fullmatch(dummy_players, player_name):
+                    # Skip dummy players
+                    print(f"Dummy player {player_name} skipped")
+                    continue
 
-                    output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
-                else:
-                   raise ValueError(f"Tourney Keeper yielded no data for {details.get('PlayerId')}")
-            except Exception as e:
-                # TODO: I think this should be a raise ValueError not a print
-                print(e)
+                output[tk_player_id] = {"TournamentPlayerId": tournament_player_id, "Player_name": player_name, "Primary_Codex": primary_codex, "TeamName": team_name, "TeamId": team_id, "Active": active}
+            else:
+                raise ValueError(f"Tourney Keeper yielded no data for playerID:{Id}")
 
     return output
 
@@ -271,8 +283,6 @@ def append_tk_game_data(
             player1 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player1Id")), {})
             player2 = next( (x for x in tk_info.player_list.values() if x.get("TournamentPlayerId") == game.get("Player2Id")), {})
 
-            
-
             # Check that non active players have lists. If not skip this game data since only 1 player from the round will be recorded and so averages will be thrown off.
             if not player1.get("Active") and not any(x.player_name == player1.get("Player_name") for x in list_of_armies):
                 continue
@@ -310,6 +320,8 @@ def append_tk_game_data(
 
             for army in list_of_armies:
                 army.data_source = Data_sources.TOURNEY_KEEPER
+                army.event_date = tk_info.event_date
+                army.event_type = tk_info.event_type
                 if army.army_uuid == player1_uuid:
                     if not army.round_performance:
                         army.round_performance = []
@@ -343,3 +355,179 @@ def append_tk_game_data(
             )
         for index, army in enumerate(list_of_armies):
             army.list_placing = index + 1  # have to account for 0 index lists
+
+def match_player_to_tk_name(tk_info: Tk_info, army: ArmyEntry) -> None:
+    """
+    Match the player name to the TK name
+    """
+    if tk_info.player_list:
+        # fuzzy match name from lists file and tourney keeper
+        close_matches = [
+            (
+                item,
+                ratio,
+            )
+            for item in tk_info.player_list.items()
+            if (
+                ratio := fuzz.token_sort_ratio(item[1]["Player_name"], army.player_name)
+            )
+            > 50
+        ]
+        if len(close_matches) > 0:
+            sorted_by_fuzz_ratio = sorted(
+                close_matches, key=lambda tup: tup[1], reverse=True
+            )
+
+            if (
+                sorted_by_fuzz_ratio[0][1] != 100
+            ):  # only report when there are a few options and the top pick isn't 100
+                raise ValueError(
+                    f"No perfect matches for '{army.player_name}' in {sorted_by_fuzz_ratio}"
+                )
+
+            top_picks = [x for x in sorted_by_fuzz_ratio if x[1] == 100]
+            if len(top_picks) > 1:
+                # reduce number of top picks down by army played
+                top_picks = [
+                    x
+                    for x in top_picks
+                    if Army_names[x[0][1].get("Primary_Codex", army.army).upper()] == army.army
+                ]
+
+                if len(top_picks) > 1:
+                    raise ValueError(
+                        f"These {len(top_picks)} players are indistinguishable: {top_picks}"
+                    )
+                elif len(top_picks) == 0:
+                    raise ValueError(
+                        f"None of the tk matches for {army.player_name} played {army.army} as found in the word docx."
+                    )
+            # set current army to be the top pick
+            army.tourney_keeper_TournamentPlayerId = top_picks[0][0][1].get(
+                "TournamentPlayerId"
+            )
+            army.tourney_keeper_PlayerId = top_picks[0][0][0]
+
+        else:
+            extra_info = "\n".join(army.list_as_str or "HELP")
+            raise ValueError(
+                f"""Player: "{army.player_name}" not on TK
+                Extra info: {extra_info}"""
+            )
+
+def verify_tk_data(army_list: list[ArmyEntry], tk_info: Tk_info):
+    if army_list:
+
+        zipped = list(
+            zip(
+                *[
+                    (x.player_name, x.tourney_keeper_TournamentPlayerId)
+                    for x in army_list
+                    if x.tourney_keeper_TournamentPlayerId
+                ]
+            )
+        )
+        if len(zipped) == 2:
+            matched_player_names = zipped[0]
+            matched_player_tkids = zipped[1]
+            # check to make sure that all players are uniquely identified in tk
+            if len(set(matched_player_tkids)) != len(matched_player_tkids):
+                double_matches = set(
+                    [
+                        x
+                        for x in matched_player_tkids
+                        if matched_player_tkids.count(x) > 1
+                    ]
+                )
+                doubles_with_name = set(
+                    [
+                        x
+                        for x in zip(matched_player_names, matched_player_tkids)
+                        if x[1] in double_matches
+                    ]
+                )
+
+                raise(
+                    ValueError(
+                        f"""Players duplicated in word file and not uniquely mapped to tk:\n {doubles_with_name}"""
+                    )
+                )
+
+            if (
+                tk_info.player_list
+                and len(tk_info.player_list) != len(matched_player_tkids)
+            ):
+                # If we have the player count from TK then we can check that the number of lists we read in are equal
+                from_file = [x.player_name for x in army_list]
+                from_tk = [x["Player_name"] for x in tk_info.player_list.values()]
+
+                # difference doesn't work here because we are fuzz matching
+                unique_from_file = from_file[:]
+                unique_from_tk = from_tk[:]
+                for x in from_file:
+                    for y in from_tk:
+                        if fuzz.token_sort_ratio(x, y) == 100:
+                            try:
+                                unique_from_file.remove(x)
+                                unique_from_tk.remove(y)
+                            except ValueError:
+                                # This happens when there are 2 player names that are the same and so the value can not be removed.
+                                # This is already handled above with the message of all duplicated players so does not need handling here
+                                pass
+
+                # if all the "missing" tk names are not active then ignore this error
+                if any(missing_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active")]):
+                    raise(
+                        ValueError(
+                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
+                        )
+                    )
+        # If we have tk data but zipping player id's failed
+        elif tk_info.event_id:
+            raise(ValueError(f"No tkdata was loaded into armies"))
+    
+
+def armies_from_docx(event_name: str, lines: list[str]) -> List[ArmyEntry]:
+    tk_info = load_tk_info(event_name)
+    armies = Convert_lines_to_army_list(event_name=event_name, event_date=tk_info.event_date, lines=lines)
+    if tk_info and tk_info.game_list and tk_info.player_list: #game was found on tk
+        for army in armies:
+            match_player_to_tk_name(tk_info=tk_info, army=army)
+        append_tk_game_data(tk_info=tk_info, list_of_armies=armies)
+        verify_tk_data(army_list=armies, tk_info=tk_info)
+    return armies
+
+if __name__ == "__main__":
+    """Used for testing locally"""
+    import os
+    from pathlib import Path
+    from time import perf_counter
+
+    from utility_functions import Docx_to_line_list
+
+
+    t1_start = perf_counter()
+
+    path = Path("../data/list-files")
+
+    os.makedirs(os.path.dirname(path / "json"), exist_ok=True)
+    for file in os.listdir(path):
+        if file.endswith(".docx") and not file.startswith("~$"):
+            file_start = perf_counter()
+            filePath = Path(os.path.join(path, file))
+            event_name = Path(filePath).stem
+            print(f"Input filepath = {filePath}")
+
+            lines = Docx_to_line_list(filePath)
+            list_of_armies = armies_from_docx(event_name, lines)
+            file_stop = perf_counter()
+            print(
+                f"{len(list_of_armies)} army lists were found in {round(file_stop - file_start)} seconds"
+            )
+            print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
+            if all(x.tourney_keeper_PlayerId for x in list_of_armies):
+                print(f"Tk Info loaded")
+            else:
+                print(f"TK Not loaded")
+    t1_stop = perf_counter()
+    print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")

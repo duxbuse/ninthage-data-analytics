@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Optional
+
 import requests
 from pydantic import BaseModel
-from typing import Optional
+
 
 class army_version(BaseModel):
     id: Optional[int]

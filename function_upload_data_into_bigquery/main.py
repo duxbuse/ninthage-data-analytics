@@ -1,13 +1,13 @@
+import json
+from os import remove
+from pathlib import Path
 from typing import Union
+
 import google.cloud.bigquery
 import google.cloud.bigquery.table
 import google.cloud.storage
-from google.api_core.exceptions import BadRequest
 from flask.wrappers import Request
-from pathlib import Path
-from os import remove
-
-
+from google.api_core.exceptions import BadRequest
 from google.cloud.storage.blob import Blob
 
 
@@ -21,10 +21,11 @@ def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
 
 
 def delete_blob(bucket_name: str, blob_name: str) -> None:
-    """Deletes a blob from the bucket."""
-    # bucket_name = "your-bucket-name"
-    # blob_name = "your-object-name"
-
+    """
+    Deletes a blob from the bucket.
+    bucket_name = "your-bucket-name"
+    blob_name = "your-file-name"
+    """
     storage_client = google.cloud.storage.Client()
 
     bucket = storage_client.bucket(bucket_name)
@@ -82,12 +83,23 @@ def function_upload_data_into_bigquery(
                 "output_table": f"File was a test file so skipping upload",
             }, 200
 
-        # Clear data that we are overwritting
+
+        # Clear data that we are overwriting
+        # ---------------------------------------------------------
         tournament_name = Path(filename).stem
+        if "new-recruit-" in tournament_name:
+            data_source = "NEW_RECRUIT"
+            with open(file_path, 'r') as f:
+                data = json.loads(f.readline())
+                if data and "tournament" in data:
+                    tournament_name = data["tournament"]
+        else:
+            data_source = "TOURNEY_KEEPER"        
+
         query_string = f"""
         DELETE
         FROM `ninthage-data-analytics.{dataset_id}.{table_id}`
-        WHERE `tournament` = "{tournament_name}"
+        WHERE `tournament` = "{tournament_name}" AND data_source = "{data_source}"
         """
         # Dont delete if its a manual report because its not the same event
         dont_delete = ["manual game report", "fading flame", "warhall"]
@@ -95,9 +107,11 @@ def function_upload_data_into_bigquery(
             delete_result = client.query(query_string).result()
 
             if not isinstance(delete_result, google.cloud.bigquery.table._EmptyRowIterator):
-                raise ValueError(f"Delete failed for {tournament_name}")
+                raise ValueError(f"Delete failed for {tournament_name=} from {data_source=}")
+            print(f"deleted {tournament_name=} from {data_source=}")
 
         # Save new data
+        # ------------------------------------------------------------
         dataset_ref = client.dataset(dataset_id)
         table_ref = dataset_ref.table(table_id)
         job_config = google.cloud.bigquery.LoadJobConfig()
@@ -110,6 +124,7 @@ def function_upload_data_into_bigquery(
                 table_ref,
                 location="us-central1",  # Must match the destination dataset location.
                 job_config=job_config,
+                num_retries=20, #sometimes we get rate limited
             )  # API request
 
         try:

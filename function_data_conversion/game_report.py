@@ -1,25 +1,32 @@
 # Game reported through web form since flattened=false everything is now a list so we need a lot of [0]
 from datetime import datetime, timezone
+
 from converter import Convert_lines_to_army_list
-from multi_error import Multi_Error
 from data_classes import (
-    Round,
-    Event_types,
-    Data_sources,
     ArmyEntry,
-    Maps,
+    Data_sources,
     Deployments,
-    Objectives,
+    Event_types,
     Magic,
+    Maps,
+    Objectives,
+    Round,
 )
+from multi_error import Multi_Error
 
 
 def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
     errors: list[Exception] = []
+    if not data:
+        raise Multi_Error([ValueError("No data provided")])
+
     name1 = "name-not-provided"
     if data.get("player1_name", [None])[0]:
         name1 = data.get("player1_name")[0]
-    player1_list = "\n".join([name1, data.get("player1_army")[0]])
+    if data.get("player1_army") and data.get("player1_army")[0]:
+        player1_list = "\n".join([name1, data.get("player1_army")[0]])
+    else:
+        raise Multi_Error([ValueError("Player 1 army not provided")])
     player2_list = ""
     name2 = "name-not-provided"
     if data.get("player2_army", [None])[0]:
@@ -28,8 +35,15 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
 
         player2_list = "\n".join([name2, data.get("player2_army")[0]])
 
+    if data.get("game_date", [None])[0]:  # 2021-12-24'
+        game_date = datetime.strptime(data.get("game_date")[0], "%Y-%m-%d").replace(
+            tzinfo=timezone.utc
+        )
+    else:
+        game_date = None
+
     lines = "\n".join([player1_list, player2_list]).split("\n")
-    list_of_armies = Convert_lines_to_army_list(event_name, lines)
+    list_of_armies = Convert_lines_to_army_list(event_name=event_name, event_date=game_date, lines=lines)
     if len(list_of_armies) == 0:
         errors.append(ValueError("No armies found"))
     player1_army = list_of_armies[0]
@@ -38,7 +52,11 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         if len(list_of_armies) == 2:
             player2_army = list_of_armies[1]
         else:
-            errors.append(ValueError(f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed."))
+            errors.append(
+                ValueError(
+                    f"2 armies were supplied but only 1 passed conversion:\n{list_of_armies[0].player_name} playing {list_of_armies[0].army} passed."
+                )
+            )
 
     player1_round = None
     if any(
@@ -98,7 +116,9 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         score_total += player2_round.result
 
     if score_total > 20:
-        errors.append(ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}"))
+        errors.append(
+            ValueError(f"Sum of scores exceed 20\n{player1_round=}\n{player2_round=}")
+        )
 
     # Set secondary points
     if data.get("player1_vps", [None])[0]:
@@ -131,11 +151,7 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         player2_round.first_turn = True
 
     # Game date
-    if data.get("game_date", [None])[0]:  # 2021-12-24'
-        game_date = datetime.strptime(data.get("game_date")[0], "%Y-%m-%d").replace(
-            tzinfo=timezone.utc
-        )
-
+    if game_date:  # 2021-12-24'
         player1_army.event_date = game_date
         if player2_army:
             player2_army.event_date = game_date
@@ -190,3 +206,9 @@ def armies_from_report(data: dict, event_name: str) -> list[ArmyEntry]:
         raise Multi_Error(errors)
 
     return list_of_armies
+
+
+if __name__ == "__main__":
+    data = {"data": {"name": "manual_game_report"}}
+    armies_from_report(data=data, event_name="test-event")
+    pass

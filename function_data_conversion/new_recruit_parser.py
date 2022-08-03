@@ -1,8 +1,10 @@
-from typing import List, Union
 import re
-import requests
-from data_classes import ArmyEntry, UnitEntry, Army_names
 import string
+from typing import List, Union
+
+import requests
+
+from data_classes import Army_names, ArmyEntry, UnitEntry
 
 http = requests.Session()
 

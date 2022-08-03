@@ -28,6 +28,11 @@
             },
             {
                 "mode": "NULLABLE",
+                "name": "half",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
                 "name": "quantity",
                 "type": "INTEGER"
             },
@@ -247,7 +252,7 @@
     },
     {
         "mode": "NULLABLE",
-        "name": "team_capitan",
+        "name": "team_captain",
         "type": "BOOLEAN"
     },
     {

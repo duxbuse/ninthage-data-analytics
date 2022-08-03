@@ -1,13 +1,9 @@
 from datetime import datetime, timezone
-from multi_error import Multi_Error
+
 from converter import Convert_lines_to_army_list
-from data_classes import (
-    Round,
-    Event_types,
-    Data_sources,
-    ArmyEntry,
-    Army_names,
-)
+from data_classes import (Army_names, ArmyEntry, Data_sources, Event_types,
+                          Round)
+from multi_error import Multi_Error
 
 faction_mapping = {
     1: Army_names["BEAST HERDS"],
@@ -31,13 +27,6 @@ faction_mapping = {
     19: Army_names["CULTISTS"],
     20: Army_names["HOBGOBLINS"],
 }
-#objective_mapping = {
-#     "1": Objectives["1 HOLD THE GROUND"],
-#     "3": Objectives["2 BREAKTHROUGH"],
-#     "4": Objectives["3 SPOILS OF WAR"],
-#     "5": Objectives["5 CAPTURE THE FLAGS"],
-#     "6": Objectives["6 SECURE TARGET"],
-# }
 
 def remove_army_names_from_list(army_list:str) -> list[str]:
     cleaned_list:list[str] = []
@@ -100,7 +89,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
         # build up compliant list of lines to be read in
         lines:list[str] = [player1_id, player1_faction] + player1_list_no_army + [player2_id, player2_faction] + player2_list_no_army
         try:
-            list_of_armies = Convert_lines_to_army_list(event_name, lines)
+            list_of_armies = Convert_lines_to_army_list(event_name=event_name, event_date=game_date, lines=lines)
         
 
             if not list_of_armies or len(list_of_armies) == 0:

@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum, auto, unique
+import math
 from typing import Optional
 from uuid import UUID, uuid4
-from enum import Enum, unique, auto
 
 
 @unique
@@ -20,11 +21,13 @@ class Data_sources(Enum):
     WARHALL = auto()
     MANUAL = auto()
 
+
 @unique
 class Event_types(Enum):
     SINGLES = auto()
     TEAMS = auto()
     CASUAL = auto()
+
 
 Magic = {
     "H": "Hereditary",
@@ -207,13 +210,14 @@ class UnitEntry:
     quantity: int  # 25
     name: str  # spearmen
     dead: Optional[bool] = None
+    half: Optional[bool] = None
     unit_uuid: UUID = field(default_factory=lambda: uuid4())
     upgrades: Optional[list[str]] = None  # musician and banner
 
 
 @dataclass
 class Round:
-    opponent: Optional[UUID] = None #Expect that this is an army_uuid
+    opponent: Optional[UUID] = None  # Expect that this is an army_uuid
     result: Optional[int] = None
     secondary_points: Optional[int] = None
     round_number: Optional[int] = None
@@ -256,8 +260,8 @@ class ArmyEntry:
     country_name: Optional[str] = None
     country_flag: Optional[str] = None
     participants_per_team: Optional[int] = None
-    team_point_cap_max: Optional[int] = None #100
-    team_point_cap_min: Optional[int] = None #60
+    team_point_cap_max: Optional[int] = None  # 100
+    team_point_cap_min: Optional[int] = None  # 60
     team_placing: Optional[int] = None
     team_total_tournament_points: Optional[int] = None
     team_total_secondary_points: Optional[int] = None
@@ -272,8 +276,7 @@ class ArmyEntry:
             self.reported_total_army_points != None
             and self.calculated_total_army_points != self.reported_total_army_points
         ):
-            raise ValueError(
-                f"""
+            msg = f"""
             Reported:{self.reported_total_army_points}
             Calculated:{self.calculated_total_army_points}
             Army: {self.army}
@@ -281,7 +284,10 @@ class ArmyEntry:
             Tournament: {self.tournament}
             Found Units: {[(x.name, x.points) for x in self.units or []]}
             """
-            )
+            if self.data_source == Data_sources.TOURNEY_KEEPER:
+                raise ValueError(msg)
+            else:
+                print(msg)
 
     def points_killed(self) -> int:
         points = 0
@@ -292,6 +298,8 @@ class ArmyEntry:
                     points += 200
                 if "battle standard bearer" in str(x.upgrades):
                     points += 200
+            elif x.half:
+                points += math.ceil(x.points // 2)
         return points
 
     def calculate_total_tournament_points(self) -> None:

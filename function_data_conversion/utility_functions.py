@@ -1,14 +1,14 @@
-from pathlib import Path
-import jsons
-from typing import List
-from docx import Document
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from docx.text.paragraph import Paragraph
 import re
-from parser_protocol import Parser
-from data_classes import Parsers
+from pathlib import Path
+from typing import List
+
+import jsons
+from docx import Document
+from docx.text.paragraph import Paragraph
+
+from data_classes import ArmyEntry, Parsers
 from new_recruit_parser import new_recruit_parser
-from data_classes import ArmyEntry
+from parser_protocol import Parser
 
 
 def clean_lines(lines: List[str]) -> List[str]:
