@@ -15,7 +15,10 @@ def function_discord_error_reporting(request: Request):
             pass  # TODO: We should raise an exception here, but we also want to submit this info back to discord
 
         # If we add some additional custom file name use that rather than the generic one
-        FILE_NAME = request.json["error"].get("name") or request.json["data"]["name"]
+        FILE_NAME = request.json["data"]["name"]
+        if request.json["error"].get("name") and request.json["error"].get("event_id"): #If available use more detailed name
+            FILE_NAME = f"{request.json['error']['name']}_{request.json['error']['event_id']}"
+
         json_message = {
             "content": "",
             "embeds": [
