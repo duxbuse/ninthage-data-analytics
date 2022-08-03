@@ -193,7 +193,7 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
             team_total_tournament_points = 0
         team_total_secondary_points = 0
 
-        for round in range(len(rounds)):
+        for round in range(rounds):
             round_total_tournament_points = 0
             round_total_secondary_points = 0
 
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "61945055989a624fe73e77bc"
+    event_id = "62606316c4babc7434f760c4"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
