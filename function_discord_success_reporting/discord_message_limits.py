@@ -9,7 +9,7 @@ def truncate_field_values(values: list[str]) -> str:
     current_total = sum(len(x) for x in values)
     while (
         current_total + len(values) > DISCORD_EMBED_FIELD_VALUE
-    ):  # len(values) represents the extra `\n` that will be appended
+    ):  # len(values) represents the extra `\n`'s that will be appended
         last_value = values.pop()
         current_total -= len(last_value)
     return "\n".join(values)
@@ -20,7 +20,7 @@ def truncate_message(message: dict):
     while character_total(message) > DISCORD_EMBED_TOTAL_LENGTH:
         message["embeds"][0]["fields"].pop(
             -2
-        )  # take the second last item as the last is the footter and we want to leave that
+        )  # take the second last item as the last is the footer and we want to leave that
 
 
 def character_total(message: dict) -> int:
@@ -34,3 +34,4 @@ def character_total(message: dict) -> int:
         total += len(json.dumps(field["name"]))
         total += len(json.dumps(field["value"]))
     return total
+
