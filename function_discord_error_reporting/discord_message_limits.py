@@ -19,7 +19,7 @@ def truncate_string(message: str) -> str:
             + message_as_string[midpoint + half_of_chars :]
         )
         return new_field
-    return message
+    return message or "No error message found"
 
 
 def truncate_message(message: dict):

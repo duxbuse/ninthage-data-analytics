@@ -94,7 +94,7 @@ class single_event(BaseModel):
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
-    rounds: Optional[list] #3
+    rounds: int #3
     type: int  # 0=singles, 1=teams
 
 
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "60de0dde9b688559ed92fae1"
+    event_id = "61945055989a624fe73e77bc"
     with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 

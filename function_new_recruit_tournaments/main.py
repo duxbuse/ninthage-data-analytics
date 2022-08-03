@@ -24,26 +24,19 @@ class country_data(BaseModel):
     id: str = Field(..., alias="_id")  #'616923ecad6fdb296244eff0'
     flag: str  #'🌍'
 
-
 class extra_points(BaseModel):
     reason: str
     amount: int
     stage: Optional[int]
     pairings: Optional[bool]
 
-    def __len__(self):
-        return 0 #some weird shit to make the serialisation work
-
-
 class team(BaseModel):
     id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
     name: str
+    status: Optional[int]
     id_captain: Optional[str]  #'5de7603e29951610d11f7401'
     participants: list[str]
     extra_points: Optional[list[extra_points]]
-
-    def __len__(self):
-        return len(self.participants) #some weird shit to make the serialisation work
 
 
 class tournaments_data(BaseModel):
@@ -56,6 +49,7 @@ class tournaments_data(BaseModel):
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
+    rounds: Optional[list[dict]]
     start: str  #'2022-02-01T10:45:49.578Z'
     end: str  #'2022-02-01T10:45:49.578Z'
     status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
@@ -101,6 +95,18 @@ class tournaments_data(BaseModel):
 class get_tournaments_response(BaseModel):
     tournaments: list[tournaments_data]
 
+class data_to_store(BaseModel):
+    name: str
+    games: list[dict]
+    country_name: str
+    country_flag: str
+    participants_per_team: Optional[int]
+    team_point_cap: Optional[int]
+    team_point_min: Optional[int]
+    type: int
+    teams: Optional[list[team]]
+    rounds: Optional[int]
+
 
 def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
@@ -137,7 +143,7 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
     return data
 
 
-def get_tournament_games(tournament_id: str) -> dict:
+def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
 
     body = {"id_tournament": tournament_id}
@@ -196,20 +202,22 @@ def function_new_recruit_tournaments(request: Request):
             not_closed += 1
             print(f"Skipping {event.name} because it is not closed")
             continue
-        data = {
-            "name": event.name
+        data = data_to_store(
+            name=event.name
             or event.short
             or f"New Recruit Tournament - ${event.id}",
-            "games": get_tournament_games(event.id),
-            "country_name": event.country.name,
-            "country_flag": event.country.flag,
-            "participants_per_team": event.participants_per_team,
-            "team_point_cap": event.team_point_cap,
-            "team_point_min": event.team_point_min,
-            "type": event.type,
-            "teams": event.teams,
-        }
-        if not data["games"]: #Skip events that have no games played
+            games=get_tournament_games(event.id),
+            country_name=event.country.name,
+            country_flag=event.country.flag,
+            participants_per_team=event.participants_per_team,
+            team_point_cap=event.team_point_cap,
+            team_point_min=event.team_point_min,
+            type=event.type,
+            teams=event.teams,
+            rounds=len(event.rounds or []),
+            )
+        
+        if not data.games: #Skip events that have no games played
             no_games_played += 1
             print(f"Skipping {event.name} because it has no games played")
             continue
@@ -247,12 +255,17 @@ def upload_blob(bucket_name: str, file_path: str, destination_blob_name: str) ->
 
 def write_report_to_json(file_path: str, data: dict):
     with open(file_path, "w") as jsonFile:
-        jsonFile.write(jsons.dumps(data))
+        sdata = jsons.dumps(data)
+        jsonFile.write(sdata)
 
 
-def store_data(data: dict, event_id: str) -> dict:
-    local_file = "/tmp/" + event_id
-    write_report_to_json(file_path=local_file, data=data)
+def store_data(data: data_to_store, event_id: str) -> dict:
+    if __name__ == "__main__":
+        local_file = "test-" + event_id
+    else:
+        local_file = "/tmp/" + event_id
+
+    write_report_to_json(file_path=local_file, data=data.dict())
 
     bucket_name = "newrecruit_tournaments"
     upload_blob(
@@ -264,6 +277,6 @@ def store_data(data: dict, event_id: str) -> dict:
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10
-    test_data = {"start": "2022-07-29", "end": "2022-07-31"}
+    test_data = {"start": "2022-05-13", "end": "2022-05-15"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
