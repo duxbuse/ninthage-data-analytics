@@ -180,7 +180,8 @@ def function_new_recruit_tournaments(request: Request):
 
     errors = []
     events_proccessed = 0
-    print(f"Processing {len(all_events.tournaments)} tournaments")
+    summary_of_events = [{x.id: x.name} for x in all_events.tournaments]
+    print(f"Processing {len(all_events.tournaments)} tournaments\n{summary_of_events=}")
 
     not_t9a = 0
     not_closed = 0
