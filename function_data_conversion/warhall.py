@@ -71,9 +71,9 @@ class warhall_data(BaseModel):
         return Objective
 
 
-def mark_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
+def mark_half_or_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
     """
-    Calculate the dead from the warhall data
+    Calculate the half points and fully dead from the warhall data
     """
     if not army_data.units or len(player_data.List) != len(army_data.units):
         raise ValueError(
@@ -85,6 +85,11 @@ def mark_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
             unit[1].dead = True
         else:
             unit[1].dead = False
+
+        if unit[0][:4] == "HALF":
+            unit[1].half = True
+        else:
+            unit[1].half = False
 
 
 def armies_from_warhall(data: dict) -> list[ArmyEntry]:
@@ -120,12 +125,12 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
             army.event_type = Event_types.CASUAL
             army.event_date = now
             army.calculate_total_points()
-            mark_dead(player, army)
+            mark_half_or_dead(player, army)
             list_of_armies.append(army)
         except ValueError as e:
             errors.append(e)
 
-    # set each other as opponents
+    # set each other as opponents and set points killed
     for i, army in enumerate(list_of_armies):
         army.round_performance[0].opponent = list_of_armies[i - 1].army_uuid
         army.round_performance[0].secondary_points = list_of_armies[
@@ -140,7 +145,7 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
     if (ab1 := abs(calculated_difference)) != (
         ab2 := abs(data_obj.PlayersData[0].PointDifference)
     ):
-        errors.append(ValueError(f"{ab1=} should be {ab2=}"))
+        errors.append(ValueError(f"Calculated difference:{ab1} should equal recorded difference:{ab2}"))
 
     if errors:
         raise Multi_Error(errors)
@@ -149,6 +154,8 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
 
 
 if __name__ == "__main__":
+    # orcs vps = 4528
+    # koe vps = 1900
     example = {
         "Deployment": "Dawn Assault",
         "Map": 5,
@@ -202,6 +209,8 @@ if __name__ == "__main__":
         "ReportTime": 1643765781,
     }
 
+    # DE = 2603
+    # SA = 2098
     example2 = {
         "Deployment": "Marching Columns",
         "Objective": "Capture the Flags",

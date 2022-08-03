@@ -28,6 +28,11 @@
             },
             {
                 "mode": "NULLABLE",
+                "name": "half",
+                "type": "BOOLEAN"
+            },
+            {
+                "mode": "NULLABLE",
                 "name": "quantity",
                 "type": "INTEGER"
             },

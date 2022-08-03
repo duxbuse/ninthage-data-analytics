@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto, unique
+import math
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -209,6 +210,7 @@ class UnitEntry:
     quantity: int  # 25
     name: str  # spearmen
     dead: Optional[bool] = None
+    half: Optional[bool] = None
     unit_uuid: UUID = field(default_factory=lambda: uuid4())
     upgrades: Optional[list[str]] = None  # musician and banner
 
@@ -296,6 +298,8 @@ class ArmyEntry:
                     points += 200
                 if "battle standard bearer" in str(x.upgrades):
                     points += 200
+            elif x.half:
+                points += math.ceil(x.points // 2)
         return points
 
     def calculate_total_tournament_points(self) -> None:
