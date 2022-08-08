@@ -6,8 +6,8 @@ main:
         try:
           call: http.post
           args:
-            url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_data_conversion
-            timeout: 540
+            url: https://function-data-conversion-lmdhj7rqma-uc.a.run.app
+            timeout: 900
             headers:
               Content-type: application/json
             body:
