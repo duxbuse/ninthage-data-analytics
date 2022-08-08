@@ -11,6 +11,7 @@ steps:
       - function-data-conversion
       - --region=${_REGION}
       - --source=./function_data_conversion/
+      - --entry-point=function_data_conversion
       - --trigger-http
       - --runtime=python39
       - --timeout=900
