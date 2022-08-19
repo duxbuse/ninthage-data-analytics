@@ -17,6 +17,7 @@ from multi_error import Multi_Error
 
 class warhall_player_data(BaseModel):
     ArmyName: str
+    PlayerName: str
     List: list[str]
     Objective: str
     PointDifference: int
@@ -120,6 +121,7 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
                 deployment_selected=data_obj.Deployment,
                 objective_selected=data_obj.Objective,
             )
+            army.player_name = player.PlayerName
             army.round_performance = [army_round]
             army.data_source = Data_sources.WARHALL
             army.event_type = Event_types.CASUAL
@@ -162,6 +164,7 @@ if __name__ == "__main__":
         "Objective": "Breakthrough",
         "PlayersData": [
             {
+                "PlayerName": "Player1",
                 "ArmyName": "Orcs and Goblins",
                 "List": [
                     "DEAD 510 - Orc Warlord, Feral Orc, War Boar, Shield, Light Armour (Tuktek's Guard),  Hand Weapon (Omen of the Apocalypse), Potion of Swiftness",
@@ -185,6 +188,7 @@ if __name__ == "__main__":
                 "Result": 4,
             },
             {
+                "PlayerName": "Player2",
                 "ArmyName": "Kingdom of Equitaine",
                 "List": [
                     " 635 - Equitan Lord, General, Fey Steed, Shield, Bastard Sword (Shield Breaker), Percival's Panoply, Black Knight's Tabard, Dragonfire Gem, Sainted, Valour",
