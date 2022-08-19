@@ -6,7 +6,6 @@ from typing import Union
 
 import google.cloud.storage
 from flask.wrappers import Request
-from fuzzywuzzy import fuzz
 from google.cloud.storage.blob import Blob
 
 from converter import Write_army_lists_to_json_file
@@ -14,7 +13,7 @@ from fading_flame import armies_from_fading_flame
 from game_report import armies_from_report
 from multi_error import Multi_Error
 from new_recruit_tournaments import armies_from_NR_tournament
-from tourney_keeper import armies_from_docx, get_recent_tournaments
+from tourney_keeper import armies_from_docx
 from utility_functions import Docx_to_line_list
 from warhall import armies_from_warhall
 
@@ -73,7 +72,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 event_name = Path(download_file_path).stem
                 lines = Docx_to_line_list(download_file_path)
 
-                list_of_armies = armies_from_docx(event_name, lines)
+                list_of_armies, tk_loaded, possible_matches = armies_from_docx(event_name, lines)
             except Multi_Error as e:
                 print(f"Multi_ErrorWD: {[str(x) for x in e.errors]}")
                 return {"message": [str(x) for x in e.errors]}, 400
@@ -177,22 +176,9 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             ]
         }, 400
 
-    # TODO: this is a silly way to do it, all the tk_info stuff needs to be pulled out into its own file
-    loaded_tk_info = any(
-        army.list_placing > 0 for army in list_of_armies if army.list_placing
-    )
-    possible_tk_names = []
-    if (
-        not loaded_tk_info and data["name"] not in ["manual game report", "warhall", "fading_flame.json", "newrecruit_tournament.json"]
-    ):  # Find name of close events since a misname may be why nothing was loaded.
-        recent_tournaments = get_recent_tournaments()
-        for tournament in recent_tournaments:
-            ratio = fuzz.token_sort_ratio(Path(file_name).stem, tournament.get("Name"))
-            if ratio > 80:
-                possible_tk_names.append((tournament, ratio))
-    else:
-        possible_tk_names = ["N/A"]
-        loaded_tk_info = "N/A"
+    #----------------------------------------------------------------------------------------------
+    # Calculate validation errors
+    #----------------------------------------------------------------------------------------------
 
     validation_count = sum(1 for i in list_of_armies if i.validated)
     validation_errors = [
@@ -203,6 +189,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
         for x in list_of_armies
         if x.validation_errors
     ]
+
+    #----------------------------------------------------------------------------------------------
+    # Upload json version
+    #----------------------------------------------------------------------------------------------
 
     upload_filename = Path(download_file_path).stem + ".json"
     converted_filename = Path(download_file_path).parent / upload_filename
@@ -225,8 +215,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     return_dict = dict(
         bucket_name=upload_bucket,
         file_name=upload_filename,
-        loaded_tk_info=loaded_tk_info,
-        possible_tk_names=possible_tk_names,
+        loaded_tk_info=tk_loaded or "N/A",
+        possible_tk_names=possible_matches or ["N/A"],
         validation_count=validation_count,
         validation_errors=validation_errors,
     )

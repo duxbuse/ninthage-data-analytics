@@ -3,7 +3,7 @@ import json
 import re
 from datetime import datetime, timedelta, timezone
 from functools import cache
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 from unicodedata import category
 from urllib.parse import quote
 from uuid import UUID, uuid4
@@ -487,15 +487,25 @@ def verify_tk_data(army_list: list[ArmyEntry], tk_info: Tk_info):
             raise(ValueError(f"No tkdata was loaded into armies"))
     
 
-def armies_from_docx(event_name: str, lines: list[str]) -> List[ArmyEntry]:
+def armies_from_docx(event_name: str, lines: list[str]) -> Tuple[List[ArmyEntry], bool, Optional[List[Tuple[str, int]]]]:
+    tk_loaded:bool = False
     tk_info = load_tk_info(event_name)
     armies = Convert_lines_to_army_list(event_name=event_name, event_date=tk_info.event_date, lines=lines)
     if tk_info and tk_info.game_list and tk_info.player_list: #game was found on tk
+        tk_loaded = True
         for army in armies:
             match_player_to_tk_name(tk_info=tk_info, army=army)
         append_tk_game_data(tk_info=tk_info, list_of_armies=armies)
         verify_tk_data(army_list=armies, tk_info=tk_info)
-    return armies
+    else:
+        possible_tk_names: list[Tuple[str, int]] = []
+        recent_tournaments = get_recent_tournaments()
+        for tournament in recent_tournaments:
+            ratio = fuzz.token_sort_ratio(event_name, tournament.get("Name"))
+            if ratio > 80:
+                possible_tk_names.append((tournament.get("Name", ""), ratio))
+        return [], tk_loaded, possible_tk_names
+    return armies, tk_loaded, None
 
 if __name__ == "__main__":
     """Used for testing locally"""
@@ -519,15 +529,15 @@ if __name__ == "__main__":
             print(f"Input filepath = {filePath}")
 
             lines = Docx_to_line_list(filePath)
-            list_of_armies = armies_from_docx(event_name, lines)
+            list_of_armies, tk_loaded, possible_matches = armies_from_docx(event_name, lines)
             file_stop = perf_counter()
             print(
                 f"{len(list_of_armies)} army lists were found in {round(file_stop - file_start)} seconds"
             )
             print(f"Player Name list: {[army.player_name for army in list_of_armies]}")
-            if all(x.tourney_keeper_PlayerId for x in list_of_armies):
+            if tk_loaded:
                 print(f"Tk Info loaded")
             else:
-                print(f"TK Not loaded")
+                print(f"TK Not loaded: {possible_matches=}")
     t1_stop = perf_counter()
     print(f"Total Elapsed time: {round(t1_stop - t1_start)} seconds")
