@@ -53,6 +53,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     download_file_path = f"/tmp/{file_name}"
 
     upload_bucket = "tournament-lists-json"
+    tk_loaded = "N/A"
+    possible_matches = ["N/A"]
 
     # break these into separate functions
 
@@ -215,8 +217,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     return_dict = dict(
         bucket_name=upload_bucket,
         file_name=upload_filename,
-        loaded_tk_info=tk_loaded or "N/A",
-        possible_tk_names=possible_matches or ["N/A"],
+        loaded_tk_info=tk_loaded,
+        possible_tk_names=possible_matches,
         validation_count=validation_count,
         validation_errors=validation_errors,
     )
