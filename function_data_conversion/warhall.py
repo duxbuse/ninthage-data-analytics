@@ -51,9 +51,9 @@ class warhall_data(BaseModel):
 
     @validator("Deployment")
     def validate_deployment(cls, Deployment):
-        if Deployment not in Deployments.values():
+        if Deployment not in Deployments:
             raise ValueError(f"{Deployment=} is not a valid deployment")
-        return Deployment
+        return Deployments[Deployment]
 
     @validator("Map", pre=True)
     def validate_map(cls, Map):
@@ -67,9 +67,9 @@ class warhall_data(BaseModel):
 
     @validator("Objective")
     def validate_objective(cls, Objective):
-        if Objective not in Objectives.values():
+        if Objective not in Objectives:
             raise ValueError(f"{Objective=} is not a valid objective")
-        return Objective
+        return Objectives[Objective]
 
 
 def mark_half_or_dead(player_data: warhall_player_data, army_data: ArmyEntry) -> None:
@@ -140,14 +140,16 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
         ].points_killed()
 
     # check that calculated secondary points == points difference
-    calculated_difference = (
+    calculated_difference:int = abs(
         list_of_armies[0].round_performance[0].secondary_points
         - list_of_armies[1].round_performance[0].secondary_points
     )
-    if (ab1 := abs(calculated_difference)) != (
-        ab2 := abs(data_obj.PlayersData[0].PointDifference)
-    ):
-        errors.append(ValueError(f"Calculated difference:{ab1} should equal recorded difference:{ab2}"))
+    reported_difference:int = abs(data_obj.PlayersData[0].PointDifference)
+    # TODO: Workaround untill Warhall calculates it correctly
+
+    if (abs(calculated_difference - reported_difference) > 10): #Ideally this should be 0
+        errors.append(ValueError(f"{reported_difference=} != {calculated_difference=}"))
+        # errors.append(ValueError(f"Calculated difference:{ab1} should equal recorded difference:{ab2}"))
 
     if errors:
         raise Multi_Error(errors)
@@ -159,9 +161,9 @@ if __name__ == "__main__":
     # orcs vps = 4528
     # koe vps = 1900
     example = {
-        "Deployment": "Dawn Assault",
+        "Deployment": "Counterthrust",
         "Map": 5,
-        "Objective": "Breakthrough",
+        "Objective": "Capture the Flags",
         "PlayersData": [
             {
                 "PlayerName": "Player1",
@@ -271,5 +273,5 @@ if __name__ == "__main__":
             },
         ],
     }
-    armies = armies_from_warhall(example2)
+    armies = armies_from_warhall(example)
     print(bool(armies))

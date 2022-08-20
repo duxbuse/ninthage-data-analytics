@@ -94,7 +94,7 @@ Magic = {
 }
 
 Maps = {
-    "OTHER": "Other",
+    "Other": "OTHER",
     "A1": "A1",
     "A2": "A2",
     "A3": "A3",
@@ -113,22 +113,23 @@ Maps = {
     "B8": "B8",
 }
 Deployments = {
-    "OTHER": "Other",
-    "1 FRONTLINE CLASH": "Frontline Clash",
-    "2 DAWN ASSAULT": "Dawn Assault",
-    "3 COUNTER THRUST": "Counter Thrust",
-    "4 ENCIRCLE": "Encircle",
-    "5 REFUSED FLANK": "Refused Flank",
-    "6 MARCHING COLUMNS": "Marching Columns",
+    "Other": "OTHER",
+    "Frontline Clash": "1 FRONTLINE CLASH",
+    "Dawn Assault": "2 DAWN ASSAULT",
+    "Counter Thrust": "3 COUNTER THRUST",
+    "Counterthrust": "3 COUNTER THRUST",
+    "Encircle": "4 ENCIRCLE",
+    "Refused Flank": "5 REFUSED FLANK",
+    "Marching Columns": "6 MARCHING COLUMNS",
 }
 Objectives = {
-    "OTHER": "Other",
-    "1 HOLD THE GROUND": "Hold the Ground",
-    "2 BREAKTHROUGH": "Breakthrough",
-    "3 SPOILS OF WAR": "Spoils of War",
-    "4 KING OF THE HILL": "King of the Hill",
-    "5 CAPTURE THE FLAGS": "Capture the Flags",
-    "6 SECURE TARGET": "Secure Target",
+    "Other": "OTHER",
+    "Hold the Ground": "1 HOLD THE GROUND",
+    "Breakthrough": "2 BREAKTHROUGH",
+    "Spoils of War": "3 SPOILS OF WAR",
+    "King of the Hill": "4 KING OF THE HILL",
+    "Capture the Flags": "5 CAPTURE THE FLAGS",
+    "Secure Target": "6 SECURE TARGET",
 }
 
 
