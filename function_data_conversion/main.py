@@ -125,7 +125,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     
     # Warhall data
     elif file_name == "warhall":
-        file_name = data.get("file_name", "")# TODO: i think this is borked: actually random file name
+        file_name = data.get("file_name", "")# actually random file name
         download_file_path = f"/tmp/{file_name}"
         try:
             downloaded_warhall_blob = download_blob("warhall", file_name)
@@ -142,10 +142,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
         except Multi_Error as e:
             print(f"File Name: {file_name}, Multi_ErrorWH: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors]}, 400
+            return {"message": [str(x) for x in e.errors], "name": file_name}, 400
         except Exception as e:
             print(f"File Name: {file_name}, Non Multi ErrorWH: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 400
+            return {"message": [str(e)], "name": file_name}, 400
 
     # NEW RECRUIT TOURNAMENTS
     elif file_name == "newrecruit_tournament.json":
