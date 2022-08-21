@@ -114,6 +114,7 @@ Maps = {
 }
 Deployments = {
     "Other": "OTHER",
+    "": "OTHER",
     "Frontline Clash": "1 FRONTLINE CLASH",
     "Dawn Assault": "2 DAWN ASSAULT",
     "Counter Thrust": "3 COUNTER THRUST",
@@ -124,6 +125,7 @@ Deployments = {
 }
 Objectives = {
     "Other": "OTHER",
+    "": "OTHER",
     "Hold the Ground": "1 HOLD THE GROUND",
     "Breakthrough": "2 BREAKTHROUGH",
     "Spoils of War": "3 SPOILS OF WAR",
