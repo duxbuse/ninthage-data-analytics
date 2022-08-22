@@ -38,7 +38,7 @@ def function_warhall_report(request: Request):
     response = execution_client.create_execution(parent=parent, execution=execution)
     print(f"Created execution: {response.name}")
 
-    return 200
+    return json.dumps({'success':True, 'execution':response.name, 'file_name':data["file_name"]}), 200, {'ContentType':'application/json'} 
 
 
 def upload_blob(bucket_name:str, file_path:str, destination_blob_name:str) -> None:
