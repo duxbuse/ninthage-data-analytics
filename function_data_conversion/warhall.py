@@ -77,7 +77,9 @@ def mark_half_or_dead(player_data: warhall_player_data, army_data: ArmyEntry) ->
     """
     Calculate the half points and fully dead from the warhall data
     """
-    if not army_data.units or len(player_data.List) != len(army_data.units):
+    if not army_data.units:
+        return
+    if len(player_data.List) != len(army_data.units):
         raise ValueError(
             f"{len(player_data.List)=} should be the same length as {len(army_data.units)=}"
         )
@@ -106,6 +108,11 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
     if len(data_obj.PlayersData) != 2:
         errors.append(ValueError(f"{data_obj.PlayersData=} Should only be 2 players"))
 
+    scored_game = True
+    if data_obj.PlayersData[0].Result == 0 and data_obj.PlayersData[0].Result == 0:
+        scored_game = False
+        # score should be null because it is unknown
+
     list_of_armies = list[ArmyEntry]()
     # load in all the army data
     for player in data_obj.PlayersData:
@@ -115,13 +122,14 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
                 event_name="warhall",
                 event_date=now,
                 lines=[player.ArmyName] + player.List,
-            ).pop()
+            ).pop() if player.List else ArmyEntry()
+
             army_round = Round(
-                result=player.Result,
-                won_secondary=player.Objective == "Won",
-                map_selected=data_obj.Map,
-                deployment_selected=data_obj.Deployment,
-                objective_selected=data_obj.Objective,
+                result=player.Result if scored_game else None,
+                won_secondary=player.Objective == "Won" if data_obj.Objective != "" else  None,
+                map_selected = data_obj.Map if data_obj.Map != 0 else  None,
+                deployment_selected=data_obj.Deployment if data_obj.Deployment != "" else  None,
+                objective_selected=data_obj.Objective if data_obj.Objective != "" else  None,
             )
             army.player_name = player.PlayerName
             army.round_performance = [army_round]
@@ -171,7 +179,7 @@ if __name__ == "__main__":
     from os import remove
     import json
 
-    file_name = "1476b06b-9112-41a1-a048-57cd988e60e0.json"
+    file_name = "03dc3b35-3987-4fc4-a106-db1d04f8cb0f.json"
     download_file_path = f"./{file_name}"
 
     downloaded_warhall_blob = download_blob("warhall", file_name)
