@@ -302,7 +302,7 @@ class ArmyEntry:
                 if "battle standard bearer" in str(x.upgrades):
                     points += 200
             elif x.half:
-                points += math.ceil(x.points // 2)
+                points += math.ceil(x.points / 2)
         return points
 
     def calculate_total_tournament_points(self) -> None:

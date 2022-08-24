@@ -171,7 +171,7 @@ if __name__ == "__main__":
     from os import remove
     import json
 
-    file_name = "c9fa5f7f-87d6-4b50-bd76-9a24ac00e587.json"
+    file_name = "1476b06b-9112-41a1-a048-57cd988e60e0.json"
     download_file_path = f"./{file_name}"
 
     downloaded_warhall_blob = download_blob("warhall", file_name)
