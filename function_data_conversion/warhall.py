@@ -109,6 +109,7 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
     list_of_armies = list[ArmyEntry]()
     # load in all the army data
     for player in data_obj.PlayersData:
+        army = "Could not convert"
         try:
             army = Convert_lines_to_army_list(
                 event_name="warhall",
