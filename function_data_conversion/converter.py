@@ -84,6 +84,9 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
                 armyblocks.append(active_block)
 
         previousLine = line
+
+    if armyblocks == []:
+        armyblocks.append(lines)
     return armyblocks
 
 

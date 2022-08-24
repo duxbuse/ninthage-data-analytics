@@ -26,13 +26,13 @@ class warhall_player_data(BaseModel):
 
     @validator("ArmyName")
     def validate_army_name(cls, ArmyName):
-        if ArmyName not in Army_names.values():
+        if ArmyName not in Army_names.values() and ArmyName != "":
             raise ValueError(f"{ArmyName=} is not a valid army name")
         return ArmyName
 
     @validator("Objective")
     def validate_objective(cls, Objective):
-        if Objective not in ["Won", "Lost", "Draw"]:
+        if Objective not in ["Won", "Lost", "Draw", ""]:
             raise ValueError(f"{Objective=} is not a valid objective")
         return Objective
 
@@ -146,7 +146,6 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
             i - 1
         ].points_killed()
 
-    # TODO: Warhall is really borking the calculation so we shall skip this check until they get it sorted
     # check that calculated secondary points == points difference
     calculated_difference:int = abs(
         list_of_armies[0].round_performance[0].secondary_points
@@ -154,9 +153,11 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
     )
     reported_difference:int = abs(data_obj.PlayersData[0].PointDifference)
 
-    if (calculated_difference != reported_difference):
+    delta = abs(calculated_difference - reported_difference)
+
+    if (calculated_difference != reported_difference and delta not in [200, 400]): #handle known issues with general and bsb(this is on the warhall side and has no easy fix)
         msg = f"{reported_difference=} != {calculated_difference=}\nCalculated - Player0: {list_of_armies[0].round_performance[0].secondary_points} Player1: {list_of_armies[1].round_performance[0].secondary_points}"
-        # errors.append(ValueError(msg))
+        errors.append(ValueError(msg))
         print(msg)
 
     if errors:
@@ -170,7 +171,7 @@ if __name__ == "__main__":
     from os import remove
     import json
 
-    file_name = "5f30af02-39fd-42ed-a4c2-4c87f0ee21d4.json"
+    file_name = "c9fa5f7f-87d6-4b50-bd76-9a24ac00e587.json"
     download_file_path = f"./{file_name}"
 
     downloaded_warhall_blob = download_blob("warhall", file_name)

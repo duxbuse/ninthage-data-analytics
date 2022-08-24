@@ -1,4 +1,5 @@
 import re
+import warnings
 from pathlib import Path
 from typing import List
 
@@ -129,6 +130,7 @@ def Write_army_lists_to_json_file(
         list_of_armies (list[ArmyEntry]): list of ArmyEntry objects to be written to file
     """
     # convert list of armies to a dict
+    warnings.filterwarnings('ignore')
     data: list[dict] = [jsons.loads(jsons.dumps(x)) for x in list_of_armies]
 
     write_dicts_to_json(file_path, data)
