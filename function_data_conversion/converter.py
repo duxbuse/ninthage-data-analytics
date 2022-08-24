@@ -151,7 +151,7 @@ if __name__ == "__main__":
             print(f"Input filepath = {filePath}")
 
             lines = Docx_to_line_list(filePath)
-            list_of_armies = Convert_lines_to_army_list(event_name, lines)
+            list_of_armies = Convert_lines_to_army_list(event_name=event_name, event_date=None, lines=lines, session=None)
             new_path = filePath.parent / ("json/" + filePath.stem + ".json")
 
             Write_army_lists_to_json_file(new_path, list_of_armies)

@@ -1,4 +1,5 @@
 from datetime import datetime
+from distutils.log import error
 from pydantic import BaseModel, validator
 
 from converter import Convert_lines_to_army_list
@@ -130,7 +131,12 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
             mark_half_or_dead(player, army)
             list_of_armies.append(army)
         except ValueError as e:
+            errors.append(ValueError(f"Failed {army=}"))
             errors.append(e)
+
+    if len(list_of_armies) != 2:
+        e = ValueError(f"Only {len(list_of_armies)} army list/s loaded.\n")
+        raise Multi_Error([e] + errors)
 
     # set each other as opponents and set points killed
     for i, army in enumerate(list_of_armies):
@@ -163,7 +169,7 @@ if __name__ == "__main__":
     from os import remove
     import json
 
-    file_name = "f1875910-29a3-4252-93b6-231bfd620b13.json"
+    file_name = "5f30af02-39fd-42ed-a4c2-4c87f0ee21d4.json"
     download_file_path = f"./{file_name}"
 
     downloaded_warhall_blob = download_blob("warhall", file_name)

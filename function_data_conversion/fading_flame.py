@@ -149,7 +149,7 @@ def armies_from_fading_flame(data:dict) -> list[ArmyEntry]:
 
 if __name__ == "__main__":
     import json
-    with open("function_data_conversion\\fading_flame-test.json", "r") as json_file:
+    with open("fading_flame-test.json", "r") as json_file:
                 data = json.load(json_file)
     output = armies_from_fading_flame(data)
     print(output)
