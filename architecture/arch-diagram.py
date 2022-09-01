@@ -1,3 +1,4 @@
+# type: ignore
 from diagrams import Cluster, Diagram, Edge
 from diagrams.gcp.analytics import BigQuery, Dataflow
 from diagrams.gcp.compute import Functions

@@ -19,6 +19,8 @@ def function_discord_error_reporting(request: Request):
         if request.json["error"].get("name") and request.json["error"].get("event_id"): #If available use more detailed name
             FILE_NAME = f"{request.json['error']['name']}_{request.json['error']['event_id']}"
 
+        WORKFLOW_ID = request.json["workflow_id"]
+
         json_message = {
             "content": "",
             "embeds": [
@@ -27,7 +29,8 @@ def function_discord_error_reporting(request: Request):
                         "name": FILE_NAME,
                     },
                     "title": "Errors:",
-                    "description": "",
+                    
+                    "description": f"[WORKFLOW](https://console.cloud.google.com/workflows/workflow/us-central1/workflow_parse_lists/execution/{WORKFLOW_ID}?project=ninthage-data-analytics)",
                     "color": 15224675,
                     "fields": [
                         {
@@ -84,6 +87,6 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv()
-    json_message = {'data': {'event_id': '61945055989a624fe73e77bc', 'name': 'newrecruit_tournament.json'}, 'error': {'body': {'message': [''], 'name': '61945055989a624fe73e77bc'}, 'code': 400, 'headers': {'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"', 'Cache-Control': 'private', 'Content-Length': '51', 'Content-Type': 'application/json', 'Date': 'Wed, 03 Aug 2022 04:13:37 GMT', 'Function-Execution-Id': '0h7c0k2zksjj', 'Server': 'Google Frontend', 'X-Cloud-Trace-Context': '0beac778f6a680cc9d257e8ee4d80b76;o=1'}, 'message': 'HTTP server responded with error code 400', 'tags': ['HttpError']}}
+    json_message = {'workflow_id': "36bbcebf-7846-43e4-89f0-556e82f98954", 'data': {'event_id': '61945055989a624fe73e77bc', 'name': 'newrecruit_tournament.json'}, 'error': {'body': {'message': [''], 'name': '61945055989a624fe73e77bc'}, 'code': 400, 'headers': {'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"', 'Cache-Control': 'private', 'Content-Length': '51', 'Content-Type': 'application/json', 'Date': 'Wed, 03 Aug 2022 04:13:37 GMT', 'Function-Execution-Id': '0h7c0k2zksjj', 'Server': 'Google Frontend', 'X-Cloud-Trace-Context': '0beac778f6a680cc9d257e8ee4d80b76;o=1'}, 'message': 'HTTP server responded with error code 400', 'tags': ['HttpError']}}
     request_obj = Request.from_values(json=json_message)
     function_discord_error_reporting(request_obj)
