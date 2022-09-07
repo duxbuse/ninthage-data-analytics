@@ -122,6 +122,7 @@ def result_validation(game: dict) -> bool:
 def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
     recent_tournaments = get_recent_tournaments()
     name_no_punc:str = unidecode(''.join(ch for ch in tournament_name if not category(ch).startswith('P')))
+    close_matches = []
     for tournament in recent_tournaments:
         # Clear punctuation
         tk_name_no_punc:str = unidecode(''.join(ch for ch in tournament.get("Name", "") if not category(ch).startswith('P')))
@@ -132,8 +133,11 @@ def Get_tournament_by_name(tournament_name: str) -> Union[Dict, None]:
             # we have found the tournament
             return tournament
         elif tournament_name in tournament.get("Name"):
-            raise ValueError(
-                f"Found very similar TK event named: '{tournament.get('Name')}'"
+            close_matches.append({'Name':tournament.get('Name'), 'Id':tournament.get('Id')})
+                
+    if close_matches:
+        raise ValueError(
+                f"Found very similar TK event/s named: '{close_matches}'"
             )
     return None
 
