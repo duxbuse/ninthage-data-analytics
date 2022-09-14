@@ -79,7 +79,7 @@ class formatted_army_block(BaseModel):
     validation: validation
 
 
-def format_army_block(army_block: list[str], event_date: Optional[datetime], session: Optional[requests.Session]) -> Optional[formatted_army_block]:
+def format_army_block(army_block: list[str], filename: str, event_date: Optional[datetime], session: Optional[requests.Session]) -> Optional[formatted_army_block]:
     data_string = "\n".join(army_block)
 
     if session:
@@ -88,7 +88,7 @@ def format_army_block(army_block: list[str], event_date: Optional[datetime], ses
         http = requests.Session()
 
     url = f"https://www.9thbuilder.com/en/api/v1/builder/imports/format"
-    payload = {"data": data_string}
+    payload = {"data": data_string, "filename": filename}
     if event_date:
         payload["date"] = str(event_date.timestamp())
     try:
@@ -130,5 +130,5 @@ Daemonic Legions
 4999
 """
     event_date = datetime(2012,4,1,0,0)
-    test = format_army_block(data.split("\n"), event_date)
-    pass
+    test = format_army_block(data.split("\n"), filename="test", event_date=event_date, session=None)
+    print(test)

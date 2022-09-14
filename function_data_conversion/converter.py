@@ -114,7 +114,7 @@ def proccess_block(
     event_date: Optional[datetime],
     session: Optional[requests.Session]=None,
 ) -> ArmyEntry:
-    formated_block = format_army_block(army_block=armyblock, event_date=event_date, session=session)
+    formated_block = format_army_block(army_block=armyblock, filename=event_name, event_date=event_date, session=session)
     if formated_block and formated_block.formated:
         armyblock = formated_block.formated.split("\n")
     # Select which parser to use
