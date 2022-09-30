@@ -23,6 +23,7 @@ def function_static_data(request: Request):
         "magic_paths",
         "special_items",
         "banners",
+        "maps",
     ]
     for endpoint in sections:
         try:
@@ -108,7 +109,8 @@ def push_to_bq(local_file: str):
 def store_data(endpoint:str, data:dict):
     local_file = "/tmp/" + endpoint + ".json"
     if __name__ == "__main__":
-        local_file = "function_static_data\\" + endpoint + ".json"
+        local_file = "..\data\9th builder static data\\" + endpoint + ".json"
+        
 
     if isinstance(data.get(endpoint, {}), list):
         write_dicts_to_json(file_path=local_file, data=data.get(endpoint,[{}]))
@@ -116,8 +118,10 @@ def store_data(endpoint:str, data:dict):
         raise ValueError(f"Data from {endpoint} is not a list")
     # Push data to BQ
     push_to_bq(local_file)
+
     # Clean up
-    remove(local_file)
+    if __name__ != "__main__":
+        remove(local_file)
 
 if __name__ == "__main__":
     request_obj = Request.from_values(json={})
