@@ -102,7 +102,7 @@ def parse_army_block(
     army.event_size = event_size
     army.player_name = armyblock[0].strip(" -–")
     army.tournament = tournament_name
-    army.list_as_str = "\n".join(armyblock)
+    army.list_as_str = "\n".join(armyblock[1:]) #ignore player name
     army.calculate_total_points()
     return army
 
