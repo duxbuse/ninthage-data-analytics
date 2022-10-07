@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto, unique
 import math
+from tkinter import N
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -243,6 +244,8 @@ class ArmyEntry:
 
     player_name: Optional[str] = None  # bob
     army: Optional[str] = None  # Vampire Covenant
+    army_version_id: Optional[int] = None
+    army_version_name: Optional[str] = None
     tournament: Optional[str] = None  # brawler bash 2021
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None
