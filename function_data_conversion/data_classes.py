@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto, unique
 import math
-from tkinter import N
 from typing import Optional
 from uuid import UUID, uuid4
 
