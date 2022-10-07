@@ -188,6 +188,7 @@ Army_names = {
     "HOBGOBLINS": "Hobgoblins",
     "HOBGOBLIN": "Hobgoblins",
     "MAKHAR": "Makhar",
+    "PLACEHOLDER": "Placeholder",
 }
 
 

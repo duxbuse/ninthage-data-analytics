@@ -459,7 +459,7 @@ def verify_tk_data(army_list: list[ArmyEntry], tk_info: Tk_info):
 
             if (
                 tk_info.player_list
-                and len(tk_info.player_list) != len(matched_player_tkids)
+                and len(tk_info.player_list) != (len(matched_player_tkids))
             ):
                 # If we have the player count from TK then we can check that the number of lists we read in are equal
                 from_file = [x.player_name for x in army_list]
@@ -480,10 +480,11 @@ def verify_tk_data(army_list: list[ArmyEntry], tk_info: Tk_info):
                                 pass
 
                 # if all the "missing" tk names are not active then ignore this error
-                if any(missing_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active")]):
+                # additionally if the list was missing and we only have a placeholder value then also ignore the error
+                if any(missing_non_placeholder_actives:=[y.get("Player_name") for x in unique_from_tk for y in tk_info.player_list.values() if y.get("Player_name") == x and y.get("Active") and y.get("Army") != "Placeholder"]):
                     raise(
                         ValueError(
-                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_actives}"
+                            f"Lists read: {len(army_list)}\nActive players on tourneykeeper: {tk_info.player_count}\nPlayers matched: {len(matched_player_tkids)}\nPlayers in file but not TK: {unique_from_file}\nPlayers in TK but not in file: {missing_non_placeholder_actives}"
                         )
                     )
         # If we have tk data but zipping player id's failed
