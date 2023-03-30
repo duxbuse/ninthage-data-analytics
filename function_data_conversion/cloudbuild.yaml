@@ -14,5 +14,5 @@ steps:
       - --entry-point=function_data_conversion
       - --trigger-http
       - --runtime=python39
-      - --timeout=900
+      - --timeout=1800
       - --gen2
