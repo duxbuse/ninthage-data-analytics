@@ -32,7 +32,7 @@ class warhall_player_data(BaseModel):
 
     @validator("Objective")
     def validate_objective(cls, Objective):
-        if Objective not in ["Won", "Lost", "Draw", ""]:
+        if Objective.casefold() not in [obj.casefold() for obj in ["Won", "Lost", "Draw", ""]]:
             raise ValueError(f"{Objective=} is not a valid objective")
         return Objective
 
