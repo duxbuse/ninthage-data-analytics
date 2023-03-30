@@ -27,6 +27,7 @@ def function_static_data(request: Request):
     ]
     for endpoint in sections:
         try:
+            print(f"Fetching: {endpoint}")
             response = http.get(
                 url+endpoint,
                 headers={

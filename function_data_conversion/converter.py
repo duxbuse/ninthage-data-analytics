@@ -102,7 +102,7 @@ def parse_army_block(
     army.event_size = event_size
     army.player_name = armyblock[0].strip(" -–")
     army.tournament = tournament_name
-    army.list_as_str = "\n".join(armyblock)
+    army.list_as_str = "\n".join(armyblock[1:]) #ignore player name
     army.calculate_total_points()
     return army
 
@@ -127,6 +127,12 @@ def proccess_block(
         event_size=event_size,
         ingest_date=ingest_date,
     )
+    # Adding in army version info
+    if formated_block and formated_block.army and formated_block.army.army_version:
+        army.army_version_id = formated_block.army.army_version.id
+        army.army_version_name = formated_block.army.army_version.name
+
+    # Adding in validation errors
     if formated_block:
         army.validated = not formated_block.validation.hasError
         if formated_block.validation.hasError:

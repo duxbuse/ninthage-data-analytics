@@ -269,5 +269,15 @@
         "mode": "NULLABLE",
         "name": "army",
         "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "army_version_id",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "army_version_name",
+        "type": "STRING"
     }
 ]
