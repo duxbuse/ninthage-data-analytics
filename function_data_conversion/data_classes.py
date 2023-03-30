@@ -188,6 +188,7 @@ Army_names = {
     "HOBGOBLINS": "Hobgoblins",
     "HOBGOBLIN": "Hobgoblins",
     "MAKHAR": "Makhar",
+    "PLACEHOLDER": "Placeholder",
 }
 
 
@@ -242,6 +243,8 @@ class ArmyEntry:
 
     player_name: Optional[str] = None  # bob
     army: Optional[str] = None  # Vampire Covenant
+    army_version_id: Optional[int] = None
+    army_version_name: Optional[str] = None
     tournament: Optional[str] = None  # brawler bash 2021
     event_date: Optional[datetime] = None
     ingest_date: Optional[datetime] = None

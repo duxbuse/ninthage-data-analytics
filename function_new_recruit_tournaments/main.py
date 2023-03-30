@@ -112,7 +112,7 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
 
     Args:
-        start (str, optional): Start date in the format of "2021-01-01". Defaults to 1 month before end date.
+        start (str, optional): Start date in the format of "2021-01-01". Defaults to 2 month before end date.
         end (str, optional): End date in the format of "2022-12-31". Defaults to datetime.now().
 
     Returns:
@@ -124,7 +124,7 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
 
     if start == "":
         start = (
-            datetime.strptime(end, "%Y-%m-%d") + relativedelta(months=-1)
+            datetime.strptime(end, "%Y-%m-%d") + relativedelta(months=-2)
         ).strftime("%Y-%m-%d")
 
     body = {"start": start, "end": end}
