@@ -162,6 +162,7 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
 
 
 def function_new_recruit_tournaments(request: Request):
+    # Example for testing on the console: # {"start": "2021-01-01", "end": "2022-12-31"}
     start: str = "" #format - "2022-12-31"
     end: str = "now"
 
