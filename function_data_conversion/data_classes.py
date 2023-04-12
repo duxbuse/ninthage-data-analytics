@@ -115,6 +115,7 @@ Maps = {
 Deployments = {
     "Other": "OTHER",
     "": "OTHER",
+    "None": "OTHER",
     "Frontline Clash": "1 FRONTLINE CLASH",
     "Dawn Assault": "2 DAWN ASSAULT",
     "Counter Thrust": "3 COUNTER THRUST",
@@ -188,6 +189,7 @@ Army_names = {
     "HOBGOBLINS": "Hobgoblins",
     "HOBGOBLIN": "Hobgoblins",
     "MAKHAR": "Makhar",
+    "LEGIONS OF SIN": "Legions of Sin",
     "PLACEHOLDER": "Placeholder",
 }
 
