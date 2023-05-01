@@ -95,6 +95,7 @@ Magic = {
 
 Maps = {
     "Other": "OTHER",
+    "None": "OTHER",
     "A1": "A1",
     "A2": "A2",
     "A3": "A3",
@@ -127,6 +128,7 @@ Deployments = {
 Objectives = {
     "Other": "OTHER",
     "": "OTHER",
+    "None": "OTHER",
     "Hold the Ground": "1 HOLD THE GROUND",
     "Breakthrough": "2 BREAKTHROUGH",
     "Spoils of War": "3 SPOILS OF WAR",
