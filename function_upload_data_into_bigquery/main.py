@@ -125,6 +125,7 @@ def function_upload_data_into_bigquery(
                 location="us-central1",  # Must match the destination dataset location.
                 job_config=job_config,
                 num_retries=20, #sometimes we get rate limited
+                timeout=5.0,
             )  # API request
 
         try:
