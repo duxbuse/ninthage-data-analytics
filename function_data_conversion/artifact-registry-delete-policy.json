@@ -1,0 +1,9 @@
+[
+    {
+      "name": "delete-all",
+      "action": {"type": "Delete"},
+      "condition": {
+        "olderThan": "1d"
+      }
+    }
+]

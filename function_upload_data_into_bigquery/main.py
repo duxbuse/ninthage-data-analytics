@@ -152,7 +152,7 @@ def function_upload_data_into_bigquery(
 
 
 if __name__ == "__main__":
-    filename = "Round 2.json"
+    filename = "6362bf252f099e47dcca88c4.json"
     request_payload = {
         "json_file": {
             "body": {"bucket_name": "tournament-lists-json", "file_name": filename}

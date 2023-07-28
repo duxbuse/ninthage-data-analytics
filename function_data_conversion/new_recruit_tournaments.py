@@ -385,7 +385,6 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     return calculate_individual_placing(army_dict)
 
 if __name__ == "__main__":
-
     import json
 
     # '[WHTFR] Team - Tournoi Warhall France par equipe 1' - 628b1da77efb5e97e2242694
@@ -395,8 +394,8 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "62606316c4babc7434f760c4"
-    with open(f"../data/nr-test-data/{event_id}.json", "r") as f:
+    event_id = "6362bf252f099e47dcca88c4"
+    with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
     armies = armies_from_NR_tournament(stored_data)

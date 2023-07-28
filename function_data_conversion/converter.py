@@ -9,8 +9,7 @@ from data_classes import Army_names, ArmyEntry
 from multi_error import Multi_Error
 from new_recruit_parser import new_recruit_parser
 from ninth_builder import format_army_block
-from parser_protocol import Parser
-from utility_functions import (DetectParser, Write_army_lists_to_json_file,
+from utility_functions import (Write_army_lists_to_json_file,
                                clean_lines)
 
 
@@ -91,13 +90,13 @@ def split_lines_into_blocks(lines: List[str]) -> List[List[str]]:
 
 
 def parse_army_block(
-    parser: Parser,
     armyblock: List[str],
     tournament_name: str,
     event_size: int,
     ingest_date: datetime,
 ) -> ArmyEntry:
-    army = parser.parse_block(armyblock)
+    
+    army = new_recruit_parser().parse_block(lines=armyblock)
     army.ingest_date = ingest_date
     army.event_size = event_size
     army.player_name = armyblock[0].strip(" -–")
@@ -117,11 +116,8 @@ def proccess_block(
     formated_block = format_army_block(army_block=armyblock, filename=event_name, event_date=event_date, session=session)
     if formated_block and formated_block.formated:
         armyblock = formated_block.formated.split("\n")
-    # Select which parser to use
-    parser_selected = DetectParser(armyblock)
     # parse block into army object
     army = parse_army_block(
-        parser=parser_selected,
         armyblock=armyblock,
         tournament_name=event_name,
         event_size=event_size,

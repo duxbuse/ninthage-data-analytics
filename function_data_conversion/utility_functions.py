@@ -7,10 +7,7 @@ import jsons
 from docx import Document
 from docx.text.paragraph import Paragraph
 
-from data_classes import ArmyEntry, Parsers
-from new_recruit_parser import new_recruit_parser
-from parser_protocol import Parser
-
+from data_classes import ArmyEntry
 
 def clean_lines(lines: List[str]) -> List[str]:
     cleaned_lines = []
@@ -60,20 +57,6 @@ def GetParagraphText(paragraph):
                 if GetTag(subChild) == "w:r":
                     text += subChild.text
     return text
-
-
-def DetectParser(armyblock: List[str]) -> Parser:
-    # Read through block to determine formatting
-    # TODO: currently hardcoded to always use newrecruit
-    parser_selected = Parsers.NEW_RECRUIT
-
-    if parser_selected == Parsers.NEW_RECRUIT:
-        active_parser = new_recruit_parser()
-    # elif parser_selected == Parsers.BATTLE_SCRIBE:
-    #     active_parser = battle_scribe_parser() #TODO: need to build a battle scribe parser
-    else:
-        active_parser = new_recruit_parser()
-    return active_parser
 
 
 def Is_int(n) -> bool:
