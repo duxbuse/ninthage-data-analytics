@@ -41,6 +41,9 @@ def Convert_lines_to_army_list(event_name: str, event_date: Optional[datetime], 
     if len(army_list) == 0:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
+    if len(b:=[x for x in army_list if not x.army]):
+        errors.append(ValueError(f"armylist: {b}\n armylist.army was None"))
+
     if errors:
         raise Multi_Error(errors)
 
@@ -116,6 +119,8 @@ def proccess_block(
     formated_block = format_army_block(army_block=armyblock, filename=event_name, event_date=event_date, session=session)
     if formated_block and formated_block.formated:
         armyblock = formated_block.formated.split("\n")
+    
+
     # parse block into army object
     army = parse_army_block(
         armyblock=armyblock,

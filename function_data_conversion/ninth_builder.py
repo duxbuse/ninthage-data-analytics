@@ -100,15 +100,20 @@ def format_army_block(army_block: list[str], filename: str, event_date: Optional
                 "Content-Type": "application/json",
                 "User-Agent": "ninthage-data-analytics/1.1.0",
             },
-            timeout=5,
+            timeout=30,
         )
     except requests.exceptions.ReadTimeout as err:
-        return None
+        print(f"\n----------------------------\nformatting timeout\n{payload=}")
+        raise(ValueError(f"Formatter timeout\n{payload=}"))
 
     if response.status_code != 200:
-        return None
+        print(f"\n----------------------------\nformatting non 200\n{payload=}")
+        raise(ValueError(f"Formatter non-200\n{payload=}"))
 
     formatted_response = formatted_army_block(**response.json())
+
+    if not formatted_response:
+        print(f"unzipping failed\n{payload=}")
 
     return formatted_response
 
