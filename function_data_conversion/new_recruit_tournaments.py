@@ -5,7 +5,7 @@ from functools import cache
 from typing import Optional
 
 import requests
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, Field
 
 from converter import Convert_lines_to_army_list
 from data_classes import ArmyEntry, Data_sources, Event_types, Round
@@ -154,14 +154,8 @@ class nr_library_entry(BaseModel):
     version: Optional[str]
     setup_categories: Optional[nr_library_setup_categories]
 
-class nr_library(RootModel):
-    root: (list[nr_library_entry])
-    
-    def __iter__(self):
-        return iter(self.root)
-
-    def __getitem__(self, item):
-        return self.root[item]
+class nr_library(BaseModel):
+    __root__: list[nr_library_entry]
 
 
 @cache
@@ -177,9 +171,9 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
     )
     data = response.json()
 
-    library = nr_library(data)
+    library = nr_library(__root__=data)
 
-    for entry in library:
+    for entry in library.__root__:
         if entry.id == id_game_system:
             return entry
 

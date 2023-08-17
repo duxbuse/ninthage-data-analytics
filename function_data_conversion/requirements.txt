@@ -4,4 +4,4 @@ google-cloud-storage
 fuzzywuzzy
 python-Levenshtein
 unidecode
-pydantic
+pydantic==1.*
