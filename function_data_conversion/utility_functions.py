@@ -13,6 +13,7 @@ def clean_lines(lines: List[str]) -> List[str]:
     cleaned_lines = []
     for line in lines:
         text = line.strip()  # remove leading and trailing whitespace
+        text = text.replace("<b>", "").replace("</b>", "").replace("<br>", "\n") #remove weird html tags
         multiple_lines = (
             text.splitlines()
         )  # line break and page break characters are split into separate sections
