@@ -41,7 +41,7 @@ def Convert_lines_to_army_list(event_name: str, event_date: Optional[datetime], 
     if len(army_list) == 0:
         errors.append(ValueError(f"No Army lists were found in\n{lines}"))
 
-    if len(b:=[x for x in army_list if not x.army]):
+    if b:=[x for x in army_list if not x.army]:
         errors.append(ValueError(f"armylist: {b}\n armylist.army was None"))
 
     if errors:
@@ -143,6 +143,9 @@ def proccess_block(
 
 if __name__ == "__main__":
     """Used for testing locally"""
+    lines = "\n<b>Daemon Legions</b><br>690 - Courtesan of Cibaresh, General (Greater Dominion), Wizard Apprentice, Witchcraft, Iron Husk, Hammer Hand, Roaming Hands<br>510 - Omen of Savar, Wizard Apprentice, Divination, Hammer Hand<br>510 - Omen of Savar, Wizard Apprentice, Thaumaturgy, Hammer Hand<br>554 - 23 Lemures, Stiff Upper Lip, Standard Bearer, Champion<br>531 - 22 Lemures, Stiff Upper Lip, Standard Bearer, Champion<br>415 - Possessed Giant, Iron Husk, Mark of the Eternal Champion, Big Brother<br>415 - Possessed Giant, Iron Husk, Mark of the Eternal Champion, Big Brother<br>375 - Blazing Glory, Fly<br>353 - 3 Hoarders, Mirrored Scales, Standard Bearer, Champion<br>4353<br>".split("\n")
+    a = Convert_lines_to_army_list(event_name="testevent", event_date=None, lines=lines)
+
     import os
     from time import perf_counter
 
