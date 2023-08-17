@@ -27,4 +27,4 @@ steps:
       - gcf-artifacts
       - --project=ninthage-data-analytics
       - --location=us-central1
-      - --policy=function_data_conversion\artifact-registry-delete-policy.json
+      - --policy=function_data_conversion/artifact-registry-delete-policy.json
