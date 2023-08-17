@@ -256,8 +256,15 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         # Handle if no army list was provided
         if player.exported_list:
             try:
+                if player.alias is not None:
+                    set_up_lines = [player.alias] + player.exported_list.split("\n")
+                elif player.name is not None:
+                    set_up_lines = [player.name] + player.exported_list.split("\n")
+                else:
+                    set_up_lines = player.exported_list.split("\n")
+
                 armies = Convert_lines_to_army_list(
-                    event_name=event_data.name, event_date=event_date, lines=player.exported_list.split("\n"), session=http
+                    event_name=event_data.name, event_date=event_date, lines=set_up_lines, session=http
                 )
             except Multi_Error as e:
                 # basically skipping the error for now cause we cant change the armylist
