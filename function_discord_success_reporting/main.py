@@ -68,17 +68,18 @@ def function_discord_success_reporting(request: Request):
             }
         ],
     }
-    truncate_message(json_message)
-    r = requests.post(url, headers=headers, json=json_message)
+    if LIST_NUMBER==2:
+        truncate_message(json_message)
+        r = requests.post(url, headers=headers, json=json_message)
 
-    print(f"upload status code: {r.status_code}\n{r.text=}")
-    if r.status_code == 429:
-        print(f"Discord API rate limit exceeded\n{r.headers=}")
-    elif r.status_code != 200 or r.status_code != 201 or r.status_code != 204:
-        print(f"{json_message=}")
+        print(f"upload status code: {r.status_code}\n{r.text=}")
+        if r.status_code == 429:
+            print(f"Discord API rate limit exceeded\n{r.headers=}")
+        elif r.status_code != 200 or r.status_code != 201 or r.status_code != 204:
+            print(f"{json_message=}")
 
-    return r.text, r.status_code
-
+        return r.text, r.status_code
+    return "skipped warhall upload", 200
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
