@@ -17,14 +17,18 @@ steps:
       - --timeout=1800
       - --gen2
 
-  - id: ensure delete policy is enabled
-    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    args:
-      - gcloud
-      - artifacts
-      - repositories
-      - set-cleanup-policies
-      - gcf-artifacts
-      - --project=ninthage-data-analytics
-      - --location=us-central1
-      - --policy=function_data_conversion/artifact-registry-delete-policy.json
+# metadata:
+#   permission: artifactregistry.repositories.update
+#   resource: projects/ninthage-data-analytics/locations/us-central1/repositories/gcf-artifacts
+# reason: IAM_PERMISSION_DENIED
+  # - id: ensure delete policy is enabled
+  #   name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  #   args:
+  #     - gcloud
+  #     - artifacts
+  #     - repositories
+  #     - set-cleanup-policies
+  #     - gcf-artifacts
+  #     - --project=ninthage-data-analytics
+  #     - --location=us-central1
+  #     - --policy=function_data_conversion/artifact-registry-delete-policy.json
