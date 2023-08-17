@@ -55,7 +55,7 @@ class tournaments_data(BaseModel):
     status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
     showlists: bool  # False
     discord_notify_reports: Optional[bool]  # False
-    address: str  #'<p></p>'
+    address: Optional[str]  #'<p></p>'
     price: Optional[int]  # 15
     currency: str  #'EUR'
     description: str  #'<p></p>'
@@ -69,7 +69,7 @@ class tournaments_data(BaseModel):
     confirmed_participants: Optional[int]  # 0
     type: int  # 0=singles, 1=teams
     currentRound: Optional[int]  # 1
-    country: country_data
+    country: Optional[country_data]
     id_game_system: int  # 5 = 9thage 2021, 6 = 9thage 2022
     id_owner: list[str]  # ['601d932bf5fdcf2f56534c4c']
     visibility: int  # 0
