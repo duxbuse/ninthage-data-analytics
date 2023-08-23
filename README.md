@@ -10,6 +10,10 @@ A better way for the project to ingest tournament results and make use of this d
 ## Discord
 [Discord Server](https://discord.gg/mTDT7rgKrU)
 
+## Perms to query dataset
+Project - BigQuery Job User - roles/bigquery.jobUser
+Table/view/dataset - BigQuery Data Viewer - roles/bigquery.dataViewer
+
 ## Requirements for performance metrics from TourneyKeeper
 
 The name of the tournament must exactly match the name of an event on TourneyKeeper.
