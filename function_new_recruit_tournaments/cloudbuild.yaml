@@ -17,3 +17,4 @@ steps:
       - --trigger-http
       - --timeout=300
       - --runtime=python39
+      - --memory=1024MB
