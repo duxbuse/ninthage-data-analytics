@@ -277,7 +277,7 @@ def store_data(data: data_to_store, event_id: str) -> dict:
 
 
 if __name__ == "__main__":
-    #first t9a game was 2021-07-10
+    #first t9a game was 2021-07-10.
     test_data = {"start": "2022-05-13", "end": "2022-05-15"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
