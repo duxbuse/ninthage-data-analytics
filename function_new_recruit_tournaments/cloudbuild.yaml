@@ -18,3 +18,4 @@ steps:
       - --timeout=300
       - --runtime=python39
       - --memory=1024MB
+      - --docker-registry=artifact-registry
