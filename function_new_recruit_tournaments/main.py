@@ -208,8 +208,8 @@ def function_new_recruit_tournaments(request: Request):
             or event.short
             or f"New Recruit Tournament - ${event.id}",
             games=get_tournament_games(event.id),
-            country_name=event.country.name,
-            country_flag=event.country.flag,
+            country_name=event.country.name if event.country else "",
+            country_flag=event.country.flag if event.country else "",
             participants_per_team=event.participants_per_team,
             team_point_cap=event.team_point_cap,
             team_point_min=event.team_point_min,
@@ -278,6 +278,6 @@ def store_data(data: data_to_store, event_id: str) -> dict:
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10.
-    test_data = {"start": "2022-05-13", "end": "2022-05-15"}
+    test_data = {"start": "2023-9-01", "end": "2023-10-31"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
