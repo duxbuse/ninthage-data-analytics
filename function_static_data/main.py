@@ -35,7 +35,7 @@ def function_static_data(request: Request):
                     "Content-Type": "application/json",
                     "User-Agent": "ninthage-data-analytics/1.1.0",
                 },
-                timeout=30,
+                timeout=60,
             ) 
         except requests.exceptions.ReadTimeout as err:
             raise err
