@@ -29,13 +29,13 @@ def function_static_data(request: Request):
         try:
             print(f"Fetching: {endpoint}")
             response = http.get(
-                url+endpoint,
+                url+endpoint+".json",
                 headers={
                     "Accept": "application/json",
                     "Content-Type": "application/json",
                     "User-Agent": "ninthage-data-analytics/1.1.0",
                 },
-                timeout=60,
+                timeout=30,
             ) 
         except requests.exceptions.ReadTimeout as err:
             raise err
@@ -100,7 +100,7 @@ def push_to_bq(local_file: str):
         try:
             job.result()  # Waits for table load to complete.
             print(
-                "Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, source)
+                "Loaded {} rows into {}:{}".format(job.output_rows, dataset_id, source)
             )
         except BadRequest:
             print(f"Upload job failed: {job.errors=}")
