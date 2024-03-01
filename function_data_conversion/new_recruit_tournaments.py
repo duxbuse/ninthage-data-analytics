@@ -148,11 +148,14 @@ class nr_library_setup_categories(BaseModel):
     deployment: nr_library_deployment
     objective: nr_library_objective
 
+class nr_library_settings(BaseModel):
+    setup_categories: Optional[nr_library_setup_categories]
+
 class nr_library_entry(BaseModel):
     id: int
     name: str
     version: Optional[str]
-    setup_categories: Optional[nr_library_setup_categories]
+    settings: Optional[nr_library_settings]
 
 class nr_library(BaseModel):
     __root__: list[nr_library_entry]
@@ -344,13 +347,13 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             new_round.secondary_points = tournament_game.score[i].VP
 
             # Save setup data
-            if library_data.setup_categories:
+            if library_data.settings.setup_categories:
                 if tournament_game.setup:
                     if tournament_game.setup.map:
                         new_round.map_selected = (
                             [
                                 x.name
-                                for x in library_data.setup_categories.map.items
+                                for x in library_data.settings.setup_categories.map.items
                                 if x.id == tournament_game.setup.map
                             ]
                             .pop()
@@ -360,13 +363,13 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                     if tournament_game.setup.deployment:
                         new_round.deployment_selected = [
                             x.name
-                            for x in library_data.setup_categories.deployment.items
+                            for x in library_data.settings.setup_categories.deployment.items
                             if x.id == tournament_game.setup.deployment
                         ].pop()
                     if tournament_game.setup.objective:
                         new_round.objective_selected = [
                             x.name
-                            for x in library_data.setup_categories.objective.items
+                            for x in library_data.settings.setup_categories.objective.items
                             if x.id == tournament_game.setup.objective
                         ].pop()
 
@@ -401,7 +404,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "6362bf252f099e47dcca88c4"
+    event_id = "6575eaddb068fa7ce7f64474"
     with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
