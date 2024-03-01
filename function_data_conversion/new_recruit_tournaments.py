@@ -55,7 +55,7 @@ class tournament_game(BaseModel):
     type: int  # 1
     date: str  #'2021-11-27T00:00:00.000Z'
     id_tourny: str  #'619224dbc77ccb1989c33cba'
-    id_match: str  #'61a25160d7c66d711486cc19'
+    id_match: Optional[str]  #'61a25160d7c66d711486cc19'
     setup: Optional[setup]
     id_game_system: int  # 5
     players: list[player]

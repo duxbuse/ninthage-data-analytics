@@ -130,7 +130,7 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
     body = {"start": start, "end": end}
     # {"start": "2021-01-01", "end": "2022-12-31"}
 
-    url = f"https://api.newrecruit.eu/api/tournaments"
+    url = f"https://www.newrecruit.eu/api/tournaments"
     response = requests.post(
         url,
         json=body,
@@ -147,8 +147,7 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
 
     body = {"id_tournament": tournament_id}
-
-    url = f"https://api.newrecruit.eu/api/reports"
+    url = f"https://www.newrecruit.eu/api/reports"
     response = requests.post(
         url,
         json=body,
@@ -278,6 +277,6 @@ def store_data(data: data_to_store, event_id: str) -> dict:
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10.
-    test_data = {"start": "2023-9-01", "end": "2023-10-31"}
+    test_data = {"start": "2023-11-01", "end": "2023-12-31"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
