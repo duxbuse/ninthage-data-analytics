@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from functools import cache
-from typing import Optional
+from typing import Optional, Union
 
 import requests
 from pydantic import BaseModel, Field
@@ -27,8 +27,9 @@ class elo(BaseModel):
 class player(BaseModel):
     alias: Optional[str]  #'phillybyrd'
     id_list: Optional[str]
+    id_member: Optional[str]
     id_book: Optional[int]  # 8
-    id_participant: str  #'619b6074bf3fd75cf2fb9a54',
+    id_participant: str  #'619b6074bf3fd75cf2fb9a54', Only available for tournament game reports
     exported_list: Optional[str]
     name: Optional[str]  #'Juan'
     elo: Optional[elo]  # Can be None if unknown
@@ -48,6 +49,9 @@ class score(BaseModel):
     BP: int
     BPObj: int
 
+class basic_score(BaseModel):
+    pts: int
+
 
 class tournament_game(BaseModel):
     id: str = Field(..., alias="_id")
@@ -59,7 +63,7 @@ class tournament_game(BaseModel):
     setup: Optional[setup]
     id_game_system: int  # 5
     players: list[player]
-    score: list[score]
+    score: Union[list[score], list[basic_score]]
     confirmation_id: Optional[str]  #'5ec2c7e1085a32315343473a'
     first_turn: Optional[int]
 
@@ -334,17 +338,22 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 tournament_game.players[i - 1].id_participant
             ].army_uuid
 
-            # Won secondary objective
-            if tournament_game.score[i].BP < tournament_game.score[i].BPObj:
-                new_round.won_secondary = True
-            elif tournament_game.score[i].BP >= tournament_game.score[i].BPObj:
-                new_round.won_secondary = False
+            if type(tournament_game.score[i]) == score:
 
-            # Save result
-            new_round.result = tournament_game.score[i].BPObj
+                # Won secondary objective
+                if tournament_game.score[i].BP < tournament_game.score[i].BPObj:
+                    new_round.won_secondary = True
+                elif tournament_game.score[i].BP >= tournament_game.score[i].BPObj:
+                    new_round.won_secondary = False
 
-            # Save points
-            new_round.secondary_points = tournament_game.score[i].VP
+                # Save result
+                new_round.result = tournament_game.score[i].BPObj
+
+                # Save points
+                new_round.secondary_points = tournament_game.score[i].VP
+
+            elif type(tournament_game.score[i]) == basic_score:
+                new_round.result = tournament_game.score[i].pts
 
             # Save setup data
             if library_data.settings.setup_categories:
@@ -404,7 +413,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "6575eaddb068fa7ce7f64474"
+    event_id = "65c8963ab4e27146d223cbfb"
     with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
