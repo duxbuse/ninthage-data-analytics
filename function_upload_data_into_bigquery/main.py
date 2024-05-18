@@ -1,6 +1,7 @@
 import json
 from os import remove
 from pathlib import Path
+import random
 from typing import Union
 
 import google.cloud.bigquery
@@ -118,14 +119,16 @@ def function_upload_data_into_bigquery(
         job_config.source_format = google.cloud.bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
         job_config.autodetect = True
 
+        primes_above_30_under_100 = [31.0, 37.0, 41.0, 43.0, 47.0, 53.0, 59.0, 61.0, 67.0, 71.0, 73.0, 79.0, 83.0, 89.0, 97.0]
+
         with open(file_path, "rb") as source_file:
             job = client.load_table_from_file(
                 source_file,
                 table_ref,
                 location="us-central1",  # Must match the destination dataset location.
                 job_config=job_config,
-                num_retries=6, #sometimes we get rate limited
-                timeout=30.0,
+                num_retries=6, #sometimes we get rate limited BQ has a limit of 10 writes per second
+                timeout=random.choice(primes_above_30_under_100), #pick a new time out duration that hopefully doesn't overlap 
             )  # API request
 
         try:
