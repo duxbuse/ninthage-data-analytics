@@ -124,7 +124,11 @@ Deployments = {
     "Encircle": "4 ENCIRCLE",
     "Refused Flank": "5 REFUSED FLANK",
     "Marching Columns": "6 MARCHING COLUMNS",
-    "Surging Tide": "7 SURGING TIDE"
+    "Surging Tide": "7 SURGING TIDE",
+    "Cornerstone": "8 CORNERSTONE",
+    "Bottleneck": "9 BOTTLENECK",
+    "Mutual Encroachment": "10 MUTUAL ENCROACHMENT",
+    "Spearhead": "11 SPEARHEAD",
 }
 Objectives = {
     "Other": "OTHER",
@@ -136,7 +140,10 @@ Objectives = {
     "King of the Hill": "4 KING OF THE HILL",
     "Capture the Flags": "5 CAPTURE THE FLAGS",
     "Secure Target": "6 SECURE TARGET",
-    "Breaking Flags": "7 BREAKING FLAGS"
+    "Breaking Flags": "7 BREAKING FLAGS",
+    "Hold the Centre": "8 HOLD THE CENTRE",
+    "Forage and Plunder": "9 FORAGE AND PLUNDER",
+    "Hidden Agendas": "10 HIDDEN AGENDAS"
 }
 
 
