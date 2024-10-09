@@ -19,8 +19,8 @@ http = requests.Session()
 
 
 class elo(BaseModel):
-    friendly: float  # 23.664319132398465
-    tourny: float  # 23.664319132398465
+    friendly: Optional[float]  # 23.664319132398465
+    tourny: Optional[float]  # 23.664319132398465
     # legaueid: int #this league id is a hex string and represents a collection of tournaments, but basically you get 3 elo's
 
 

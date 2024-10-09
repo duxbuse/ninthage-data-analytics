@@ -202,6 +202,7 @@ Army_names = {
     "MAKHAR": "Makhar",
     "LEGIONS OF SIN": "Legions of Sin",
     "PLACEHOLDER": "Placeholder",
+    "DREAD FLEET": "Dread Fleet"
 }
 
 

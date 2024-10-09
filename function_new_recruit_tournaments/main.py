@@ -90,6 +90,20 @@ class tournaments_data(BaseModel):
             return 0
         else:
             return v
+        
+    @validator("team_point_cap", pre=True)
+    def participants_team_point_cap(cls, v):
+        if isinstance(v, str):
+            return 0
+        else:
+            return v
+        
+    @validator("id_game_system", pre=True)
+    def participants_id_game_system(cls, v):
+        if isinstance(v, str):
+            return 0
+        else:
+            return v
 
 
 class get_tournaments_response(BaseModel):
@@ -277,6 +291,6 @@ def store_data(data: data_to_store, event_id: str) -> dict:
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10.
-    test_data = {"start": "2023-11-01", "end": "2023-12-31"}
+    test_data = {"start": "2024-07-01", "end": "2024-10-01"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))

@@ -143,7 +143,7 @@ def proccess_block(
 
 if __name__ == "__main__":
     """Used for testing locally"""
-    lines = "\n<b>Daemon Legions</b><br>690 - Courtesan of Cibaresh, General (Greater Dominion), Wizard Apprentice, Witchcraft, Iron Husk, Hammer Hand, Roaming Hands<br>510 - Omen of Savar, Wizard Apprentice, Divination, Hammer Hand<br>510 - Omen of Savar, Wizard Apprentice, Thaumaturgy, Hammer Hand<br>554 - 23 Lemures, Stiff Upper Lip, Standard Bearer, Champion<br>531 - 22 Lemures, Stiff Upper Lip, Standard Bearer, Champion<br>415 - Possessed Giant, Iron Husk, Mark of the Eternal Champion, Big Brother<br>415 - Possessed Giant, Iron Husk, Mark of the Eternal Champion, Big Brother<br>375 - Blazing Glory, Fly<br>353 - 3 Hoarders, Mirrored Scales, Standard Bearer, Champion<br>4353<br>".split("\n")
+    lines = "Иван Мальков (Ivan VanMal)\nOgre Khans\n500 - Great Khan, General, Light Armour (Destinys Call), Great Weapon (Khagadais Legacy), Ogre Crossbow, Lygurs Tongue\n480 - Shaman, Wizard Master, Pyromancy, Iron Fist, Magical Heirloom, Potion of Strength\n315 - Khan, Battle Standard Bearer (Aether Icon, Aether Icon), Light Armour, Brace of Ogre Pistols (Viper's Curse)\n740 - 10x Bruisers, Standard Bearer (Pennant of the Great Grass Sky), Musician, Champion\n200 - 5x Sabretooth Tigers,\n185 - 33x Scraplings, Shield, Musician\n677 - 6x Mercenary Veterans, Brace of Ogre Pistols, Poison Attacks, Accurate, Musician, Champion\n235 - Scratapult,\n235 - Scratapult,\n170 - 3x Bombardiers,\n170 - 3x Bombardiers,\n315 - Mercenary Giant, Great Weapon\n275 - Mercenary Giant, Iron Fist\n4497".split("\n")
     a = Convert_lines_to_army_list(event_name="testevent", event_date=None, lines=lines)
 
     import os
