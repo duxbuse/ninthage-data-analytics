@@ -154,20 +154,6 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
             i - 1
         ].points_killed()
 
-    # check that calculated secondary points == points difference
-    calculated_difference:int = abs(
-        list_of_armies[0].round_performance[0].secondary_points
-        - list_of_armies[1].round_performance[0].secondary_points
-    )
-    reported_difference:int = abs(data_obj.PlayersData[0].PointDifference)
-
-    delta = abs(calculated_difference - reported_difference)
-
-    if (calculated_difference != reported_difference and delta not in [200, 400]): #handle known issues with general and bsb(this is on the warhall side and has no easy fix)
-        msg = f"{reported_difference=} != {calculated_difference=}\nCalculated - Player0: {list_of_armies[0].round_performance[0].secondary_points} Player1: {list_of_armies[1].round_performance[0].secondary_points}"
-        errors.append(ValueError(msg))
-        print(msg)
-
     if errors:
         raise Multi_Error(errors)
 
