@@ -148,3 +148,6 @@ dmypy.json
 
 #other stuff to ignore
 function_data_conversion/fading_flame-test.json
+
+# IDE
+.idea/

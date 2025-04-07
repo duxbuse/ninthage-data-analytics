@@ -112,14 +112,14 @@ class single_event(BaseModel):
 
 # Map Data
 class nr_library_map_items(BaseModel):
-    id: int
+    id: Optional[int]
     ord: int
     name: str
 
 class nr_library_map(BaseModel):
     id: str
     name: str
-    id_game_system: str
+    id_game_system: Optional[str]
     items: list[nr_library_map_items]
 
 # Deployment Data
@@ -131,7 +131,7 @@ class nr_library_deployment_items(BaseModel):
 class nr_library_deployment(BaseModel):
     id: str
     name: str
-    id_game_system: str
+    id_game_system: Optional[str]
     items: list[nr_library_deployment_items]
 
 # Objective Data
@@ -143,7 +143,7 @@ class nr_library_objective_items(BaseModel):
 class nr_library_objective(BaseModel):
     id: str
     name: str
-    id_game_system: str
+    id_game_system: Optional[str]
     items: list[nr_library_objective_items]
 
 # Base Objects
@@ -152,8 +152,19 @@ class nr_library_setup_categories(BaseModel):
     deployment: nr_library_deployment
     objective: nr_library_objective
 
+class nr_library_season_setup_categories(BaseModel):
+    map: Optional[nr_library_map]
+    deployment: Optional[nr_library_deployment]
+    objective: Optional[nr_library_objective]
+
+class nr_library_season_entry(BaseModel):
+    id: int
+    name: str
+    game_setup: Optional[nr_library_season_setup_categories]
+
 class nr_library_settings(BaseModel):
     setup_categories: Optional[nr_library_setup_categories]
+    seasons: Optional[list[nr_library_season_entry]]
 
 class nr_library_entry(BaseModel):
     id: int
@@ -326,6 +337,22 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     # append round performance
     for tournament_game in event_data.games:
         library_data = get_NR_library(tournament_game.id_game_system)
+        maps = []
+        deployments = []
+        objectives = []
+
+        if library_data.settings.setup_categories:
+            maps.extend(library_data.settings.setup_categories.map.items)
+            deployments.extend(library_data.settings.setup_categories.deployment.items)
+            objectives.extend(library_data.settings.setup_categories.deployment.items)
+
+        for season in library_data.settings.seasons:
+            if season.game_setup.map:
+                maps.extend(season.game_setup.map.items)
+            if season.game_setup.deployment:
+                deployments.extend(season.game_setup.deployment.items)
+            if season.game_setup.objective:
+                objectives.extend(season.game_setup.objective.items)
 
         for i, player in enumerate(tournament_game.players):
             new_round = Round()
@@ -356,31 +383,30 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                 new_round.result = tournament_game.score[i].pts
 
             # Save setup data
-            if library_data.settings.setup_categories:
-                if tournament_game.setup:
-                    if tournament_game.setup.map:
-                        new_round.map_selected = (
-                            [
-                                x.name
-                                for x in library_data.settings.setup_categories.map.items
-                                if x.id == tournament_game.setup.map
-                            ]
-                            .pop()
-                            .replace("map", "")
-                            .strip()
-                        )
-                    if tournament_game.setup.deployment:
-                        new_round.deployment_selected = [
+            if tournament_game.setup:
+                if tournament_game.setup.map:
+                    new_round.map_selected = (
+                        [
                             x.name
-                            for x in library_data.settings.setup_categories.deployment.items
-                            if x.id == tournament_game.setup.deployment
-                        ].pop()
-                    if tournament_game.setup.objective:
-                        new_round.objective_selected = [
-                            x.name
-                            for x in library_data.settings.setup_categories.objective.items
-                            if x.id == tournament_game.setup.objective
-                        ].pop()
+                            for x in maps
+                            if x.id == tournament_game.setup.map
+                        ]
+                        .pop()
+                        .replace("map", "")
+                        .strip()
+                    )
+                if tournament_game.setup.deployment:
+                    new_round.deployment_selected = [
+                        x.name
+                        for x in deployments
+                        if x.id == tournament_game.setup.deployment
+                    ].pop()
+                if tournament_game.setup.objective:
+                    new_round.objective_selected = [
+                        x.name
+                        for x in objectives
+                        if x.id == tournament_game.setup.objective
+                    ].pop()
 
             # Append round
             try:
