@@ -65,18 +65,17 @@ main:
             - return_error_big_query:
                 return: ${e}
 
-    # This is to noisy so we are going to skip it for now
-    # - workflow_function_discord_success_reporting:
-    #     call: http.post
-    #     args:
-    #       url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_success_reporting
-    #       headers:
-    #         Content-type: application/json
-    #       body:
-    #         data: ${upload_result}
-    #         army_info: ${json_file}
-    #       auth:
-    #         type: OIDC
+    - workflow_function_discord_success_reporting:
+        call: http.post
+        args:
+          url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_success_reporting
+          headers:
+            Content-type: application/json
+          body:
+            data: ${upload_result}
+            army_info: ${json_file}
+          auth:
+            type: OIDC
 
     - return_success:
         return: ${upload_result}
