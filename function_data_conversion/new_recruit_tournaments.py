@@ -5,6 +5,7 @@ from functools import cache
 from typing import Optional, Union
 import pathlib
 
+import json
 import requests
 from pydantic import BaseModel, Field
 
@@ -438,7 +439,6 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
     return calculate_individual_placing(army_dict)
 
 if __name__ == "__main__":
-    import json
 
     # '[WHTFR] Team - Tournoi Warhall France par equipe 1' - 628b1da77efb5e97e2242694
     # ordu onslaught singles - 6282df1f4485537e8fca47b7
