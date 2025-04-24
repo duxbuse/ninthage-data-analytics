@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime
 from functools import cache
 from typing import Optional, Union
+import pathlib
 
 import requests
 from pydantic import BaseModel, Field
@@ -179,15 +180,22 @@ class nr_library(BaseModel):
 @cache
 def get_NR_library(id_game_system: int) -> nr_library_entry:
 
-    url = f"https://www.newrecruit.eu/api/rpc?m=get_library"
-    response = requests.get(
-        url,
-        headers={
-            "Accept": "application/json",
-            "User-Agent": "ninthage-data-analytics/1.1.0",
-        },
-    )
-    data = response.json()
+    data = []
+    try:
+        url = f"https://www.newrecruit.eu/api/rpc?m=get_library"
+        response = requests.get(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "ninthage-data-analytics/1.1.0",
+            },
+        )
+        data = response.json()
+    except Exception as e:
+        print(f"Load library from local file")
+        download_file_path = f"{pathlib.Path().resolve()}/data/library.json"
+        with open(download_file_path, "r") as jsonFile:
+            data = json.loads(jsonFile.read())
 
     library = nr_library(__root__=data)
 
@@ -330,7 +338,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         army.country_name = event_data.country_name
         army.country_flag = event_data.country_flag
 
-        
+
 
         army_dict[player.id_participant] = army
 
@@ -439,7 +447,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "65c8963ab4e27146d223cbfb"
+    event_id = "679a0de0b0a070561e21ed1e"
     with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
