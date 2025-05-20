@@ -6,6 +6,7 @@ from typing import Optional, Union
 import pathlib
 
 import json
+from os import environ
 import requests
 from pydantic import BaseModel, Field
 
@@ -178,8 +179,21 @@ class nr_library(BaseModel):
     __root__: list[nr_library_entry]
 
 
+def get_cred_config() -> dict[str, str]:
+    """Retrieve Cloud SQL credentials stored in Secret Manager
+    or default to environment variables.
+
+    Returns:
+        A dictionary with Cloud SQL credential values
+    """
+    secret = environ.get("NR_CREDENTIALS_SECRET")
+    if secret:
+        return json.loads(secret)
+
 @cache
 def get_NR_library(id_game_system: int) -> nr_library_entry:
+
+    creds = get_cred_config()
 
     data = []
     try:
@@ -189,6 +203,7 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
             headers={
                 "Accept": "application/json",
                 "User-Agent": "ninthage-data-analytics/1.1.0",
+                "NR-Password": creds["NR_PASSWORD"],
             },
         )
         data = response.json()

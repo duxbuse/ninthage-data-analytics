@@ -1,5 +1,6 @@
+import json
 from datetime import datetime
-from os import remove
+from os import remove, environ
 from typing import Optional
 
 import google.cloud.storage
@@ -108,6 +109,7 @@ class tournaments_data(BaseModel):
 
 class get_tournaments_response(BaseModel):
     tournaments: list[tournaments_data]
+    total: int
 
 class data_to_store(BaseModel):
     name: str
@@ -121,8 +123,18 @@ class data_to_store(BaseModel):
     teams: Optional[list[team]]
     rounds: Optional[int]
 
+def get_cred_config() -> dict[str, str]:
+    """Retrieve Cloud SQL credentials stored in Secret Manager
+    or default to environment variables.
 
-def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
+    Returns:
+        A dictionary with Cloud SQL credential values
+    """
+    secret = environ.get("NR_CREDENTIALS_SECRET")
+    if secret:
+        return json.loads(secret)
+
+def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
 
     Args:
@@ -144,13 +156,17 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
     body = {"start": start, "end": end}
     # {"start": "2021-01-01", "end": "2022-12-31"}
 
-    url = f"https://www.newrecruit.eu/api/tournaments"
+    creds = get_cred_config()
+
+
+    url = f"https://www.newrecruit.eu/api/tournaments?page={page}"
     response = requests.post(
         url,
         json=body,
         headers={
             "Accept": "application/json",
             "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-Password": creds["NR_PASSWORD"],
         },
     )
     data = response.json()
@@ -160,6 +176,8 @@ def get_tournaments(start: str = "", end: str = "now") -> list[dict]:
 def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
 
+    creds = get_cred_config()
+
     body = {"id_tournament": tournament_id}
     url = f"https://www.newrecruit.eu/api/reports"
     response = requests.post(
@@ -168,6 +186,7 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
         headers={
             "Accept": "application/json",
             "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-Password": creds["NR_PASSWORD"],
         },
     )
     data = response.json()
@@ -185,8 +204,30 @@ def function_new_recruit_tournaments(request: Request):
         if "end" in request.json:
             end = request.json["end"]
 
-    tournament_list = get_tournaments(start=start, end=end)
-    all_events = get_tournaments_response(tournaments=tournament_list)
+    page = 1
+    all_events = []
+
+    while True:
+        tournament_list = get_tournaments(start=start, end=end, page=page)
+        events = get_tournaments_response(tournaments=tournament_list)
+        print(f"Page {page}: {len(events.tournament_list)} tournois trouvés / {events.total}.")
+
+        all_events.extend(events.tournaments)
+
+        # Check if all tournaments have been loaded
+        if len(all_events) >= events.total:
+            print(f"All tournaments have been loaded ({len(all_events)}/{events.total}).")
+            break
+
+        # If last page empty => Stop
+        if not tournament_list or not any(events.values()):
+            print("No Tournament to load.")
+            break
+
+        # Passer à la page suivante
+        page += 1
+
+
     project = "ninthage-data-analytics"
     location = "us-central1"
     workflow = "workflow_parse_lists"
@@ -200,8 +241,8 @@ def function_new_recruit_tournaments(request: Request):
 
     errors = []
     events_proccessed = 0
-    summary_of_events = [{x.id: x.name} for x in all_events.tournaments]
-    print(f"Processing {len(all_events.tournaments)} tournaments\n{summary_of_events=}")
+    summary_of_events = [{x.id: x.name} for x in all_events]
+    print(f"Processing {len(all_events)} tournaments\n{summary_of_events=}")
 
     not_t9a = 0
     not_closed = 0
