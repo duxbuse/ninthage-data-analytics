@@ -172,6 +172,7 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
         headers={
             "Accept": "application/json",
             "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
     )

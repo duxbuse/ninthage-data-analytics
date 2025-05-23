@@ -203,6 +203,7 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
             headers={
                 "Accept": "application/json",
                 "User-Agent": "ninthage-data-analytics/1.1.0",
+                "NR-Login": creds["NR_LOGIN"],
                 "NR-Password": creds["NR_PASSWORD"],
             },
         )
