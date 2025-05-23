@@ -31,80 +31,34 @@ class extra_points(BaseModel):
     stage: Optional[int]
     pairings: Optional[bool]
 
+class player(BaseModel):
+    name: str
+    lists: list[str]
+
 class team(BaseModel):
-    id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
+    id: Optional[str] # = Field(..., alias="_id")  #'61f9392492696257cf835c85'
     name: str
     status: Optional[int]
     id_captain: Optional[str]  #'5de7603e29951610d11f7401'
-    participants: list[str]
+    players: list[player]
     extra_points: Optional[list[extra_points]]
 
 
 class tournaments_data(BaseModel):
-    id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
+    id: str #_id '61f9392492696257cf835c85'
     name: str  #'Prueba 2'
     short: Optional[str]  #'Prueba 2'
-    participants: int  # 32
     participants_per_team: Optional[int]  # 8
     team_proposals: Optional[int]  # 2
     team_point_cap: Optional[int]  # 100
     team_point_min: Optional[int]  # 60
     teams: Optional[list[team]]
     rounds: Optional[list[dict]]
-    start: str  #'2022-02-01T10:45:49.578Z'
-    end: str  #'2022-02-01T10:45:49.578Z'
-    status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
     showlists: bool  # False
-    discord_notify_reports: Optional[bool]  # False
-    address: Optional[str]  #'<p></p>'
-    price: Optional[int]  # 15
-    currency: str  #'EUR'
-    description: str  #'<p></p>'
-    rules: str  #'<p></p>'
-    tables: int  # 8
-    group_size: Optional[int]  # 3, this group data is for events that have group stages then finals
-    group_winners: Optional[int]  # 1
-    group_win_condition: Optional[int]  # 0
-    group_letters: Optional[bool]  # False
-    roundNumber: Optional[int]  # 3
-    confirmed_participants: Optional[int]  # 0
     type: int  # 0=singles, 1=teams
     currentRound: Optional[int]  # 1
     country: Optional[country_data]
-    id_game_system: int  # 5 = 9thage 2021, 6 = 9thage 2022
-    id_owner: list[str]  # ['601d932bf5fdcf2f56534c4c']
     visibility: int  # 0
-    version: int  # 0
-    mod_date: str  #'2022-02-01T10:46:00.449Z'
-
-    # If the price is empty it returns '', which is treated as a string, so we must convert back to None
-    @validator("price", pre=True)
-    def price_validator(cls, v):
-        if isinstance(v, str):
-            return None
-        else:
-            return v
-
-    @validator("participants", pre=True)
-    def participants_validator(cls, v):
-        if isinstance(v, str):
-            return 0
-        else:
-            return v
-        
-    @validator("team_point_cap", pre=True)
-    def participants_team_point_cap(cls, v):
-        if isinstance(v, str):
-            return 0
-        else:
-            return v
-        
-    @validator("id_game_system", pre=True)
-    def participants_id_game_system(cls, v):
-        if isinstance(v, str):
-            return 0
-        else:
-            return v
 
 class data_to_store(BaseModel):
     name: str
@@ -179,6 +133,34 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
     data = response.json()
     return data
 
+def get_tournament(id) -> tournaments_data:
+    """Retrieve a tournament from new recruit server with the given id
+
+    Args:
+        id (str): Tournament identifier
+
+    Returns:
+        dict: tournament data with the given id
+    """
+    creds = get_cred_config()
+
+    body = {"id": id}
+
+    url = f"https://www.newrecruit.eu/api/tournament"
+    response = requests.post(
+        url,
+        json=body,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-User": creds["NR_USER"],
+            "NR-Password": creds["NR_PASSWORD"],
+        },
+    )
+    data = response.json()
+    print(f"tournament: {data}")
+
+    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], visibility=data["visibility"])
 
 def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
@@ -193,6 +175,7 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
         headers={
             "Accept": "application/json",
             "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
     )
@@ -255,19 +238,22 @@ def function_new_recruit_tournaments(request: Request):
     no_games_played = 0
 
     for event in all_events:
+        tournament = get_tournament(event.id)
+        print(f"tournament: {tournament}")
+
         data = data_to_store(
             name=event.name
             or event.short
             or f"New Recruit Tournament - ${event.id}",
             games=get_tournament_games(event.id),
-            country_name=event.country.name if event.country else "",
-            country_flag=event.country.flag if event.country else "",
-            participants_per_team=event.participants_per_team,
-            team_point_cap=event.team_point_cap,
-            team_point_min=event.team_point_min,
-            type=event.type,
-            teams=event.teams,
-            rounds=len(event.rounds or []),
+            country_name="", #tournament.country.name if tournament.country else "",
+            country_flag="", #tournament.country.flag if tournament.country else "",
+            participants_per_team=0, #tournament.participants_per_team,
+            team_point_cap=0, #tournament.team_point_cap,
+            team_point_min=0, #tournament.team_point_min,
+            type=tournament.type,
+            teams=tournament.teams,
+            rounds=len(tournament.rounds or []),
             )
         
         if not data.games: #Skip events that have no games played
