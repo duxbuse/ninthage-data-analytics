@@ -19,4 +19,5 @@ steps:
       - --runtime=python39
       - --memory=1024MB
       - --docker-registry=artifact-registry
+      - --set-secret=NR_CREDENTIALS_SECRET=NR_USER:latest
       - --set-secret=NR_CREDENTIALS_SECRET=NR_PASSWORD:latest
