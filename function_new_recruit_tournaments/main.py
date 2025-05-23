@@ -106,11 +106,6 @@ class tournaments_data(BaseModel):
         else:
             return v
 
-
-class get_tournaments_response(BaseModel):
-    tournaments: list[tournaments_data]
-    total: int
-
 class data_to_store(BaseModel):
     name: str
     games: list[dict]
@@ -122,6 +117,17 @@ class data_to_store(BaseModel):
     type: int
     teams: Optional[list[team]]
     rounds: Optional[int]
+
+class tournament(BaseModel):
+    id: str = Field(..., alias="_id")  #'61f9392492696257cf835c85'
+    name: str  #'Prueba 2'
+    start: str  #'2022-02-01T10:45:49.578Z'
+    end: str  #'2022-02-01T10:45:49.578Z'
+    status: int  # 1=OPEN, 2=ONGOING, 3=CLOSED
+
+class tournaments_response(BaseModel):
+    tournaments: list[tournament]
+    total: int
 
 def get_cred_config() -> dict[str, str]:
     """Retrieve Cloud SQL credentials stored in Secret Manager
@@ -153,13 +159,13 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
             datetime.strptime(end, "%Y-%m-%d") + relativedelta(months=-2)
         ).strftime("%Y-%m-%d")
 
-    body = {"start": start, "end": end}
+    body = {"start": start, "end": end, "page": page, "status": 3, "id_game_system": 6}
     # {"start": "2021-01-01", "end": "2022-12-31"}
 
     creds = get_cred_config()
 
 
-    url = f"https://www.newrecruit.eu/api/tournaments?page={page}"
+    url = f"https://www.newrecruit.eu/api/tournaments"
     response = requests.post(
         url,
         json=body,
@@ -209,8 +215,9 @@ def function_new_recruit_tournaments(request: Request):
 
     while True:
         tournament_list = get_tournaments(start=start, end=end, page=page)
-        events = get_tournaments_response(tournaments=tournament_list)
-        print(f"Page {page}: {len(events.tournament_list)} tournois trouvés / {events.total}.")
+        print(f"tournament_list: {tournament_list}")
+        events = tournaments_response(tournaments=tournament_list['tournaments'], total=tournament_list['total'])
+        print(f"Page {page}: {len(events.tournaments)} tournois trouvés / {events.total}.")
 
         all_events.extend(events.tournaments)
 
@@ -220,7 +227,7 @@ def function_new_recruit_tournaments(request: Request):
             break
 
         # If last page empty => Stop
-        if not tournament_list or not any(events.values()):
+        if not tournament_list or not any(events.tournaments):
             print("No Tournament to load.")
             break
 
@@ -244,19 +251,9 @@ def function_new_recruit_tournaments(request: Request):
     summary_of_events = [{x.id: x.name} for x in all_events]
     print(f"Processing {len(all_events)} tournaments\n{summary_of_events=}")
 
-    not_t9a = 0
-    not_closed = 0
     no_games_played = 0
 
-    for event in all_events.tournaments:
-        if event.id_game_system not in [5, 6]: #Skip non 9th age events, hardcoded magic numbers for 9thage 2021 and 2022
-            not_t9a += 1
-            print(f"Skipping {event.name} because it is not a 9th age event")
-            continue
-        if event.status != 3: #Event is not closed and so not ready for ingestion, hardcoded magic number for closed
-            not_closed += 1
-            print(f"Skipping {event.name} because it is not closed")
-            continue
+    for event in all_events:
         data = data_to_store(
             name=event.name
             or event.short
@@ -290,10 +287,10 @@ def function_new_recruit_tournaments(request: Request):
         events_proccessed += 1
 
     if errors:
-        print(f"{not_t9a=}, {not_closed=}, {no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
+        print(f"{no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
         return f"{events_proccessed} events found with {len(errors)}\nErrors: {str(errors)}", 400
 
-    print(f"{not_t9a=}, {not_closed=}, {no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
+    print(f"{no_games_played=}, {events_proccessed=}, {start=}, {end=}, {errors=}")
     return f"{events_proccessed} events found from {start} to {end}.", 200
 
 
