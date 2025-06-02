@@ -92,7 +92,12 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
+        print(f"NR_CREDENTIALS_SECRET a été chargé. Longueur : {len(secret)} caractères.")
         return json.loads(secret)
+    else:
+        print("Erreur : NR_CREDENTIALS_SECRET n'a PAS été chargé.")
+        return {}
+
 
 def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
@@ -100,6 +105,7 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
     Args:
         start (str, optional): Start date in the format of "2021-01-01". Defaults to 2 month before end date.
         end (str, optional): End date in the format of "2022-12-31". Defaults to datetime.now().
+        page (int, optional): Page number to retrieve. Defaults to 1.
 
     Returns:
         dict: List of tournament data from the selected period
