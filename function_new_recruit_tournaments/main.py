@@ -12,7 +12,6 @@ from flask.wrappers import Request
 from google.cloud.workflows import executions_v1beta
 from google.cloud.workflows.executions_v1beta.types import executions
 from pydantic import BaseModel, Field, validator
-import whatismyip
 
 http = requests.Session()
 
@@ -93,29 +92,11 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
-        print(f"NR_CREDENTIALS_SECRET a été chargé. Longueur : {len(secret)} caractères.")
+        print(f"NR_CREDENTIALS_SECRET are loaded. Length : {len(secret)}.")
         return json.loads(secret)
     else:
-        print("Erreur : NR_CREDENTIALS_SECRET n'a PAS été chargé.")
+        print("Error : NR_CREDENTIALS_SECRET can not be loaded.")
         return {}
-
-
-def pretty_print(req):
-    """
-    At this point it is completely built and ready
-    to be fired; it is "prepared".
-
-    However pay attention at the formatting used in
-    this function because it is programmed to be pretty
-    printed and may differ from the actual request.
-    """
-    print('{}\n{}\r\n{}\r\n\r\n{}'.format(
-        '-----------START-----------',
-        req.method + ' ' + req.url,
-        '\r\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-        req.body,
-    ))
-
 
 def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
@@ -143,23 +124,17 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
 
     creds = get_cred_config()
 
-    print(f"connected: {whatismyip.amionline()}")
-    print(f"connected: {whatismyip.whatismyip()}")
-
-    req = requests.Request('POST',
-                           f"https://www.newrecruit.eu/api/tournaments",
-                           headers={
-                               "Accept": "application/json",
-                               "User-Agent": "ninthage-data-analytics/1.1.0",
-                               "NR-User": creds["NR_USER"],
-                               "NR-Password": creds["NR_PASSWORD"],
-                           },
-                           json=body)
-    prepared = req.prepare()
-    pretty_print(prepared)
-
-    s = requests.Session()
-    response = s.send(prepared)
+    url = f"https://www.newrecruit.eu/api/tournaments"
+    response = requests.post(
+        url,
+        json=body,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "ninthage-data-analytics/1.1.0",
+            "NR-User": creds["NR_USER"],
+            "NR-Password": creds["NR_PASSWORD"],
+        },
+    )
     data = response.json()
     return data
 
