@@ -210,6 +210,10 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
                 "NR-Login": creds["NR_LOGIN"],
                 "NR-Password": creds["NR_PASSWORD"],
             },
+            proxies={
+                "http": environ.get("PROXY"),
+                "https": environ.get("PROXY")
+            },
         )
         data = response.json()
     except Exception as e:
