@@ -126,8 +126,8 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
     creds = get_cred_config()
 
     print(f"creds: {creds}")
-    print(f"NR-User: {creds["NR_USER"]}")
-    print(f"NR-Password: {creds["NR_PASSWORD"]}")
+    print(f"NR-User: {creds['NR_USER']}")
+    print(f"NR-Password: {creds['NR_PASSWORD']}")
     url = f"https://www.newrecruit.eu/api/tournaments"
     response = requests.post(
         url,
