@@ -20,5 +20,4 @@ steps:
       - --memory=1024MB
       - --docker-registry=artifact-registry
       - --set-secrets=NR_CREDENTIALS_SECRET=projects/${PROJECT_ID}/secrets/NR_CREDENTIALS/versions/latest
-      - --set-secrets=HTTP_PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
-      - --set-secrets=HTTPS_PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
+      - --set-secrets=PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest

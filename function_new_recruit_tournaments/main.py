@@ -134,6 +134,10 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
+        },
     )
     data = response.json()
     return data
@@ -161,6 +165,10 @@ def get_tournament(id) -> tournaments_data:
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
+        },
     )
     data = response.json()
     print(f"tournament: {data}")
@@ -182,6 +190,10 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
             "User-Agent": "ninthage-data-analytics/1.1.0",
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
+        },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
         },
     )
     data = response.json()
