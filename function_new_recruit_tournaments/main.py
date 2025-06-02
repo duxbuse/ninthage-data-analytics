@@ -143,6 +143,9 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
 
     creds = get_cred_config()
 
+    print(f"connected: {whatismyip.amionline()}")
+    print(f"connected: {whatismyip.whatismyip()}")
+
     req = requests.Request('POST',
                            f"https://www.newrecruit.eu/api/tournaments",
                            headers={
@@ -193,9 +196,6 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
 
     creds = get_cred_config()
-
-    print(f"connected: {whatismyip.amionline()}")
-    print(f"connected: {whatismyip.whatismyip()}")
 
     body = {"id_tournament": tournament_id}
     url = f"https://www.newrecruit.eu/api/reports"
