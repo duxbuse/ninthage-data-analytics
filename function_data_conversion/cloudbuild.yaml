@@ -17,8 +17,7 @@ steps:
       - --timeout=1800
       - --gen2
       - --set-secrets=NR_CREDENTIALS_SECRET=projects/${PROJECT_ID}/secrets/NR_CREDENTIALS/versions/latest
-      - --set-secrets=HTTP_PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
-      - --set-secrets=HTTPS_PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
+      - --set-secrets=PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
 
 # metadata:
 #   permission: artifactregistry.repositories.update
