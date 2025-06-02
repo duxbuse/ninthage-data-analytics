@@ -18,6 +18,7 @@ steps:
       - --gen2
       - --set-secrets=NR_CREDENTIALS_SECRET=NR_CREDENTIALS:latest
 
+
 # metadata:
 #   permission: artifactregistry.repositories.update
 #   resource: projects/ninthage-data-analytics/locations/us-central1/repositories/gcf-artifacts
