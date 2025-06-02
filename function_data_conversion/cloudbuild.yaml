@@ -16,8 +16,7 @@ steps:
       - --runtime=python39
       - --timeout=1800
       - --gen2
-      - --set-secrets=NR_CREDENTIALS_SECRET=NR_USER:latest
-      - --set-secrets=NR_CREDENTIALS_SECRET=NR_PASSWORD:latest
+      - --set-secrets=NR_CREDENTIALS_SECRET=NR_CREDENTIALS:latest
 
 # metadata:
 #   permission: artifactregistry.repositories.update
