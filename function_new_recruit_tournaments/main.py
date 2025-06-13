@@ -92,7 +92,11 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
+        print(f"NR_CREDENTIALS_SECRET are loaded. Length : {len(secret)}.")
         return json.loads(secret)
+    else:
+        print("Error : NR_CREDENTIALS_SECRET can not be loaded.")
+        return {}
 
 def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
@@ -100,6 +104,7 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
     Args:
         start (str, optional): Start date in the format of "2021-01-01". Defaults to 2 month before end date.
         end (str, optional): End date in the format of "2022-12-31". Defaults to datetime.now().
+        page (int, optional): Page number to retrieve. Defaults to 1.
 
     Returns:
         dict: List of tournament data from the selected period
@@ -115,9 +120,9 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
 
     body = {"start": start, "end": end, "page": page, "status": 3, "id_game_system": 6}
     # {"start": "2021-01-01", "end": "2022-12-31"}
+    print(f"body: {body}")
 
     creds = get_cred_config()
-
 
     url = f"https://www.newrecruit.eu/api/tournaments"
     response = requests.post(
@@ -128,6 +133,10 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
             "User-Agent": "ninthage-data-analytics/1.1.0",
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
+        },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
         },
     )
     data = response.json()
@@ -156,6 +165,10 @@ def get_tournament(id) -> tournaments_data:
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
+        },
     )
     data = response.json()
     print(f"tournament: {data}")
@@ -177,6 +190,10 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
             "User-Agent": "ninthage-data-analytics/1.1.0",
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
+        },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
         },
     )
     data = response.json()

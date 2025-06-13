@@ -188,7 +188,11 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
+        print(f"NR_CREDENTIALS_SECRET are loaded. Length : {len(secret)}.")
         return json.loads(secret)
+    else:
+        print("Error : NR_CREDENTIALS_SECRET can not be loaded.")
+        return {}
 
 @cache
 def get_NR_library(id_game_system: int) -> nr_library_entry:
@@ -205,6 +209,10 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
                 "User-Agent": "ninthage-data-analytics/1.1.0",
                 "NR-Login": creds["NR_LOGIN"],
                 "NR-Password": creds["NR_PASSWORD"],
+            },
+            proxies={
+                "http": environ.get("PROXY"),
+                "https": environ.get("PROXY")
             },
         )
         data = response.json()
