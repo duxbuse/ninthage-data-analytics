@@ -173,7 +173,7 @@ def get_tournament(id) -> tournaments_data:
     data = response.json()
     print(f"tournament: {data}")
 
-    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], rounds=(data["rounds"] or []))
+    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], visibility=data["visibility"])
 
 def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
