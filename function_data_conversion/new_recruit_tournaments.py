@@ -77,17 +77,20 @@ class extra_points(BaseModel):
     stage: Optional[int]
     pairings: Optional[bool]
 
+class player_name(BaseModel):
+    name: str
+    lists: list[str]
 
 class team(BaseModel):
-    def __init__(self, **data): #handle that the id might be "id" or "_id"
-        super().__init__(
-            id=data.pop("_id", None) or data.pop("id", None),
-            **data,
-        )
-    id: str #'61f9392492696257cf835c85'
+    # def __init__(self, **data): #handle that the id might be "id" or "_id"
+    #     super().__init__(
+    #         id=data.pop("_id", None) or data.pop("id", None),
+    #         **data,
+    #     )
+    id: Optional[str] #'61f9392492696257cf835c85'
     name: str
     id_captain: Optional[str]  #'5de7603e29951610d11f7401'
-    participants: list[str]
+    players: list[player_name]
     extra_points: Optional[list[extra_points]]
 
 
@@ -248,19 +251,19 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
             round_total_tournament_points = 0
             round_total_secondary_points = 0
 
-            for player in team.participants:
-                if player in data and data[player].round_performance and round <= len(data[player].round_performance)-1:
-                    round_total_tournament_points += data[player].round_performance[round].result
-                    round_total_tournament_points = clamp(round_total_tournament_points, data[player].team_point_cap_min, data[player].team_point_cap_max)
-                    round_total_secondary_points += data[player].round_performance[round].secondary_points
+            for player in team.players:
+                if player in data and data[player.name].round_performance and round <= len(data[player.name].round_performance)-1:
+                    round_total_tournament_points += data[player.name].round_performance[round].result
+                    round_total_tournament_points = clamp(round_total_tournament_points, data[player.name].team_point_cap_min, data[player.name].team_point_cap_max)
+                    round_total_secondary_points += data[player.name].round_performance[round].secondary_points
 
             team_total_tournament_points += round_total_tournament_points
             team_total_secondary_points += round_total_secondary_points
 
-        for player in team.participants:
+        for player in team.players:
             if player in data:
-                data[player].team_total_tournament_points = team_total_tournament_points
-                data[player].team_total_secondary_points = team_total_secondary_points
+                data[player.name].team_total_tournament_points = team_total_tournament_points
+                data[player.name].team_total_secondary_points = team_total_secondary_points
 
     if not (data and data.items()):
         raise Multi_Error(
@@ -343,8 +346,8 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             army.team_point_cap_min = event_data.team_point_min
             # find which team the participant belongs to and save if the captain
             for team in event_data.teams if event_data.teams else []:
-                for person in team.participants:
-                    if person == player.id_participant:
+                for person in team.players:
+                    if person.name == player.name:
                         army.team_id = team.id
                         if team.id_captain and team.id_captain == player.id_participant:
                             army.team_captain = True
@@ -471,7 +474,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "679a0de0b0a070561e21ed1e"
+    event_id = "67172ebf8bb68175914ab4a8"
     with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
