@@ -92,7 +92,11 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
+        print(f"NR_CREDENTIALS_SECRET are loaded. Length : {len(secret)}.")
         return json.loads(secret)
+    else:
+        print("Error : NR_CREDENTIALS_SECRET can not be loaded.")
+        return {}
 
 def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[dict]:
     """Retrieve all tournaments from new recruit server between the inclusive dates
@@ -100,6 +104,7 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
     Args:
         start (str, optional): Start date in the format of "2021-01-01". Defaults to 2 month before end date.
         end (str, optional): End date in the format of "2022-12-31". Defaults to datetime.now().
+        page (int, optional): Page number to retrieve. Defaults to 1.
 
     Returns:
         dict: List of tournament data from the selected period
@@ -115,9 +120,9 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
 
     body = {"start": start, "end": end, "page": page, "status": 3, "id_game_system": 6}
     # {"start": "2021-01-01", "end": "2022-12-31"}
+    print(f"body: {body}")
 
     creds = get_cred_config()
-
 
     url = f"https://www.newrecruit.eu/api/tournaments"
     response = requests.post(
@@ -128,6 +133,10 @@ def get_tournaments(start: str = "", end: str = "now", page: int = 1) -> list[di
             "User-Agent": "ninthage-data-analytics/1.1.0",
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
+        },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
         },
     )
     data = response.json()
@@ -156,11 +165,15 @@ def get_tournament(id) -> tournaments_data:
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
+        },
     )
     data = response.json()
     print(f"tournament: {data}")
 
-    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], visibility=data["visibility"])
+    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], rounds=(data["rounds"] or []))
 
 def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
@@ -178,7 +191,12 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
             "NR-User": creds["NR_USER"],
             "NR-Password": creds["NR_PASSWORD"],
         },
+        proxies={
+            "http": environ.get("PROXY"),
+            "https": environ.get("PROXY")
+        },
     )
+
     data = response.json()
     return data
 
@@ -300,22 +318,24 @@ def write_report_to_json(file_path: str, data: dict):
 
 def store_data(data: data_to_store, event_id: str) -> dict:
     if __name__ == "__main__":
-        local_file = "test-" + event_id
+        local_file = f"../function_data_conversion/data/nr-test-data/{event_id}.json"
     else:
         local_file = "/tmp/" + event_id
 
     write_report_to_json(file_path=local_file, data=data.dict())
 
-    bucket_name = "newrecruit_tournaments"
-    upload_blob(
-        bucket_name=bucket_name, file_path=local_file, destination_blob_name=event_id
-    )
-    remove(local_file)
+    if __name__ != "__main__":
+        bucket_name = "newrecruit_tournaments"
+        upload_blob(
+            bucket_name=bucket_name, file_path=local_file, destination_blob_name=event_id
+        )
+        remove(local_file)
+
     return {"name": "newrecruit_tournament.json", "event_id": event_id}
 
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10.
-    test_data = {"start": "2024-07-01", "end": "2024-10-01"}
+    test_data = {"start": "2025-03-01", "end": "2025-06-30"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))

@@ -77,17 +77,20 @@ class extra_points(BaseModel):
     stage: Optional[int]
     pairings: Optional[bool]
 
+class player_name(BaseModel):
+    name: str
+    lists: list[str]
 
 class team(BaseModel):
-    def __init__(self, **data): #handle that the id might be "id" or "_id"
-        super().__init__(
-            id=data.pop("_id", None) or data.pop("id", None),
-            **data,
-        )
-    id: str #'61f9392492696257cf835c85'
+    # def __init__(self, **data): #handle that the id might be "id" or "_id"
+    #     super().__init__(
+    #         id=data.pop("_id", None) or data.pop("id", None),
+    #         **data,
+    #     )
+    id: Optional[str] #'61f9392492696257cf835c85'
     name: str
     id_captain: Optional[str]  #'5de7603e29951610d11f7401'
-    participants: list[str]
+    players: list[player_name]
     extra_points: Optional[list[extra_points]]
 
 
@@ -188,7 +191,11 @@ def get_cred_config() -> dict[str, str]:
     """
     secret = environ.get("NR_CREDENTIALS_SECRET")
     if secret:
+        print(f"NR_CREDENTIALS_SECRET are loaded. Length : {len(secret)}.")
         return json.loads(secret)
+    else:
+        print("Error : NR_CREDENTIALS_SECRET can not be loaded.")
+        return {}
 
 @cache
 def get_NR_library(id_game_system: int) -> nr_library_entry:
@@ -205,6 +212,10 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
                 "User-Agent": "ninthage-data-analytics/1.1.0",
                 "NR-Login": creds["NR_LOGIN"],
                 "NR-Password": creds["NR_PASSWORD"],
+            },
+            proxies={
+                "http": environ.get("PROXY"),
+                "https": environ.get("PROXY")
             },
         )
         data = response.json()
@@ -240,19 +251,19 @@ def calculate_team_placing(data: dict[str, ArmyEntry], teams: list[team], rounds
             round_total_tournament_points = 0
             round_total_secondary_points = 0
 
-            for player in team.participants:
-                if player in data and data[player].round_performance and round <= len(data[player].round_performance)-1:
-                    round_total_tournament_points += data[player].round_performance[round].result
-                    round_total_tournament_points = clamp(round_total_tournament_points, data[player].team_point_cap_min, data[player].team_point_cap_max)
-                    round_total_secondary_points += data[player].round_performance[round].secondary_points
+            for player in team.players:
+                if player in data and data[player.name].round_performance and round <= len(data[player.name].round_performance)-1:
+                    round_total_tournament_points += data[player.name].round_performance[round].result
+                    round_total_tournament_points = clamp(round_total_tournament_points, data[player.name].team_point_cap_min, data[player.name].team_point_cap_max)
+                    round_total_secondary_points += data[player.name].round_performance[round].secondary_points
 
             team_total_tournament_points += round_total_tournament_points
             team_total_secondary_points += round_total_secondary_points
 
-        for player in team.participants:
+        for player in team.players:
             if player in data:
-                data[player].team_total_tournament_points = team_total_tournament_points
-                data[player].team_total_secondary_points = team_total_secondary_points
+                data[player.name].team_total_tournament_points = team_total_tournament_points
+                data[player.name].team_total_secondary_points = team_total_secondary_points
 
     if not (data and data.items()):
         raise Multi_Error(
@@ -295,6 +306,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
 
+    print(f"player_list({len(player_list)}): {player_list}")
     for player in player_list.values():
         # Handle if no army list was provided
         if player.exported_list:
@@ -305,6 +317,8 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                     set_up_lines = [player.name] + player.exported_list.split("\n")
                 else:
                     set_up_lines = player.exported_list.split("\n")
+
+                print(f"event_name: {event_data.name}, event_date: {event_date}, set_up_lines: {set_up_lines}")
 
                 armies = Convert_lines_to_army_list(
                     event_name=event_data.name, event_date=event_date, lines=set_up_lines, session=http
@@ -325,18 +339,26 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             army = ArmyEntry()
 
         army.tournament = event_data.name
+        print(f"army.tournament: {army.tournament}")
         army.player_name = player.alias
+        print(f"army.player_name: {army.player_name}")
         army.ingest_date = datetime.datetime.now(datetime.timezone.utc)
+        print(f"army.ingest_date: {army.ingest_date}")
         army.event_date = event_date
+        print(f"army.event_date: {army.event_date}")
         if event_data.type == 1:
+            print(f"event_data.type: {event_data.type} : TEAM")
             army.event_type = Event_types.TEAMS
             army.participants_per_team = event_data.participants_per_team
+            print(f"army.participants_per_team: {army.participants_per_team}")
             army.team_point_cap_max = event_data.team_point_cap
+            print(f"army.team_point_cap_max: {army.team_point_cap_max}")
             army.team_point_cap_min = event_data.team_point_min
+            print(f"army.team_point_cap_min: {army.team_point_cap_min}")
             # find which team the participant belongs to and save if the captain
             for team in event_data.teams if event_data.teams else []:
-                for person in team.participants:
-                    if person == player.id_participant:
+                for person in team.players:
+                    if person.name == player.name:
                         army.team_id = team.id
                         if team.id_captain and team.id_captain == player.id_participant:
                             army.team_captain = True
@@ -350,12 +372,15 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             army.event_type = Event_types.SINGLES
 
         army.event_size = len(player_list)
+        print(f"army.event_size: {army.event_size}")
         army.data_source = Data_sources.NEW_RECRUIT
+        print(f"army.data_source: {army.data_source}")
         army.validated = True
+        print(f"army.validated: {army.validated}")
         army.country_name = event_data.country_name
+        print(f"army.country_name: {army.country_name}")
         army.country_flag = event_data.country_flag
-
-
+        print(f"army.country_flag: {army.country_flag}")
 
         army_dict[player.id_participant] = army
 
@@ -463,7 +488,7 @@ if __name__ == "__main__":
     # Buckeye battles - singles - 6276dfa3f65a49d9a99ed245
     # The Alpine Grand Tournament - Austrian Singles - 628f71c8e93d8a55fec510a5
     # North American Team Championships 2021 - 61945055989a624fe73e77bc
-    event_id = "679a0de0b0a070561e21ed1e"
+    event_id = "67172ebf8bb68175914ab4a8"
     with open(f"data/nr-test-data/{event_id}.json", "r") as f:
         stored_data =json.load(f)
 
