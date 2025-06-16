@@ -306,6 +306,7 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             event_data.games[0].date, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
 
+    print(f"player_list({len(player_list)}): {player_list}")
     for player in player_list.values():
         # Handle if no army list was provided
         if player.exported_list:
@@ -316,6 +317,8 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
                     set_up_lines = [player.name] + player.exported_list.split("\n")
                 else:
                     set_up_lines = player.exported_list.split("\n")
+
+                print(f"event_name: {event_data.name}, event_date: {event_date}, set_up_lines: {set_up_lines}")
 
                 armies = Convert_lines_to_army_list(
                     event_name=event_data.name, event_date=event_date, lines=set_up_lines, session=http
@@ -336,14 +339,22 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             army = ArmyEntry()
 
         army.tournament = event_data.name
+        print(f"army.tournament: {army.tournament}")
         army.player_name = player.alias
+        print(f"army.player_name: {army.player_name}")
         army.ingest_date = datetime.datetime.now(datetime.timezone.utc)
+        print(f"army.ingest_date: {army.ingest_date}")
         army.event_date = event_date
+        print(f"army.event_date: {army.event_date}")
         if event_data.type == 1:
+            print(f"event_data.type: {event_data.type} : TEAM")
             army.event_type = Event_types.TEAMS
             army.participants_per_team = event_data.participants_per_team
+            print(f"army.participants_per_team: {army.participants_per_team}")
             army.team_point_cap_max = event_data.team_point_cap
+            print(f"army.team_point_cap_max: {army.team_point_cap_max}")
             army.team_point_cap_min = event_data.team_point_min
+            print(f"army.team_point_cap_min: {army.team_point_cap_min}")
             # find which team the participant belongs to and save if the captain
             for team in event_data.teams if event_data.teams else []:
                 for person in team.players:
@@ -361,12 +372,15 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             army.event_type = Event_types.SINGLES
 
         army.event_size = len(player_list)
+        print(f"army.event_size: {army.event_size}")
         army.data_source = Data_sources.NEW_RECRUIT
+        print(f"army.data_source: {army.data_source}")
         army.validated = True
+        print(f"army.validated: {army.validated}")
         army.country_name = event_data.country_name
+        print(f"army.country_name: {army.country_name}")
         army.country_flag = event_data.country_flag
-
-
+        print(f"army.country_flag: {army.country_flag}")
 
         army_dict[player.id_participant] = army
 
