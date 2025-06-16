@@ -173,7 +173,7 @@ def get_tournament(id) -> tournaments_data:
     data = response.json()
     print(f"tournament: {data}")
 
-    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], visibility=data["visibility"])
+    return tournaments_data(id=id, name=data["name"], type=data["type"], teams=data["teams"], showlists=data["showlists"], rounds=(data["rounds"] or []))
 
 def get_tournament_games(tournament_id: str) -> list[dict]:
     """Retrieve all games from new recruit server for a tournament"""
@@ -196,6 +196,7 @@ def get_tournament_games(tournament_id: str) -> list[dict]:
             "https": environ.get("PROXY")
         },
     )
+
     data = response.json()
     return data
 
@@ -317,22 +318,24 @@ def write_report_to_json(file_path: str, data: dict):
 
 def store_data(data: data_to_store, event_id: str) -> dict:
     if __name__ == "__main__":
-        local_file = "test-" + event_id
+        local_file = f"../function_data_conversion/data/nr-test-data/{event_id}.json"
     else:
         local_file = "/tmp/" + event_id
 
     write_report_to_json(file_path=local_file, data=data.dict())
 
-    bucket_name = "newrecruit_tournaments"
-    upload_blob(
-        bucket_name=bucket_name, file_path=local_file, destination_blob_name=event_id
-    )
-    remove(local_file)
+    if __name__ != "__main__":
+        bucket_name = "newrecruit_tournaments"
+        upload_blob(
+            bucket_name=bucket_name, file_path=local_file, destination_blob_name=event_id
+        )
+        remove(local_file)
+
     return {"name": "newrecruit_tournament.json", "event_id": event_id}
 
 
 if __name__ == "__main__":
     #first t9a game was 2021-07-10.
-    test_data = {"start": "2024-07-01", "end": "2024-10-01"}
+    test_data = {"start": "2025-03-01", "end": "2025-06-30"}
     request_obj = Request.from_values(json=test_data)
     print(function_new_recruit_tournaments(request_obj))
