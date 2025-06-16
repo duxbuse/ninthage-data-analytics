@@ -51,7 +51,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     list_of_armies = []
     file_name = data["name"]
     if __name__ == "__main__":
-        download_file_path = f"data/nr-test-data/{data["event_id"]}.json"
+        download_file_path = f"data/nr-test-data/{data['event_id']}.json"
     else:
         download_file_path = f"/tmp/{file_name}"
 
