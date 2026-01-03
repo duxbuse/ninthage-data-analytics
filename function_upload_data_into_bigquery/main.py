@@ -10,6 +10,9 @@ import google.cloud.storage
 from flask.wrappers import Request
 from google.api_core.exceptions import BadRequest
 from google.cloud.storage.blob import Blob
+import functions_framework
+
+
 
 
 def download_blob(bucket_name: str, blob_name: str) -> Union[Blob, None]:
@@ -36,6 +39,7 @@ def delete_blob(bucket_name: str, blob_name: str) -> None:
     print("Blob {} deleted.".format(blob_name))
 
 
+@functions_framework.http
 def function_upload_data_into_bigquery(
     request: Request, is_remote: bool = True
 ) -> tuple[dict, int]:

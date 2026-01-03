@@ -1,7 +1,10 @@
 python-docx
 jsons
 google-cloud-storage
+google-cloud-logging
 fuzzywuzzy
 python-Levenshtein
 unidecode
-pydantic==1.*
+pydantic<2.0
+functions-framework
+pytest

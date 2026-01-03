@@ -1,5 +1,5 @@
 from datetime import datetime
-from distutils.log import error
+# from distutils.log import error
 from pydantic import BaseModel, validator
 
 from converter import Convert_lines_to_army_list
@@ -27,19 +27,22 @@ class warhall_player_data(BaseModel):
     @validator("ArmyName")
     def validate_army_name(cls, ArmyName):
         if ArmyName not in Army_names.values() and ArmyName != "":
-            raise ValueError(f"{ArmyName=} is not a valid army name")
+            print(f"WARNING: {ArmyName=} is not a valid army name. Storing as is.")
+            # raise ValueError(f"{ArmyName=} is not a valid army name")
         return ArmyName
 
     @validator("Objective")
     def validate_objective(cls, Objective):
         if Objective.casefold() not in [obj.casefold() for obj in ["Won", "Lost", "Draw", ""]]:
-            raise ValueError(f"{Objective=} is not a valid objective")
+            print(f"WARNING: {Objective=} is not a valid objective. Storing as is.")
+            # raise ValueError(f"{Objective=} is not a valid objective")
         return Objective
 
     @validator("Result")
     def validate_result(cls, Result):
         if not 0 <= Result <= 20:
-            raise ValueError(f"{Result=} is not a valid result from 0-20")
+            print(f"WARNING: {Result=} is not a valid result from 0-20. Storing as is.")
+            # raise ValueError(f"{Result=} is not a valid result from 0-20")
         return Result
 
 
@@ -53,23 +56,33 @@ class warhall_data(BaseModel):
     @validator("Deployment")
     def validate_deployment(cls, Deployment):
         if Deployment not in Deployments:
-            raise ValueError(f"{Deployment=} is not a valid deployment")
+            print(f"WARNING: {Deployment=} is not a valid deployment. Storing as is.")
+            return Deployment # Return original if not found
+            # raise ValueError(f"{Deployment=} is not a valid deployment")
         return Deployments[Deployment]
 
     @validator("Map", pre=True)
     def validate_map(cls, Map):
         if isinstance(Map, int):
-            Map = list(enumerate(Maps.values()))[Map][
-                1
-            ]  # convert int to string from our list of maps
+            try:
+                Map = list(enumerate(Maps.values()))[Map][
+                    1
+                ]  # convert int to string from our list of maps
+            except IndexError:
+                print(f"WARNING: Map index {Map} out of range. Storing as is.")
+                return str(Map)
         if Map not in Maps.values():
-            raise ValueError(f"{Map=} is not a valid map")
+            print(f"WARNING: {Map=} is not a valid map. Storing as is.")
+            return Map # Return original
+            # raise ValueError(f"{Map=} is not a valid map")
         return Map
 
     @validator("Objective")
     def validate_objective(cls, Objective):
         if Objective not in Objectives:
-            raise ValueError(f"{Objective=} is not a valid objective")
+            print(f"WARNING: {Objective=} is not a valid objective. Storing as is.")
+            return Objective # Return original
+            # raise ValueError(f"{Objective=} is not a valid objective")
         return Objectives[Objective]
 
 
@@ -96,14 +109,16 @@ def mark_half_or_dead(player_data: warhall_player_data, army_data: ArmyEntry) ->
             unit[1].half = False
 
 
-def armies_from_warhall(data: dict) -> list[ArmyEntry]:
+def armies_from_warhall(data: dict) -> tuple[list[ArmyEntry], list[str]]:
     errors: list[Exception] = []
     now = datetime.now()
     try:
         data_obj = warhall_data(**data)
     except ValueError as e:
         errors.append(e)
-        raise Multi_Error(errors)
+    except ValueError as e:
+        errors.append(e)
+        return [], [str(e)]
 
     if len(data_obj.PlayersData) != 2:
         errors.append(ValueError(f"{data_obj.PlayersData=} Should only be 2 players"))
@@ -145,7 +160,7 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
 
     if len(list_of_armies) != 2:
         e = ValueError(f"Only {len(list_of_armies)} army list/s loaded.\n")
-        raise Multi_Error([e] + errors)
+        errors.append(e)
 
     # set each other as opponents and set points killed
     for i, army in enumerate(list_of_armies):
@@ -154,10 +169,10 @@ def armies_from_warhall(data: dict) -> list[ArmyEntry]:
             i - 1
         ].points_killed()
 
-    if errors:
-        raise Multi_Error(errors)
+    # if errors:
+    #     raise Multi_Error(errors)
 
-    return list_of_armies
+    return list_of_armies, [str(e) for e in errors]
 
 
 if __name__ == "__main__":

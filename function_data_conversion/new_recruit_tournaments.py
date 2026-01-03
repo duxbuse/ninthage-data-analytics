@@ -285,11 +285,14 @@ def calculate_individual_placing(data: dict[str, ArmyEntry]) -> list[ArmyEntry]:
         army.list_placing = sorted_armies.index(army) + 1
     return sorted_armies
 
-def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
+def armies_from_NR_tournament(stored_data: dict) -> tuple[list[ArmyEntry], list[str]]:
     event_data = single_event(**stored_data)
 
+    errors: list[str] = []
+
     if not event_data.games:
-        raise Multi_Error([ValueError(f"No games found for event: '{event_data.name}'")])
+        errors.append(str(ValueError(f"No games found for event: '{event_data.name}'")))
+        return [], errors
 
     # get list of unique players and their army lists {player_id: player}
     player_list:dict[str, player] = dict()
@@ -326,14 +329,16 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
             except Multi_Error as e:
                 # basically skipping the error for now cause we cant change the armylist
                 # TODO: make this a validation error
-                print(f"Error converting army list for {player.id_participant}: {e}")
+                err_msg = f"Error converting army list for {player.id_participant}: {e}"
+                print(err_msg)
+                errors.append(err_msg)
 
             if len(armies) == 1:
                 army = armies[0]
             else:
-                raise Multi_Error(
-                    [ValueError(f"{len(armies)} armies found for player {player.id_participant}\nPlayer list: \n{player.exported_list}")]
-                )
+                err_msg = f"{len(armies)} armies found for player {player.id_participant}\nPlayer list: \n{player.exported_list}"
+                errors.append(err_msg)
+                continue
 
         else:
             army = ArmyEntry()
@@ -383,6 +388,9 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         print(f"army.country_flag: {army.country_flag}")
 
         army_dict[player.id_participant] = army
+
+    # Filter out failed conversions (None values)
+    army_dict = {k: v for k, v in army_dict.items() if v is not None}
 
     # append round performance
     for tournament_game in event_data.games:
@@ -475,9 +483,14 @@ def armies_from_NR_tournament(stored_data: dict) -> list[ArmyEntry]:
         # list of all armyEntries from duplicate list that have round performance data
         assert event_data.teams is not None
         assert event_data.rounds is not None
-        calculate_team_placing(data=army_dict, teams=event_data.teams, rounds=event_data.rounds)
+        # Verify if existing logic allows string matching for 'player in data' (keys are IDs)
+        # Assuming existing logic is what it is, but we passed army_dict which now only has valid entries.
+        try:
+             calculate_team_placing(data=army_dict, teams=event_data.teams, rounds=event_data.rounds)
+        except Exception as e:
+             errors.append(f"Team placing calculation failed: {str(e)}")
 
-    return calculate_individual_placing(army_dict)
+    return calculate_individual_placing(army_dict), errors
 
 if __name__ == "__main__":
 

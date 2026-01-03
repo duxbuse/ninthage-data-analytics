@@ -1,4 +1,5 @@
 pynacl
-flask
+requests
+pytest
 google-cloud-storage
 google-auth
