@@ -221,8 +221,9 @@ def get_NR_library(id_game_system: int) -> nr_library_entry:
         data = response.json()
     except Exception as e:
         print(f"Load library from local file")
-        download_file_path = f"{pathlib.Path().resolve()}/data/library.json"
-        with open(download_file_path, "r") as jsonFile:
+        # Use file-relative path, not cwd
+        download_file_path = pathlib.Path(__file__).parent / "data" / "library.json"
+        with open(download_file_path, "r", encoding="utf-8") as jsonFile:
             data = json.loads(jsonFile.read())
 
     library = nr_library(__root__=data)
