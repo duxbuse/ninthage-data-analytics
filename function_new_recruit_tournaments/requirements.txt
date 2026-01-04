@@ -1,7 +1,7 @@
-google-cloud-workflows==1.5.0
+google-cloud-workflows
 python-dateutil
 google-cloud-storage
 requests
 pytest
-pydantic==1.*
+pydantic
 
