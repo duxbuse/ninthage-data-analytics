@@ -1,0 +1,299 @@
+{
+  "_id": "684ef4f42f3347d145e86f39",
+  "name": "The 9th Age \u201cSPb-summer GT\u201d",
+  "showlists": true,
+  "type": 1,
+  "visibility": 0,
+  "teams": [
+    {
+      "players": [
+        {
+          "name": " VanMal",
+          "lists": [
+            "\u0418\u0432\u0430\u043d \u041c\u0430\u043b\u044c\u043a\u043e\u0432 ( VanMal) - Sylvan Elves\n800 - Forest Prince, General, Battleline Hero, Trusted Adviser, Forest Dragon, Sylvan Bow, Sylvan Blades (Spirit of the Whirlwind), Obsidian Rock, Binding Scroll\n735 - Treefather Ancient, Wizard Master, Druidism (Fountain of Youth, Veil of Mist, Gravel Storm, Stone Skin, Quicksand), Verdant Rebirth\n419 - 32 Forest Guard, Standard Bearer (Rending Banner)\n345 - 21 Dryads, Standard Bearer\n260 - 10 Sylvan Archers, Standard Bearer (Aether Icon)\n210 - 10 Forest Rangers, Vanguard, Standard Bearer\n210 - 10 Forest Rangers, Vanguard, Standard Bearer\n400 - 10 Pathfinders\n320 - 8 Pathfinders\n300 - 5 Briar Maidens, Wizard Conclave (Entwining Roots, Swarm of Insects)\n3999\n"
+          ]
+        },
+        {
+          "name": "Loug77",
+          "lists": [
+            "NorthStar (Loug77) - Warriors of the Dark Gods\n870 - Chosen Lord, General, Wasteland Dragon, Trophy Rack (Banner of Speed), Paired Weapons (Touch of Greatness), Immortal Gauntlets, Wyrd Stone, Lust, Dark Prelate\n530 - Sorcerer, Light Troops, Wizard Master, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Mimic Cloak, Binding Scroll\n466 - 18 Warriors, Paired Weapons, Gluttony, Standard Bearer (Zealots' Banner)\n444 - 17 Warriors, Paired Weapons, Gluttony, Standard Bearer (Zealots' Banner)\n570 - 4 Chosen Knights, Wrath, Standard Bearer (Stalker's Standard)\n530 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer (Icon of the Infinite)\n490 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer\n100 - 5 Warhounds\n4000\n"
+          ]
+        },
+        {
+          "name": "PapaSvin",
+          "lists": [
+            "PapaSvin - Orcs and Goblins\n490 - Goblin Witch, General (Darrmu), Light Troops, Wizard Master, Thaumaturgy (Smite the Unbeliever, Light of Faith, Weight of Judgement, Holy Affliction, Rain of Fire), Mimic Cloak\n345 - Goblin Witch, Light Troops, Wizard Adept, Pyromancy (Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow), Skull Fetish\n250 - Goblin Demagogue, Battle Standard Bearer, Beastie (Creepy-Crawlies), Banner of Courage, Bow, Paired Weapons (Touch of Greatness), Dragon's Brew\n55 - Mad Git\n55 - Mad Git\n55 - Mad Git\n55 - Mad Git\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n45 - Gogtuk Initiate, Netter\n340 - 18 Goblin Reavers, Bow and Spies, Creepy-Crawlies, Musician\n330 - 30 Goblin Rabble, Poisoned Spear and Shield, Bow, Musician, Standard Bearer (Goga Cauldron)\n330 - 30 Goblin Rabble, Poisoned Spear and Shield, Bow, Musician, Standard Bearer (Goga Cauldron)\n270 - 20 Gogtuk Neophytes, Musician, Standard Bearer\n180 - 12 Gogtuk Neophytes, Standard Bearer\n180 - Goblin Artillery, Splatterer\n180 - Goblin Artillery, Splatterer\n170 - Goblin Artillery, Git Launcher\n110 - Grotling Scrap Wagon\n110 - Grotling Scrap Wagon\n100 - Wrecking Team\n100 - Wrecking Team\n4000\n"
+          ]
+        },
+        {
+          "name": "tunekov",
+          "lists": [
+            "595 - Prophet, General, Trusted Adviser, Prophet of Lugar, Light Troops, Wizard Master, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Shield, Hand Weapon (Flame of the East), Golden Idol of Shamut\r\n350 - Prophet, Prophet of Nezibkesh, Light Troops, Wizard Adept, Pyromancy (Flaming Swords, Dragon's Roar, Pyroclastic Flow), Occultism (The Devouring Dark, Hand of Glory, Blood Curse), Shield, Blunderbuss, Essence of a Free Mind\r\n290 - Vizier, Battle Standard Bearer, Light Troops, Aether Icon, Blaze of Protection, Paired Weapons (Shield Breaker), Mask of Ages\r\n513 - 22 Citadel Guard, Pistol and Spear, Standard Bearer (Banner of the Twice-Branded)\r\n494 - 21 Citadel Guard, Pistol and Spear, Standard Bearer (Banner of the Twice-Branded)\r\n490 - 20 Immortals, Spear, Standard Bearer (Banner of Shamut)\r\n440 - 20 Immortals, Spear, Standard Bearer\r\n285 - Infernal Artillery, Rocket Battery\r\n170 - Infernal Artillery, Naphtha Thrower\r\n170 - Infernal Artillery, Naphtha Thrower\r\n200 - Gunnery Team, Rocket Battery\r\n3997"
+          ]
+        }
+      ],
+      "name": "\u0413\u043e\u043b\u0443\u0431\u0430\u044f \u0431\u0443\u0440\u044f"
+    },
+    {
+      "players": [
+        {
+          "name": "Tiferet",
+          "lists": [
+            "Timofey (Tiferet) - Orcs and Goblins\n565 - Orc Shaman, Curse of Lycanthropy, Light Troops, Wizard Master, Pyromancy (Fireball, Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow, Cage of Embers), Skull Fetish, Spell Scroll (Awaken the Beast)\n445 - Orc Warlord, General, Grunter, Tazrek's Guard, Shield, Lance (Attack Gnasher), Mask of Mindless Violence\n165 - Goblin Demagogue, Battle Standard Bearer, Light Troops, Shield, Poisoned Spear, Dragon's Brew\n55 - Mad Git\n55 - Mad Git\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n45 - Gogtuk Initiate, Netter\n352 - 9 Veteran Orc Marauders, Standard Bearer (Stalker's Standard)\n328 - 34 Goblin Rabble, Poisoned Spear and Shield, Musician, Standard Bearer (Flaming Standard)\n320 - 30 Feral Orcs, Bow, Musician, Standard Bearer\n380 - Great Green Idol\n300 - 3 Goblin Chariots\n300 - 3 Goblin Chariots\n160 - 10 Gogtuk Neophytes, Standard Bearer\n380 - Great Green Idol\n4000\n"
+          ]
+        },
+        {
+          "name": "Yrgo",
+          "lists": [
+            "Nikita Petrowich (Yrgo) - Ogre Khans\n540 - Shaman, General, Curse of Lycanthropy, Wizard Master, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast, Wild Spikes, Totemic Summon), Scroll of Power, Gut Roarer\n290 - Khan, Battle Standard Bearer, Warding of Unity, Brace of Ogre Pistols, Rottenjaw\n434 - 9 Tribesmen, Iron Fist, Standard Bearer (Sheltering Standard)\n416 - 10 Tribesmen, Paired Weapons, Standard Bearer (Sheltering Standard)\n170 - 3 Bruisers, Standard Bearer\n470 - 7 Mercenary Veterans, Halberd, First Strike (Fury), Standard Bearer (Banner of Courage)\n470 - 7 Mercenary Veterans, Paired Weapons, Lethal Strike, Standard Bearer (Banner of Courage)\n150 - Kin-Eater\n150 - Kin-Eater\n150 - Kin-Eater\n380 - Frost Mammoth, Hunting Spear\n380 - Frost Mammoth, Hunting Spear\n4000\n"
+          ]
+        },
+        {
+          "name": "GhostOfCommunism1",
+          "lists": [
+            "Arseny (GhostOfCommunism1) - Vampire Covenant\n760 - Vampire Count, Vetala, Mysteries of the Night, Zombie Dragon, Wizard Adept, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast), Paired Weapons (Touch of Greatness), Obsidian Rock\n525 - Necromancer, General and The Dead Arise, Light Troops, Wizard Master, Evocation (Whispers of the Veil, Chorus of the Damned, Touch of the Reaper, Spectral Blades, Soul Blight), Necromantic Staff\n150 - Banshee\n150 - Banshee\n475 - 34 Ghouls, Standard Bearer\n366 - 37 Skeletons, Spear and Shield, Standard Bearer (Banner of Eldritch Might)\n165 - 21 Zombies, Standard Bearer\n519 - 32 Barrow Guard, Shield, Standard Bearer (Black Standard of Zagvozd)\n260 - Cadaver Wagon\n270 - 8 Spectral Hunters\n360 - 4 Vampire Knights, Standard Bearer\n4000\n"
+          ]
+        },
+        {
+          "name": "Nicitapalladib",
+          "lists": [
+            "Nikitapalladib (Nicitapalladib) - Highborn Elves\n620 - Mage, General, Asfad Scholar, Light Troops, Wizard Master, Pyromancy (Flaming Swords, Pyroclastic Flow, Pillars of Fire, Cage of Embers), Gleaming Robe, Book of Meladys\n280 - Commander, Battle Standard Bearer, Queen's Companion (Moonlight Arrows), Light Troops, Longbow, Banner of Becalming, Great Weapon and Elven Finesse, Talisman of the Void\n513 - 26 Sea Guard, Standard Bearer (Flaming Standard), Musician\n282 - 21 Citizen Archers, Standard Bearer\n205 - 5 Erlein Reavers, Bow, Standard Bearer, Musician\n400 - Phoenix, Fire Phoenix\n400 - Phoenix, Fire Phoenix\n230 - Sky Sloop\n230 - Sky Sloop\n210 - 10 Lion Guard, Standard Bearer\n210 - 10 Lion Guard, Standard Bearer\n210 - 10 Sword Masters, Standard Bearer\n210 - 10 Sword Masters, Standard Bearer\n4000\n"
+          ]
+        }
+      ],
+      "name": "\u0414\u0443\u0431 \u0438 \u0416\u0435\u043b\u0443\u0434\u0438"
+    },
+    {
+      "players": [
+        {
+          "name": "Cobra 3000",
+          "lists": [
+            "Vadim (Cobra 3000) - Kingdom of Equitaine\n550 - Damsel, Revered Unicorn, Wizard Master, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast, Swarm of Insects, Wild Spikes), Talisman of the Void\n315 - Folk Hero, Destrier, Shield (Sigil of Protection), Light Lance, Oriflamme, Attached, Bannerman, Cleric\n285 - Folk Hero, Pegasus Charger, Shield (Fortress of Faith), Lance (Uther's Mettle), Basalt Infusion, Sainted, Castellan\n210 - Folk Hero, Destrier, Shield, Attached, Cleric, Minstrel (Divination (Foresight))\n575 - 11 Knights of the Realm, Solemn Oath, Standard Bearer, Knight Banneret\n300 - 10 Mounted Serjeants, Light Lance, Standard Bearer\n185 - 15 Lowborn Archers, Crossbow, Standard Bearer\n595 - 9 Knights of the Quest, Standard Bearer (Stalker's Standard)\n465 - 9 Knights of the Court, Standard Bearer\n155 - 5 Yeoman Outriders, Throwing Weapons, Shield\n360 - Fey Knight, Champion of the Green Knight\n3995\n"
+          ]
+        },
+        {
+          "name": "\u0421\u043a\u0443\u043b\u044c\u0442",
+          "lists": [
+            "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 (\u0421\u043a\u0443\u043b\u044c\u0442) - Orcs and Goblins\n480 - Goblin Witch, Light Troops, Wizard Master, Pyromancy (Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow, Pillars of Fire, Cage of Embers), Monster Munch\n145 - Goblin Demagogue, Battle Standard Bearer, Light Troops, Shield, Gnasher Bait\n95 - Goblin Demagogue, General (Darrmu and Goblin Gardens), Beastie, Shield\n55 - Mad Git\n55 - Mad Git\n55 - Mad Git\n55 - Mad Git\n55 - Mad Git\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n50 - Gogtuk Initiate, Headhunter\n45 - Gogtuk Initiate, Netter\n325 - 35 Goblin Rabble, Poisoned Spear and Shield, Standard Bearer (Goga Cauldron)\n325 - 35 Goblin Rabble, Poisoned Spear and Shield, Standard Bearer (Goga Cauldron)\n243 - 28 Goblin Rabble, Shield, Bow, Standard Bearer (Banner of Courage)\n186 - 10 Goblin Reavers, Lance and Shield, Standard Bearer\n280 - Guardian Behemoth\n280 - Guardian Behemoth\n210 - 15 Gogtuk Neophytes, Standard Bearer\n210 - 15 Gogtuk Neophytes, Standard Bearer\n180 - 15 Gnashers\n180 - 15 Gnashers\n170 - Goblin Artillery, Git Launcher\n170 - Goblin Artillery, Git Launcher\n3999\n"
+          ]
+        },
+        {
+          "name": "Dazzoo",
+          "lists": [
+            "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 (Dazzoo) - Warriors of the Dark Gods\n870 - Chosen Lord, General, Wasteland Dragon, Trophy Rack (Banner of Speed), Paired Weapons (Touch of Greatness), Immortal Gauntlets, Wyrd Stone, Lust, Dark Prelate\n510 - Sorcerer, Trusted Adviser, Light Troops, Wizard Master, Occultism (Hand of Glory, Blood Curse, Pentagram of Pain, Umbral Majesty, The Grave Calls), Paired Weapons, Mimic Cloak\n470 - 20 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n470 - 20 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n530 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer (Icon of the Infinite)\n405 - 3 Chosen Knights, Lust, Standard Bearer\n405 - 3 Chosen Knights, Lust, Standard Bearer\n340 - Hellmaw\n4000\n"
+          ]
+        },
+        {
+          "name": "SpaceUnicorn",
+          "lists": [
+            "\u0420\u043e\u043c\u0430\u043d (SpaceUnicorn) - Saurian Ancients\n630 - Anurarch Archmage, Light Troops and Closely Guarded, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Talisman of the Void, Eternal Mastery, Mystifying Mastery\n340 - Skink Veteran, Pouakai Sky Tyrant, Enclave Wizard (Evocation (Whispers of the Veil, Danse Macabre)), Poisoned Javelin, Paired Weapons (Serpent's Nest Charm)\n140 - Skink Veteran, Light Troops and Strider, Magnetic Short Bow (Alchemical Arrows), Halberd, Obsidian Rock, Chameleon and Hard Target\n575 - 30 Tegu Warriors, Spear, Wizard Conclave (Awaken the Beast), Musician, Standard Bearer (Aether Icon)\n226 - 4 Caiman Warriors, Halberd, Standard Bearer\n226 - 4 Caiman Warriors, Halberd, Standard Bearer\n496 - 21 Tegu Guards, Musician, Standard Bearer (Koru Stone)\n420 - 10 Raptor Riders, Standard Bearer\n250 - Thyroscutus Herd, Great Protector, Lodestone Shield\n246 - 14 Skink Guerrillas, Magnetic Short Bow, Chameleon\n240 - 2 Weapon Beasts, Spearback\n210 - 2 Weapon Beasts, Salamander\n3999\n"
+          ]
+        }
+      ],
+      "name": "\u041f\u0438\u0440 \u0414\u0443\u0445\u0430"
+    },
+    {
+      "players": [
+        {
+          "name": "Shiny",
+          "lists": [
+            "AntonSaturin (Shiny) - Saurian Ancients\n665 - Anurarch Archmage, Light Troops and Closely Guarded, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Talisman of the Void, Scroll of Power, Forbidden Mastery (Pyroclastic Flow), Mystifying Mastery\n525 - 30 Tegu Warriors, Spear, Standard Bearer (Aether Icon)\n475 - 29 Tegu Warriors, Standard Bearer (Rending Banner)\n595 - 3 Thyroscutus Herd, Magnetic Great Bow\n250 - Thyroscutus Herd, Great Protector, Lodestone Shield\n470 - 4 Weapon Beasts, Spearback\n210 - 2 Weapon Beasts, Salamander\n430 - 9 Raptor Riders, Standard Bearer (Koru Stone)\n380 - 9 Raptor Riders, Standard Bearer\n4000\n"
+          ]
+        },
+        {
+          "name": "Teal",
+          "lists": [
+            "Teal - Warriors of the Dark Gods\n685 - Chosen Lord, General, Chimera, Trophy Rack (Banner of Speed), Paired Weapons (Symbol of Slaughter), Talisman of Shielding, Wyrd Stone, Gluttony, Luck of the Dark Gods\n620 - Sorcerer, Scythed Skywheel, Wizard Master, Occultism (The Devouring Dark, Hand of Glory, Blood Curse, Umbral Majesty, The Grave Calls), Destiny's Call, Dark Familiar\n410 - 17 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n410 - 17 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n590 - 10 Chosen, Greed, Standard Bearer\n580 - 4 Chosen Knights, Wrath, Standard Bearer (Banner of Speed), Musician\n370 - 4 Forsworn, Great Weapon, Damnation, Standard Bearer (Icon of the Infinite)\n330 - 4 Forsworn, Great Weapon, Damnation, Standard Bearer\n3995\n"
+          ]
+        },
+        {
+          "name": "Krinok",
+          "lists": [
+            "Krinok - Dread Elves\n635 - Dread Prince, General (Beastmaster), Battleline Hero, Trusted Adviser, Manticore (Extraordinary Specimen), Paired Weapons (Lacerating Touch), Talisman of Shielding\n376 - 24 Silexian Spears, Standard Bearer (Caedhren's Pennon)\n240 - 15 Temple Militants, Standard Bearer (Aether Icon)\n195 - 10 Corsairs, Repeater Handbow, Standard Bearer\n195 - 10 Corsairs, Repeater Handbow, Standard Bearer\n344 - 14 Judicators, Standard Bearer (Banner of Urlain)\n344 - 14 Judicators, Standard Bearer (Banner of Urlain)\n260 - Divine Altar, Altar of Yema\n215 - 5 Dread Acolytes, Temple Acolytes, Standard Bearer\n165 - 5 Black Cloaks, Repeater Handbow and Poison Attacks, Covert Operatives\n165 - 5 Black Cloaks, Repeater Handbow and Poison Attacks, Covert Operatives\n230 - Mist Leviathan\n230 - Mist Leviathan\n400 - Hydra\n3994\n"
+          ]
+        },
+        {
+          "name": "WarChild",
+          "lists": [
+            "WarChild - Vampire Covenant\n575 - Necromancer, General and The Dead Arise, Trusted Adviser, Light Troops, Wizard Master (Lich), Evocation (Whispers of the Veil, Danse Macabre, Chorus of the Damned, Spectral Blades, Soul Blight), Necromantic Staff\n420 - Vampire Courtier, Battle Standard Bearer, Unbreakable Will, Mysteries of the Night, Light Troops, Wizard Adept, Shamanism (Savage Fury, Awaken the Beast, Swarm of Insects), Mimic Cloak\n150 - Banshee\n150 - Banshee\n85 - Barrow King, Captain, Skeletal Steed, Lance\n85 - Barrow King, Captain, Skeletal Steed, Lance\n65 - Barrow King, Captain, Light Troops, Great Weapon\n65 - Barrow King, Captain, Light Troops, Great Weapon\n490 - 35 Ghouls, Standard Bearer\n350 - 35 Skeletons, Spear and Shield, Standard Bearer (Banner of Eldritch Might)\n160 - 20 Zombies, Standard Bearer\n300 - 9 Barrow Knights, Standard Bearer, Musician\n300 - 9 Barrow Knights, Standard Bearer, Musician\n260 - Cadaver Wagon\n185 - 15 Barrow Guard, Shield, Standard Bearer, Musician\n185 - 15 Barrow Guard, Shield, Standard Bearer, Musician\n170 - 3 Ghasts\n3995\n"
+          ]
+        }
+      ],
+      "name": "Moldova"
+    },
+    {
+      "players": [
+        {
+          "name": "MoonShade",
+          "lists": [
+            "Mikhail Filkov (MoonShade) - Dread Elves\n375 - Temple Exarch, General, Wizard Adept, Alchemy (Living Steel, Corruption of Tin, Molten Copper), Paired Weapons (Lacerating Touch)\n355 - Temple Exarch, Battle Standard Bearer, Wizard Apprentice, Divination (Foresight), Flaming Standard, Great Weapon and Elven Finesse (Supernatural Dexterity), Ceinran's Scales\n320 - 20 Silexian Spears, Standard Bearer (Caedhren's Pennon)\n304 - 16 Silexian Auxiliaries, Standard Bearer\n195 - 10 Corsairs, Repeater Handbow, Standard Bearer\n195 - 10 Corsairs, Repeater Handbow, Standard Bearer\n446 - 18 Temple Militants, Dancers of Yema, Standard Bearer (Sheltering Standard)\n365 - 15 Judicators, Standard Bearer (Banner of Urlain)\n310 - 5 Dread Knights, Great Weapon and Elven Finesse, Standard Bearer (Banner of Urlain)\n280 - 5 Dread Acolytes, Warlock Acolytes (Ice and Fire, Illusory Paths)\n205 - 5 Dread Acolytes, Temple Acolytes\n230 - Divine Altar, Altar of Tila\n210 - Repeater Battery\n210 - Repeater Battery\n4000\n"
+          ]
+        },
+        {
+          "name": "galrauch",
+          "lists": [
+            "galrauch - Undying Dynasties\n420 - Death Cult Hierarch, General, Ark of Ages, Wizard Adept, Divination (Foresight, Chance of Redemption, The Stars Align), Book of the Dead, Soul Conduit\n410 - Death Cult Hierarch, Ark of Ages, Wizard Adept, Evocation (Whispers of the Veil, Danse Macabre, Chorus of the Damned), Kherp Sceptre\n140 - Nomarch, Captain and Attached, Tomb Architect, Light Troops\n140 - Nomarch, Captain and Attached, Tomb Architect, Light Troops\n250 - 3 Skeleton Chariots, Halberd, Aspis Arrows and Bow\n250 - 3 Skeleton Chariots, Halberd, Aspis Arrows and Bow\n250 - 3 Skeleton Chariots, Halberd, Aspis Arrows and Bow\n155 - 15 Skeleton Archers, Bow, Standard Bearer\n145 - 15 Skeleton Archers, Bow\n500 - 7 Shabtis, Paired Weapons, Standard Bearer\n500 - 7 Shabtis, Paired Weapons, Standard Bearer\n305 - 3 Sand Stalkers, Ambush\n305 - 3 Sand Stalkers, Ambush\n230 - Casket of Phatep, Augury of Despair, Soul Blight\n4000\n"
+          ]
+        },
+        {
+          "name": "Hourgund",
+          "lists": [
+            "Saurian Ancients\r\n690 - Anurarch Archmage, Glory Hunter, Light Troops and Closely Guarded, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Talisman of the Void, Scroll of Power, Forbidden Mastery (Flaming Swords, Pyroclastic Flow), Mystifying Mastery\r\n155 - Skink Veteran, Light Troops and Strider, Shield, Magnetic Short Bow (Alchemical Arrows), Paired Weapons, Te Aupouri Smokestone, Master Strategist\r\n580 - 30 Tegu Warriors, Spear, Wizard Conclave (Awaken the Beast), Standard Bearer (Flaming Standard)\r\n376 - 33 Skink Warriors, Spear and Shield, Wizard Conclave (Entwining Roots), Standard Bearer (Rending Banner)\r\n246 - 20 Skink Hunters, Magnetic Short Bow\r\n507 - 22 Tegu Guards, Standard Bearer (Koru Stone)\r\n460 - 10 Raptor Riders, Standard Bearer (Stalker's Standard)\r\n280 - 5 Pteradon Riders, Magnetic Short Bow\r\n250 - Thyroscutus Herd, Great Protector, Lodestone Shield\r\n245 - Thyroscutus Herd, Great Protector, Venomous Fortress\r\n210 - 2 Weapon Beasts, Salamander\r\n3999"
+          ]
+        },
+        {
+          "name": "Baguette",
+          "lists": [
+            "Highborn Elves\r\n670 - Commander, Battle Standard Bearer, Queen's Cavalier, Regal Dragon, Lance (Eldritch Inscriptions), Obsidian Rock, Scroll of the Pearl Throne\r\n640 - Mage, Asfad Scholar, Light Troops, Wizard Master, Cosmology (Altered Sight, Truth of Time, Weal and Woe, Ice and Fire, Thunder and Lightning), Gleaming Robe, Amethyst Crystal, Scroll of Power\r\n528 - 26 Sea Guard, Standard Bearer (Navigator's Banner)\r\n467 - 24 Sea Guard, Standard Bearer (Flaming Standard)\r\n195 - 5 Erlein Reavers, Bow, Standard Bearer\r\n550 - 10 Knights of Rym\u00e2, Standard Bearer (Stalker's Standard)\r\n550 - 10 Knights of Rym\u00e2, Standard Bearer (Stalker's Standard)\r\n400 - Initiate of the Fiery Heart, Wizard Conclave (Flaming Swords, Pyroclastic Flow)\r\n4000"
+          ]
+        }
+      ],
+      "name": "Ancient Evil"
+    },
+    {
+      "players": [
+        {
+          "name": "Oktameron",
+          "lists": [
+            "\u0414\u0430\u043d\u0438\u043b (Oktameron) - Saurian Ancients\n550 - Anurarch Archmage, Light Troops and Closely Guarded, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Farseeing Mastery, Mystifying Mastery\n510 - Skink Veteran, Taurosaur (Lodestone Shield), Poisoned Javelin, Obsidian Rock\n521 - 28 Tegu Warriors, Spear, Wizard Conclave (Awaken the Beast), Standard Bearer\n481 - 28 Tegu Warriors, Spear, Standard Bearer\n423 - 18 Tegu Guards, Standard Bearer (Koru Stone)\n385 - 6 Rhamphodon Riders\n380 - 9 Raptor Riders, Standard Bearer\n370 - 3 Caiman Elders, Wizard Conclave (Fountain of Youth, Veil of Mist), Standard Bearer\n210 - 2 Weapon Beasts, Salamander\n170 - 3 Saurian Swarms\n4000\n"
+          ]
+        },
+        {
+          "name": "HCM_Arhipov",
+          "lists": [
+            "\u0415\u0432\u0433\u0435\u043d\u0438\u0439 (HCM_Arhipov) - Dwarven Holds\n445 - Runic Smith, General, Trusted Adviser, Shield Wall, Rune of Resistance, Rune of Devouring, Rune of Harnessing, Rune of Channelling, 3x Battle Rune (Rune of Reckoning, Rune of Oaths, Rune of Resilience)\n510 - 20 Greybeards, Shield Wall, Throwing Weapons, Standard Bearer (Runic Standard of the Hold), Musician\n490 - 20 Greybeards, Shield Wall, Throwing Weapons, Standard Bearer (Runic Standard of Wisdom (Rune of Resolve)), Musician\n400 - 20 Deep Watch, Standard Bearer (Stalker's Standard)\n400 - 20 Deep Watch, Standard Bearer (Stalker's Standard)\n320 - 15 Deep Watch, Standard Bearer (Runic Standard of the Hold)\n245 - Field Artillery, Dwarf Cannon\n115 - Field Artillery, Dwarf Ballista (Rune Crafted)\n115 - Field Artillery, Dwarf Ballista (Rune Crafted)\n220 - 10 Miners, Great Weapon, Pistol, Standard Bearer\n220 - 10 Miners, Great Weapon, Pistol, Standard Bearer\n200 - Anvil of Power, Rune of Reckoning, Rune of Gleaming, Rune of Resilience\n200 - 10 Forge Wardens\n120 - Vengeance Seeker\n4000\n"
+          ]
+        },
+        {
+          "name": "KLICKman",
+          "lists": [
+            "\u0410\u043d\u0434\u0440\u0435\u0439 (KLICKman) - Kingdom of Equitaine\n500 - Damsel, General, Destrier, Wizard Master, Shamanism (Predator\u2019s Instinct, Awaken the Beast, Swarm of Insects, Wild Spikes, Totemic Summon), Sainted\n315 - Folk Hero, Destrier, Shield, Light Lance (Touch of Greatness), Talisman of the Void, Attached, Bannerman, Cleric\n175 - Folk Hero, Destrier, Shield, Light Lance, Attached, Cleric\n570 - 10 Knights of the Realm, Solemn Oath, Standard Bearer (Stalker's Standard), Knight Banneret\n268 - 8 Mounted Serjeants, Great Weapon, Standard Bearer\n260 - 21 Lowborn Archers, Crossbow, Prepared Position, Standard Bearer\n600 - 8 Knights of the Quest, Standard Bearer (Stalker's Standard), Knight Banneret (Lady's Favour)\n285 - 20 Men-at-Arms, Castle Guard, Standard Bearer\n285 - 20 Men-at-Arms, Castle Guard, Standard Bearer\n380 - Fey Knight, Chosen of the Snow Childe\n360 - Fey Knight, Champion of the Green Knight\n3998\n"
+          ]
+        },
+        {
+          "name": "WarMachine",
+          "lists": [
+            "Konstantin Kuzin (WarMachine) - Highborn Elves\n500 - Mage, General, Asfad Scholar, Light Troops, Wizard Master, Pyromancy (Fireball, Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow, Cage of Embers)\n370 - 20 Sea Guard, Standard Bearer\n370 - 20 Sea Guard, Standard Bearer\n260 - 20 Citizen Spears, Standard Bearer\n510 - 10 Knights of Rym\u00e2, Standard Bearer\n450 - 20 Queen's Guard, Standard Bearer\n440 - Phoenix, Fire Phoenix, Warden's Bond\n440 - Phoenix, Fire Phoenix, Warden's Bond\n220 - Sea Guard Reaper\n220 - Sea Guard Reaper\n220 - Sea Guard Reaper\n4000\n"
+          ]
+        }
+      ],
+      "name": "\u041f\u044c\u044f\u043d\u044b\u0439 \u043c\u0430\u0441\u0442\u0435\u0440"
+    },
+    {
+      "players": [
+        {
+          "name": "Mity",
+          "lists": [
+            "Dmitry Korovin (Mity) - Undying Dynasties\n585 - Death Cult Hierarch, General, Light Troops, Wizard Master, Evocation (Danse Macabre, Chorus of the Damned, Touch of the Reaper, Spectral Blades, Soul Blight), Sandstorm Cloak, Sacred Hourglass, Scroll of Power, Soul Conduit\n330 - Death Cult Hierarch, Light Troops, Wizard Adept, Divination (Foresight, Chance of Redemption, The Stars Align), Talisman of the Void, Soul Conduit\n235 - Nomarch, Battle Standard Bearer, Deathless Noble, Light Troops, Great Weapon, Crown of the Pharaohs\n95 - Nomarch, Captain and Attached, Tomb Harbinger, Light Troops, Great Weapon, Book of the Dead\n55 - Nomarch, Captain and Attached, Tomb Harbinger, Light Troops, Great Weapon\n55 - Nomarch, Captain and Attached, Tomb Harbinger, Light Troops, Great Weapon\n452 - 48 Skeleton Warriors, Spear and Shield, Standard Bearer\n348 - 24 Skeleton Cavalry, Standard Bearer (Aether Icon)\n200 - 15 Skeleton Archers, Bow, Standard Bearer (Banner of the Entombed)\n330 - 4 Sand Stalkers\n305 - 3 Sand Stalkers, Ambush\n305 - 3 Sand Stalkers, Ambush\n250 - 15 Necropolis Guard, Paired Weapons, Standard Bearer\n250 - 15 Necropolis Guard, Paired Weapons, Standard Bearer\n205 - 15 Necropolis Guard, Standard Bearer\n4000\n"
+          ]
+        },
+        {
+          "name": "Konstantin",
+          "lists": [
+            "Konstantin (Konstantin) - Warriors of the Dark Gods\n565 - Sorcerer, Curse of Lycanthropy, Light Troops, Wizard Master, Occultism (Hand of Glory, Blood Curse, Pentagram of Pain, Umbral Majesty, The Grave Calls), Hand Weapon (Giant Slayer), Dark Familiar\n560 - Chosen Lord, General, Scythed Skywheel, Thrice-Forged, Talisman of the Void, Talisman of Shielding, Greed, Dark Prelate\n170 - Barbarian Chief, Captain and Attached, Light Troops, Great Weapon, Veilgate Orb\n598 - 24 Warriors, Paired Weapons, Lust, Standard Bearer (Zealots' Banner)\n210 - 10 Warriors, Paired Weapons, Standard Bearer\n500 - Feldrak Elder, Paired Weapons\n500 - Feldrak Elder, Paired Weapons\n490 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer\n405 - 3 Chosen Knights, Lust, Standard Bearer\n3998\n"
+          ]
+        },
+        {
+          "name": "akniles",
+          "lists": [
+            "Aliaksei (akniles) - Dread Elves\n445 - Sanctioned Warlock, Light Troops, Wizard Master, Evocation (Danse Macabre, Chorus of the Damned, Touch of the Reaper, Spectral Blades, Soul Blight), Paired Weapons\n360 - Temple Exarch, General, Wizard Adept, Divination (Foresight, Chance of Redemption, The Stars Align), Great Weapon and Elven Finesse, Talisman of the Void\n130 - Silent Assassin\n130 - Silent Assassin\n340 - 20 Temple Militants, Musician, Standard Bearer (Sheltering Standard)\n250 - 13 Corsairs, Repeater Handbow, Standard Bearer (Aether Icon)\n185 - 10 Corsairs, Repeater Handbow\n230 - 15 Silexian Spears, Standard Bearer (Flaming Standard)\n240 - Divine Altar, Altar of Nabh\n230 - 10 Obsidian Guard, Standard Bearer\n230 - 10 Obsidian Guard, Standard Bearer\n220 - 10 Judicators, Standard Bearer\n210 - Hunting Chariot\n210 - Hunting Chariot\n180 - 8 Black Cloaks\n180 - 8 Black Cloaks\n230 - Mist Leviathan\n4000\n"
+          ]
+        },
+        {
+          "name": "Domkrat",
+          "lists": [
+            "Chizhov Nikita (Domkrat) - Kingdom of Equitaine\n470 - Damsel, Light Troops, Wizard Master, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast, Wild Spikes, Totemic Summon), Binding Scroll\n330 - Duke, General, Battleline Hero, Destrier, Bastard Sword (Shield Breaker), Generosity\n235 - Folk Hero, Destrier, Shield, Attached, Bannerman, Cleric\n175 - Folk Hero, Destrier, Shield, Attached, Cleric\n540 - 12 Knights of the Realm, Standard Bearer (Stalker's Standard), Knight Banneret\n470 - 15 Mounted Serjeants, Great Weapon, Standard Bearer (Relic Shroud)\n560 - 8 Knights of the Quest, Standard Bearer (Stalker's Standard), Knight Banneret\n353 - 24 Men-at-Arms, Castle Guard, Standard Bearer\n155 - 5 Yeoman Outriders, Throwing Weapons, Shield\n360 - Fey Knight, Champion of the Green Knight\n350 - 10 Naiads, Wizard Conclave (Illusory Paths, Chance of Redemption)\n3998\n"
+          ]
+        }
+      ],
+      "name": "No name"
+    },
+    {
+      "players": [
+        {
+          "name": "Guu_san",
+          "lists": [
+            "Alexander (Guu_san) - Highborn Elves\n855 - High Prince, General, Trusted Adviser, Ancient Dragon, Great Weapon and Elven Finesse (Elemental Blade), Obsidian Rock\n350 - Mage, Light Troops, Wizard Adept, Divination (Foresight, Chance of Redemption, The Stars Align), Amethyst Crystal\n305 - Commander, Battle Standard Bearer, Queen's Cavalier, Elven Horse, Shield, Stalker's Standard, Lance, Talisman of the Void\n492 - 24 Sea Guard, Standard Bearer (Navigator's Banner)\n316 - 17 Sea Guard, Standard Bearer\n210 - 6 Erlein Reavers, Bow, Standard Bearer\n570 - 10 Knights of Rym\u00e2, Standard Bearer (War Banner of Rym\u00e2)\n400 - Initiate of the Fiery Heart, Wizard Conclave (Molten Copper, Flaming Swords)\n272 - 11 Sword Masters, Standard Bearer (Banner of Becalming)\n230 - Sky Sloop\n4000\n"
+          ]
+        },
+        {
+          "name": "TroR",
+          "lists": [
+            "Sergey (TroR) - Ogre Khans\n520 - Shaman, Wizard Master, Pyromancy (Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow, Pillars of Fire, Cage of Embers), Mimic Cloak, Godspeaker\n320 - Khan, Battle Standard Bearer, Aurochs Resilience, Halberd, Paired Weapons, Iron Fist, Great Weapon, Rod of Battle, Hoardmaster\n570 - 14 Tribesmen, Paired Weapons, Standard Bearer (Stalker's Standard)\n260 - 4 Bruisers, Standard Bearer (Banner of Courage), Musician\n170 - 5 Sabretooth Tigers\n565 - 5 Tusker Cavalry, Paired Weapons, Standard Bearer (Stalker's Standard)\n540 - 8 Mercenary Veterans, Paired Weapons, Lethal Strike, Standard Bearer (Flaming Standard)\n405 - 6 Mercenary Veterans, Halberd, First Strike (Fury), Standard Bearer (Banner of Courage)\n380 - Frost Mammoth, Hunting Spear\n270 - Mercenary Giant, Iron Fist, First Strike\n4000\n"
+          ]
+        },
+        {
+          "name": "Zhval",
+          "lists": [
+            "\u0410\u043b\u0435\u043a\u0441\u0430\u043d\u0434\u0440 \u0411\u0440\u044b\u043a\u043e\u0432 (Zhval) - Warriors of the Dark Gods\n870 - Chosen Lord, General, Wasteland Dragon, Trophy Rack (Banner of Speed), Paired Weapons (Touch of Greatness), Talisman of the Void, Wyrd Stone, Lust, Dark Prelate\n595 - Sorcerer, Light Troops, Wizard Master, Alchemy (Living Steel, Corruption of Tin, Molten Copper, Word of Iron, Quicksilver Lash), Thrice-Forged, Paired Weapons, Dark Familiar, Spell Scroll (The Grave Calls)\n400 - 15 Warriors, Paired Weapons, Lust, Standard Bearer (Zealots' Banner)\n400 - 15 Warriors, Paired Weapons, Gluttony, Standard Bearer (Zealots' Banner)\n515 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer (Flaming Standard)\n405 - 3 Chosen Knights, Lust, Standard Bearer\n405 - 3 Chosen Knights, Lust, Standard Bearer\n310 - 3 Feldraks, Halberd, Standard Bearer\n100 - 5 Warhounds\n4000\n"
+          ]
+        },
+        {
+          "name": "Flam",
+          "lists": [
+            "525 - King, General (Ancient Grudge), Battleline Hero, Light Troops, Pistol, Rune of Resistance, 2x Rune of Iron, Hand Weapon (Rune of Destruction, Rune of Smashing, Rune of Precision)\n445 - Runic Smith, Trusted Adviser, 2x Rune of Iron, Hand Weapon (2x Rune of Lightning), Rune of Devouring, Rune of Channelling, Rune of Mining, 3x Battle Rune (Rune of Resolve, Rune of Gleaming, Rune of Resilience)\n260 - 10x Clan Marksmen, Shield Wall, Guild-Crafted Handgun, Standard Bearer\n260 - 10x Greybeards, Shield Wall, Vanguard, Throwing Weapons, Standard Bearer\n240 - 10x Greybeards, Shield Wall, Throwing Weapons, Standard Bearer\n240 - 10x Greybeards, Shield Wall, Throwing Weapons, Standard Bearer\n437 - 21x King's Guard, Standard Bearer (Flaming Standard)\n315 - 15x Deep Watch, Standard Bearer (Runic Standard of Swiftness)\n280 - 15x Deep Watch, Standard Bearer (Runic Standard of the Anvil)\n270 - 15x Deep Watch, Standard Bearer\n282 - 14x Forge Wardens, Standard Bearer\n246 - 12x Forge Wardens, Standard Bearer\n200 - Anvil of Power, Rune of Resolve, Rune of Gleaming, Rune of Resilience\n4000"
+          ]
+        }
+      ],
+      "name": "Grumpy Old Men"
+    },
+    {
+      "players": [
+        {
+          "name": "FlameLTW",
+          "lists": [
+            "Victor (FlameLTW) - Vampire Covenant\n550 - Necromancer, General and The Dead Arise, Light Troops, Wizard Master (Lich), Evocation (Danse Macabre, Chorus of the Damned, Touch of the Reaper, Spectral Blades, Soul Blight), Necromantic Staff\n410 - Vampire Courtier, Battle Standard Bearer, Mysteries of the Night, Light Troops, Wizard Adept, Shamanism (Savage Fury, Awaken the Beast, Swarm of Insects), Mimic Cloak, Gates of the Netherworld\n150 - Banshee\n150 - Banshee\n150 - Banshee\n85 - Barrow King, Captain, Skeletal Steed, Lance\n60 - Barrow King, Captain, Light Troops\n490 - 35 Ghouls, Standard Bearer\n350 - 35 Skeletons, Spear and Shield, Standard Bearer (Banner of Eldritch Might)\n160 - 20 Zombies, Standard Bearer\n450 - 14 Barrow Knights, Standard Bearer, Musician\n393 - 24 Barrow Guard, Shield, Standard Bearer (Black Standard of Zagvozd), Musician\n260 - Cadaver Wagon\n340 - 10 Spectral Hunters\n3998\n"
+          ]
+        },
+        {
+          "name": "Kirkiller3",
+          "lists": [
+            "\u041a\u0438\u0440\u0438\u043b\u043b (Kirkiller3) - Orcs and Goblins\n595 - Orc Shaman, Grunter Chariot, Wizard Master, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast, Swarm of Insects, Totemic Summon), Paired Weapons (Touch of Greatness), Basalt Infusion, Talisman of Shielding\n425 - Orc Shaman, General, Curse of Lycanthropy, Grunter, Wizard Adept, Pyromancy (Flaming Swords, Dragon\u2019s Roar, Pyroclastic Flow), Paired Weapons, Talisman of the Void, Gnasher Bait\n225 - Brood Alpha, Battle Standard Bearer, Light Troops, Shield, Death Cheater\n105 - Brood Alpha, Captain and Attached, Light Troops, Shield, Hand Weapon (Attack Gnasher)\n590 - 38 Veteran Orcs, Spear, Musician, Standard Bearer (Sheltering Standard)\n502 - 14 Veteran Orc Marauders, Musician, Standard Bearer (Stalker's Standard)\n491 - 24 Iron Orcs, Standard Bearer (Stalker's Standard)\n280 - Giant, Giant Club\n200 - 15 Gogtuk Neophytes\n180 - 15 Gnashers\n180 - 15 Gnashers\n110 - Grotling Scrap Wagon\n110 - Grotling Scrap Wagon\n3993\n"
+          ]
+        },
+        {
+          "name": "\u041f\u0430\u0441\u0442\u044b\u0440\u044c",
+          "lists": [
+            "\u0413\u0440\u0438\u0433\u043e\u0440\u0438\u0439 \u041d\u0435\u043a\u043b\u044e\u0434\u043e\u0432 (\u041f\u0430\u0441\u0442\u044b\u0440\u044c) - Warriors of the Dark Gods\n610 - Sorcerer, Scythed Skywheel, Wizard Master, Occultism (The Devouring Dark, Hand of Glory, Blood Curse, Umbral Majesty, The Grave Calls), Thrice-Forged, Dark Familiar\n405 - Barbarian Chief, Chimera (Wings), Trophy Rack (Icon of the Infinite), Paired Weapons (Symbol of Slaughter)\n385 - Barbarian Chief, Chimera, Trophy Rack, Paired Weapons (Shield Breaker), Talisman of the Void\n470 - 20 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n180 - 7 Fallen\n150 - 10 Warhounds\n570 - 4 Chosen Knights, Wrath, Standard Bearer (Stalker's Standard)\n569 - 9 Chosen, Halberd, Wrath, Standard Bearer (Aether Icon)\n330 - 4 Forsworn, Great Weapon, Damnation, Standard Bearer\n330 - 4 Forsworn, Great Weapon, Damnation, Standard Bearer\n3999\n"
+          ]
+        },
+        {
+          "name": "DocToeBcKuu_FM",
+          "lists": [
+            "Dwarven Holds\r\n240 - Runic Smith, General, Shield Wall, 3x Battle Rune (Rune of Reckoning, Rune of Oaths, Rune of Resolve)\r\n240 - Runic Smith, Shield Wall, 3x Battle Rune (Rune of Reckoning, Rune of Oaths, Rune of Resolve)\r\n90 - Thane, Captain and Attached, Light Troops, Shield Wall\r\n260 - 10 Clan Marksmen, Shield Wall, Guild-Crafted Handgun, Standard Bearer\r\n260 - 10 Clan Marksmen, Shield Wall, Guild-Crafted Handgun, Standard Bearer\r\n240 - 10 Greybeards, Shield Wall, Throwing Weapons, Standard Bearer\r\n240 - 10 Greybeards, Shield Wall, Throwing Weapons, Standard Bearer\r\n500 - 25 Deep Watch, Standard Bearer (Runic Standard of the Hold)\r\n500 - 25 Deep Watch, Standard Bearer (Runic Standard of the Hold)\r\n220 - 10 Miners, Great Weapon, Pistol, Standard Bearer\r\n200 - 10 Forge Wardens\r\n200 - 10 Forge Wardens\r\n200 - Anvil of Power, Rune of Resolve, Rune of Gleaming, Rune of Resilience\r\n170 - Field Artillery, Flame Cannon\r\n100 - Field Artillery, Dwarf Ballista\r\n100 - Field Artillery, Dwarf Ballista\r\n120 - Vengeance Seeker\r\n120 - Vengeance Seeker\r\n4000"
+          ]
+        }
+      ],
+      "name": "\u0420\u0443\u0441\u0441\u043a\u0430\u044f \u043a\u043b\u0430\u0441\u0441\u0438\u043a\u0430"
+    },
+    {
+      "players": [
+        {
+          "name": "Danila",
+          "lists": [
+            "Danila (Danila) - Warriors of the Dark Gods\n900 - Chosen Lord, General, Battleline Hero, Wasteland Dragon, Trophy Rack (Banner of Speed), Paired Weapons (Touch of Greatness), Immortal Gauntlets, Wyrd Stone, Lust, Dark Prelate\n595 - Sorcerer, Curse of Lycanthropy, Light Troops, Wizard Master, Occultism (Hand of Glory, Blood Curse, Pentagram of Pain, Umbral Majesty, The Grave Calls), Paired Weapons, Dark Familiar, Binding Scroll\n570 - 25 Warriors, Paired Weapons, Standard Bearer (Zealots' Banner)\n230 - 10 Warriors, Paired Weapons, Lust, Standard Bearer\n490 - 6 Forsworn, Great Weapon, Damnation, Standard Bearer\n330 - 4 Forsworn, Great Weapon, Damnation, Standard Bearer\n445 - 3 Chosen Knights, Wrath, Standard Bearer (Icon of the Infinite)\n340 - Hellmaw\n100 - 5 Warhounds\n4000\n"
+          ]
+        },
+        {
+          "name": "SadovyiGnom",
+          "lists": [
+            "Beast Herds\n395 - Wildhorn Lord, General (Hunting Call), Light Troops and Ambush, Throwing Weapons, Destiny's Call, Great Weapon (King Slayer), Talisman of the Void\n295 - Wildhorn Chieftain, Greater Totem Bearer, Battle Standard Bearer, Light Troops, Shield (Wild Warding), Warding of Unity\n469 - 29 Wildhorn Herd, Paired Weapons and Throwing Weapons, Ambush, Standard Bearer (Banner of the Wild Herd), Musician (Totem Bearer (Blooded Horn Totem))\n400 - 35 Wildhorn Herd, Paired Weapons, Standard Bearer (Banner of the Wild Herd)\n315 - 25 Mongrel Herd, Spear, Ambush, Standard Bearer (Banner of the Wild Herd)\n440 - 6 Minotaurs, Shield, Standard Bearer, Musician (Totem Bearer (Gnarled Hide Totem))\n440 - 6 Minotaurs, Shield, Standard Bearer, Musician (Totem Bearer (Gnarled Hide Totem))\n166 - 6 Gargoyles\n120 - Briar Beast\n120 - Briar Beast\n420 - Gortach\n420 - Gortach\n4000"
+          ]
+        },
+        {
+          "name": "27lik",
+          "lists": [
+            "Dread Elves\n440 - Sanctioned Warlock, General, Light Troops, Wizard Master, Cosmology (Truth of Time, Weal and Woe, Ice and Fire, Cosmic Scales, Thunder and Lightning)\n350 - Temple Exarch, Battle Standard Bearer, Wizard Apprentice, Alchemy, Basalt Infusion, Great Weapon and Elven Finesse, Talisman of the Void\n130 - Silent Assassin\n130 - Silent Assassin\n329 - 21 Silexian Spears, Standard Bearer (Stalker's Standard)\n276 - 14 Silexian Auxiliaries, Standard Bearer\n200 - 5 Shadow Riders, Light Lance, Standard Bearer\n195 - 10 Corsairs, Repeater Handbow, Standard Bearer\n491 - 21 Judicators, Standard Bearer (Stalker's Standard)\n354 - 6 Dread Knights, Lance, Standard Bearer (Banner of Urlain)\n354 - 6 Dread Knights, Lance, Standard Bearer (Banner of Urlain)\n210 - Repeater Battery\n210 - Repeater Battery\n190 - 8 Black Cloaks, Musician\n140 - 5 Harpies\n3999"
+          ]
+        },
+        {
+          "name": "uchenikkk",
+          "lists": [
+            "\u0410\u043b\u0435\u043a\u0441\u0435\u0439 \u0423\u0441\u0430\u0447\u0435\u0432 (uchenikkk) - Kingdom of Equitaine\n320 - Damsel, Destrier, Wizard Adept, Divination (Foresight, Chance of Redemption, The Stars Align)\n320 - Damsel, Light Troops, Wizard Adept, Shamanism (Predator\u2019s Instinct, Savage Fury, Awaken the Beast), Talisman of the Void\n320 - Duke, General, Destrier, Paired Weapons (Hero's Heart), Excellence\n255 - Folk Hero, Heraldic Steed, Shield (Sigil of Protection), Lance (Uther's Mettle), Sainted, Castellan\n225 - Folk Hero, Destrier, Attached, Bannerman, Cleric\n395 - 45 Lowborn Levies, Spear and Shield, Standard Bearer\n365 - 9 Knights of the Realm, Standard Bearer\n335 - 9 Hedge Knights, Standard Bearer\n595 - 9 Knights of the Quest, Standard Bearer (Stalker's Standard)\n510 - 10 Knights of the Court, Standard Bearer\n360 - Fey Knight, Champion of the Green Knight\n4000\n"
+          ]
+        }
+      ],
+      "name": "\u041f\u0440\u043e\u043a\u0441\u0438\u0431\u043e\u0431\u0440\u044b"
+    }
+  ]
+}

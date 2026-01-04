@@ -39,21 +39,21 @@ class player(BaseModel):
 
 
 class setup(BaseModel):
-    map: Optional[int]
-    deployment: Optional[int]
-    objective: Optional[int]
+    map: Union[int, list[int], None]
+    deployment: Union[int, list[int], None]
+    objective: Union[int, list[int], None]
 
 
 class score(BaseModel):
-    VP: int
-    Diff: int
+    VP: Optional[int]
+    Diff: Optional[int]
     Obj: Optional[int]
     Turns: Optional[int]
-    BP: int
-    BPObj: int
+    BP: Optional[int]
+    BPObj: Optional[int]
 
 class basic_score(BaseModel):
-    pts: int
+    pts: Optional[int]
 
 
 class tournament_game(BaseModel):
@@ -66,7 +66,7 @@ class tournament_game(BaseModel):
     setup: Optional[setup]
     id_game_system: int  # 5
     players: list[player]
-    score: Union[list[score], list[basic_score]]
+    score: Optional[Union[list[score], list[basic_score]]]
     confirmation_id: Optional[str]  #'5ec2c7e1085a32315343473a'
     first_turn: Optional[int]
 
@@ -414,57 +414,75 @@ def armies_from_NR_tournament(stored_data: dict) -> tuple[list[ArmyEntry], list[
                 objectives.extend(season.game_setup.objective.items)
 
         for i, player in enumerate(tournament_game.players):
+            if player.id_participant not in army_dict:
+                continue
+
             new_round = Round()
             # first turn?
             if i == tournament_game.first_turn:
                 new_round.first_turn = True
 
-            # Opponent, typing is all borked, cause dict is a copy but then we re write each value to be an armyEntry
-            new_round.opponent = army_dict[
-                tournament_game.players[i - 1].id_participant
-            ].army_uuid
+            # Opponent
+            opponent_id = tournament_game.players[i - 1].id_participant
+            if opponent_id in army_dict:
+                new_round.opponent = army_dict[opponent_id].army_uuid
 
-            if type(tournament_game.score[i]) == score:
+            if isinstance(tournament_game.score[i], score):
 
                 # Won secondary objective
-                if tournament_game.score[i].BP < tournament_game.score[i].BPObj:
-                    new_round.won_secondary = True
-                elif tournament_game.score[i].BP >= tournament_game.score[i].BPObj:
-                    new_round.won_secondary = False
+                if tournament_game.score[i].BP is not None and tournament_game.score[i].BPObj is not None:
+                    if tournament_game.score[i].BP < tournament_game.score[i].BPObj:
+                        new_round.won_secondary = True
+                    elif tournament_game.score[i].BP >= tournament_game.score[i].BPObj:
+                        new_round.won_secondary = False
 
                 # Save result
-                new_round.result = tournament_game.score[i].BPObj
+                if tournament_game.score[i].BPObj is not None:
+                    new_round.result = tournament_game.score[i].BPObj
 
                 # Save points
-                new_round.secondary_points = tournament_game.score[i].VP
+                if tournament_game.score[i].VP is not None:
+                    new_round.secondary_points = tournament_game.score[i].VP
 
-            elif type(tournament_game.score[i]) == basic_score:
-                new_round.result = tournament_game.score[i].pts
+            elif isinstance(tournament_game.score[i], basic_score):
+                if tournament_game.score[i].pts is not None:
+                    new_round.result = tournament_game.score[i].pts
 
             # Save setup data
             if tournament_game.setup:
-                if tournament_game.setup.map:
+                # Helper to normalize setup values which can be int or list[int]
+                def get_setup_id(val):
+                    if isinstance(val, list) and len(val) > 0:
+                        return val[0]
+                    return val
+
+                map_id = get_setup_id(tournament_game.setup.map)
+                if map_id is not None:
                     new_round.map_selected = (
                         [
                             x.name
                             for x in maps
-                            if x.id == tournament_game.setup.map
+                            if x.id == map_id
                         ]
                         .pop()
                         .replace("map", "")
                         .strip()
                     )
-                if tournament_game.setup.deployment:
+                
+                deployment_id = get_setup_id(tournament_game.setup.deployment)
+                if deployment_id is not None:
                     new_round.deployment_selected = [
                         x.name
                         for x in deployments
-                        if x.id == tournament_game.setup.deployment
+                        if x.id == deployment_id
                     ].pop()
-                if tournament_game.setup.objective:
+                
+                objective_id = get_setup_id(tournament_game.setup.objective)
+                if objective_id is not None:
                     new_round.objective_selected = [
                         x.name
                         for x in objectives
-                        if x.id == tournament_game.setup.objective
+                        if x.id == objective_id
                     ].pop()
 
             # Append round

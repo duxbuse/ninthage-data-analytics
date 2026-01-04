@@ -60,29 +60,18 @@ sys.modules["functions_framework"] = mock_framework
 
 from main import function_data_conversion
 
-def test_pipeline_new_recruit_flow():
-    """
-    Integration test that simulates the flow:
-    1.  New Recruit Data (from saved samples)
-    2.  Transformed into storage format (logic from function_new_recruit_tournaments)
-    3.  Processed by function_data_conversion
-    """
+def run_single_test(t_file, g_file):
+    """Run pipeline for a single tournament/games pair"""
+    t_id = t_file.stem.replace("tournament_", "")
+    print(f"\n--- Testing Tournament ID: {t_id} ---")
     
-    # 1. Load Samples
-    base_path = Path(__file__).parent
-    t_id = "677fc8a9e68eb714beeaa5fd" # The ID we investigated
-    
-    with open(base_path / f"sample_tournament_{t_id}.json", "r", encoding="utf-8") as f:
+    with open(t_file, "r", encoding="utf-8") as f:
         t_data = json.load(f)
         
-    with open(base_path / f"sample_games_{t_id}.json", "r", encoding="utf-8") as f:
+    with open(g_file, "r", encoding="utf-8") as f:
         games_data = json.load(f)
-        
-    # 2. Simulate Data Construction (mirroring function_new_recruit_tournaments/main.py)
-    # logic: name = event.name or event.short...
-    # logic: type = tournament.type
-    
-    # Construct the JSON that is stored in the bucket
+
+    # 2. Simulate Data Construction 
     storage_data = {
         "name": t_data.get("name"),
         "games": games_data,
@@ -91,16 +80,12 @@ def test_pipeline_new_recruit_flow():
         "participants_per_team": 0,
         "team_point_cap": 0,
         "team_point_min": 0,
-        "type": t_data.get("type", 0), # Default to 0 if missing (though we verified it's present in detail)
+        "type": t_data.get("type", 0), 
         "teams": t_data.get("teams", []),
         "rounds": len(t_data.get("rounds") or [])
     }
     
-    print(f"Constructed Storage Payload. Games count: {len(storage_data['games'])}. Teams count: {len(storage_data['teams'])}")
-    
-    # 3. Invoke function_data_conversion
-    # It expects: request.json["data"] = {"name": "newrecruit_tournament.json", "event_id": t_id}
-    # It attempts to download: "newrecruit_tournaments", t_id
+    print(f"Constructed Storage Payload. Games: {len(storage_data['games'])}, Teams: {len(storage_data['teams'])}")
     
     mock_request = MagicMock()
     mock_request.json = {
@@ -116,53 +101,89 @@ def test_pipeline_new_recruit_flow():
         mock_blob = MagicMock()
         
         mock_client.return_value.get_bucket.return_value = mock_bucket
-        mock_bucket.get_blob.return_value = mock_blob # for download_blob call
+        mock_bucket.get_blob.return_value = mock_blob 
         
-        # When blob.download_to_filename is called, write our JSON to that file
         def side_effect_download(filename):
-            with open(filename, 'w') as f:
+            with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(storage_data, f)
-            print(f"Mock download wrote to {filename}")
+            # print(f"Mock download wrote to {filename}")
             
         mock_blob.download_to_filename.side_effect = side_effect_download
-        
-        # Also need to mock upload_blob because the function uploads the result
-        # We can inspect what it tries to upload
         upload_blob_mock = mock_bucket.blob.return_value
         
-        # Mock other dependencies that migth be called
-        with patch('function_data_conversion.main.remove') as mock_remove: 
-             # Mock remove to do nothing (except verify call) 
-             pass
+        with patch('function_data_conversion.main.remove'): 
+            pass
         
-        # Execute
-        print("Invoking function_data_conversion...")
         result, code = function_data_conversion(mock_request)
         
-        print(f"Result Code: {code}")
-        # print(f"Result Body: {result}")
+        if code != 200:
+             print(f"FAILED: Code {code}. Message: {result.get('message')}")
+             return False
         
-        # Assertions
-        assert code == 200, f"Conversion failed with code {code}. Message: {result.get('message')}"
-        
-        # Check validation stats
         val_count = result.get('validation_count')
         print(f"Validation Count: {val_count}")
+        
         parsing_errors = result.get('parsing_errors', [])
         if parsing_errors:
             print("PARSING ERRORS FOUND:")
             for e in parsing_errors:
                 print(f"- {e}")
         
-        # Check validation errors details
-        val_errors = result.get('validation_errors', [])
-        if val_errors:
-            print(f"Validation Errors (Business Logic): {len(val_errors)}")
-            # print(val_errors)
+        if val_count == 0:
+            print("FAILED: Zero validations.")
+            return False
             
-        # We expect at least some successful conversions if data is valid
-        # There are 31 games, multiple teams.
-        assert val_count > 0, "No armies passed validation!"
+        return True
+
+def test_pipeline_new_recruit_flow():
+    # 1. Find Fixtures
+    # Check fixtures dir AND integration dir (for legacy singular test support if needed)
+    base_path = Path(__file__).parent.parent / "fixtures" / "new_recruit"
+    if not base_path.exists():
+         # Fallback to current dir if fixtures not generated, mostly for the specific case we just built
+         # But the user asked for 5 samples loop.
+         print(f"Fixture dir {base_path} not found. Running legacy single check in integration folder if exists.")
+         base_path = Path(__file__).parent
+    
+    # Glob for tournaments
+    tournament_files = list(base_path.glob("tournament_*.json"))
+    # Also check sample_tournament_*.json (legacy name from previous step)
+    tournament_files.extend(list(base_path.glob("sample_tournament_*.json")))
+    
+    if not tournament_files:
+        print("No tournament samples found to test.")
+        return
+
+    print(f"Found {len(tournament_files)} samples.")
+    failures = []
+    
+    for t_file in tournament_files:
+        # Find matching games file
+        # name pattern: tournament_ID.json -> games_ID.json
+        # or sample_tournament_ID.json -> sample_games_ID.json
+        id_part = t_file.name.replace("tournament_", "").replace("sample_", "") # result: ID.json
+        prefix = "games_" if "sample_" not in t_file.name else "sample_games_"
+        g_file = t_file.parent / (prefix + id_part)
+        
+        if not g_file.exists():
+            print(f"Skipping {t_file.name}: missing {g_file.name}")
+            continue
+            
+        try:
+            success = run_single_test(t_file, g_file)
+            if not success:
+                failures.append(t_file.name)
+        except Exception as e:
+            print(f"EXCEPTION for {t_file.name}: {e}")
+            import traceback
+            traceback.print_exc()
+            failures.append(t_file.name)
+
+    if failures:
+        raise AssertionError(f"Failures in {len(failures)} samples: {failures}")
+    else:
+        print("\nALL SAMPLES PASSED.")
+
 
 if __name__ == "__main__":
     # Allow running directly
