@@ -8,6 +8,14 @@ import google.cloud.storage
 from flask.wrappers import Request
 from google.cloud.storage.blob import Blob
 
+import logging
+import google.cloud.logging
+import functions_framework
+
+# Setup structured logging
+client = google.cloud.logging.Client()
+client.setup_logging()
+
 from converter import Write_army_lists_to_json_file
 from fading_flame import armies_from_fading_flame
 from game_report import armies_from_report
@@ -16,6 +24,10 @@ from new_recruit_tournaments import armies_from_NR_tournament
 from tourney_keeper import armies_from_docx
 from utility_functions import Docx_to_line_list
 from warhall import armies_from_warhall
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
 
 
 def download_blob(bucket_name, blob_name) -> Union[Blob, None]:
@@ -35,9 +47,12 @@ def upload_blob(bucket_name, file_path, destination_blob_name) -> None:
 
     blob.upload_from_filename(file_path)
 
-    print("File {} uploaded to {}.".format(destination_blob_name, bucket_name))
+    blob.upload_from_filename(file_path)
+
+    logger.info("File {} uploaded to {}.".format(destination_blob_name, bucket_name))
 
 
+@functions_framework.http
 def function_data_conversion(request: Request) -> tuple[dict, int]:
     """Google Cloud Function that upon invocation downloads a .docx file and converts it into newline delimetered .json
 
@@ -46,10 +61,12 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
     """
 
     data = request.json["data"]
-    print(f"{request.json=}")
+    logger.info(f"{request.json=}")
 
     list_of_armies = []
+    parsing_errors = []
     file_name = data["name"]
+
     if __name__ == "__main__":
         download_file_path = f"data/nr-test-data/{data['event_id']}.json"
     else:
@@ -70,7 +87,8 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             try:
                 downloaded_docx_blob = download_blob(bucket_name, file_name)
                 downloaded_docx_blob.download_to_filename(download_file_path)
-                print(
+                downloaded_docx_blob.download_to_filename(download_file_path)
+                logger.info(
                     f"Downloaded {file_name} from {bucket_name} to {download_file_path}"
                 )
 
@@ -79,12 +97,13 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
                 list_of_armies, tk_loaded, possible_matches = armies_from_docx(event_name, lines)
             except Multi_Error as e:
-                print(f"Multi_ErrorWD: {[str(x) for x in e.errors]}")
-                return {"message": [str(x) for x in e.errors]}, 400
+                logger.error(f"Multi_ErrorWD: {[str(x) for x in e.errors]}")
+                parsing_errors.extend([str(x) for x in e.errors])
             except Exception as e:
                 tb1 = traceback.TracebackException.from_exception(e)
-                print(f"Non multi errorWD:{e}\n {''.join(tb1.format())}")
-                return {"message": [str(e)]}, 400
+                logger.error(f"Non multi errorWD:{e}\n {''.join(tb1.format())}")
+                parsing_errors.append(str(e))
+
         else:
             return {
                 "message": [
@@ -98,11 +117,12 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             list_of_armies = armies_from_report(data, Path(file_name).stem)
 
         except Multi_Error as e:
-            print(f"Multi_ErrorGR: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors]}, 400
+            logger.error(f"Multi_ErrorGR: {[str(x) for x in e.errors]}")
+            parsing_errors.extend([str(x) for x in e.errors])
         except Exception as e:
-            print(f"Non Multi ErrorGR: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 400
+            logger.error(f"Non Multi ErrorGR: {str(type(e))}, {str(e)}")
+            parsing_errors.append(str(e))
+
     
     # Fading Flame data
     elif file_name == "fading_flame.json":
@@ -110,21 +130,22 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             downloaded_FF_blob = download_blob("fading-flame", file_name)
             downloaded_FF_blob.download_to_filename(download_file_path)
             if downloaded_FF_blob:
-                print(
+                logger.info(
                     f"Downloaded {file_name} from fading-flame to {download_file_path}"
                 )
             with open(download_file_path, "r") as json_file:
                 data = json.load(json_file)
-                print(f"Loaded data")
+                logger.info(f"Loaded data")
             remove(download_file_path)
             list_of_armies = armies_from_fading_flame(data)
 
         except Multi_Error as e:
-            print(f"Multi_ErrorFF: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors]}, 400
+            logger.error(f"Multi_ErrorFF: {[str(x) for x in e.errors]}")
+            parsing_errors.extend([str(x) for x in e.errors])
         except Exception as e:
-            print(f"Non Multi ErrorFF: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)]}, 400
+            logger.error(f"Non Multi ErrorFF: {str(type(e))}, {str(e)}")
+            parsing_errors.append(str(e))
+
     
     # Warhall data
     elif file_name == "warhall":
@@ -134,21 +155,22 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             downloaded_warhall_blob = download_blob("warhall", file_name)
             downloaded_warhall_blob.download_to_filename(download_file_path)
             if downloaded_warhall_blob:
-                print(
+                logger.info(
                     f"Downloaded {file_name} from warhall to {download_file_path}"
                 )
             with open(download_file_path, "r") as json_file:
                 data = json.load(json_file)
-                print(f"Loaded data")
+                logger.info(f"Loaded data")
             remove(download_file_path)
-            list_of_armies = armies_from_warhall(data)
+            list_of_armies, errors = armies_from_warhall(data)
+            if errors:
+                logger.warning(f"File Name: {file_name}, Warhall Errors: {errors}")
+                parsing_errors.extend(errors)
 
-        except Multi_Error as e:
-            print(f"File Name: {file_name}, Multi_ErrorWH: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors], "name": file_name}, 400
         except Exception as e:
-            print(f"File Name: {file_name}, Non Multi ErrorWH: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)], "name": file_name}, 400
+            logger.error(f"File Name: {file_name}, Non Multi ErrorWH: {str(type(e))}, {str(e)}")
+            parsing_errors.append(str(e))
+
 
     # NEW RECRUIT TOURNAMENTS
     elif file_name == "newrecruit_tournament.json":
@@ -175,14 +197,15 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
 
                 remove(download_file_path)
 
-            list_of_armies = armies_from_NR_tournament(data)
+            list_of_armies, errors = armies_from_NR_tournament(data)
+            if errors:
+                logger.warning(f"File Name: {file_name}, NR Errors: {errors}")
+                parsing_errors.extend(errors)
 
-        except Multi_Error as e:
-            print(f"File Name: {file_name}, Multi_ErrorNR: {[str(x) for x in e.errors]}")
-            return {"message": [str(x) for x in e.errors], "name": file_name}, 400
         except Exception as e:
-            print(f"File Name: {file_name}, Non Multi ErrorNR: {str(type(e))}, {str(e)}")
-            return {"message": [str(e)], "name": file_name}, 400
+            logger.error(f"File Name: {file_name}, Non Multi ErrorNR: {str(type(e))}, {str(e)}")
+            parsing_errors.append(str(e))
+
 
     else:
         return {
@@ -231,7 +254,7 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
                 remove(download_file_path)
             remove(converted_filename)
         except FileNotFoundError as e:
-            print(f"Failed to remove file: {e}")
+            logger.warning(f"Failed to remove file: {e}")
 
         return_dict = dict(
             bucket_name=upload_bucket,
@@ -240,8 +263,10 @@ def function_data_conversion(request: Request) -> tuple[dict, int]:
             possible_tk_names=possible_matches,
             validation_count=validation_count,
             validation_errors=validation_errors,
+            parsing_errors=parsing_errors
         )
     return return_dict, 200
+
 
 
 if __name__ == "__main__":

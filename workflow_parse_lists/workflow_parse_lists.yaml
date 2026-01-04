@@ -31,8 +31,26 @@ main:
                   auth:
                     type: OIDC
 
-            - return_error_data_conversion:
-                return: ${e}
+            - raise_error_data_conversion:
+                raise: ${e}
+    
+    - check_parsing_errors:
+        switch:
+          - condition: ${"parsing_errors" in json_file.body and len(json_file.body.parsing_errors) > 0}
+            steps:
+              - report_partial_errors:
+                  call: http.post
+                  args:
+                    url: https://us-central1-ninthage-data-analytics.cloudfunctions.net/function_discord_error_reporting
+                    headers:
+                      Content-type: application/json
+                    body:
+                      error: ${json_file.body.parsing_errors}
+                      data: ${input}
+                      workflow_id: ${sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}
+                    auth:
+                      type: OIDC
+
 
     - workflow_function_upload_data_into_bigquery:
         try:
@@ -62,8 +80,8 @@ main:
                   auth:
                     type: OIDC
 
-            - return_error_big_query:
-                return: ${e}
+            - raise_error_big_query:
+                raise: ${e}
 
     - workflow_function_discord_success_reporting:
         call: http.post

@@ -4,9 +4,104 @@ substitutions:
 
 steps:
 
-- id: Preload cloud-sdk image
-  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+- id: Test function_data_conversion
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_data_conversion/requirements.txt
+      pytest function_data_conversion/tests/
 
+- id: Test function_data_ingestion
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_data_ingestion/requirements.txt
+      pytest function_data_ingestion/tests/
+
+- id: Test function_upload_data_into_bigquery
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_upload_data_into_bigquery/requirements.txt
+      pytest function_upload_data_into_bigquery/tests/
+
+- id: Test function_discord_bot
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_discord_bot/requirements.txt
+      pytest function_discord_bot/tests/
+
+- id: Test function_discord_error_reporting
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_discord_error_reporting/requirements.txt
+      pytest function_discord_error_reporting/tests/
+
+- id: Test function_discord_success_reporting
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_discord_success_reporting/requirements.txt
+      pytest function_discord_success_reporting/tests/
+
+- id: Test function_fading_flame
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_fading_flame/requirements.txt
+      pytest function_fading_flame/tests/
+
+- id: Test function_game_report
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_game_report/requirements.txt
+      pytest function_game_report/tests/
+
+- id: Test function_new_recruit_tournaments
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_new_recruit_tournaments/requirements.txt
+      pytest function_new_recruit_tournaments/tests/
+
+- id: Test function_static_data
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_static_data/requirements.txt
+      pytest function_static_data/tests/
+
+- id: Test function_warhall_report
+  name: 'python:3.12-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      pip install -r function_warhall_report/requirements.txt
+      pytest function_warhall_report/tests/
 
 - id: Deploy workflow_parse_lists
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -17,8 +112,6 @@ steps:
   - workflow_parse_lists
   - --source=./workflow_parse_lists/workflow_parse_lists.yaml
   - --location=${_REGION}
-  waitFor: ['Preload cloud-sdk image']
-
 
 - id: Deploy function_data_ingestion
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -27,11 +120,13 @@ steps:
   - functions
   - deploy
   - function_data_ingestion
+  - --gen2
   - --region=${_REGION}
   - --source=./function_data_ingestion/
-  - --trigger-bucket=tournament-lists
-  - --runtime=python39
-  waitFor: ['Preload cloud-sdk image']
+  - --trigger-event-filters=type=google.cloud.storage.object.v1.finalized
+  - --trigger-event-filters=bucket=tournament-lists
+  - --runtime=python312
+  - --trigger-location=${_REGION}
 
 - id: Deploy function-data-conversion
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -40,11 +135,11 @@ steps:
   - functions
   - deploy
   - function_data_conversion
+  - --gen2
   - --region=${_REGION}
   - --source=./function_data_conversion/
   - --trigger-http
-  - --runtime=python39
-  waitFor: ['Preload cloud-sdk image']
+  - --runtime=python312
 
 - id: Deploy function_upload_data_into_bigquery
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -53,8 +148,8 @@ steps:
   - functions
   - deploy
   - function_upload_data_into_bigquery
+  - --gen2
   - --region=${_REGION}
   - --source=./function_upload_data_into_bigquery/
   - --trigger-http
-  - --runtime=python39
-  waitFor: ['Preload cloud-sdk image']
+  - --runtime=python312
