@@ -13,5 +13,4 @@ steps:
       - --source=./function_game_report/
       - --trigger-http
       - --allow-unauthenticated
-      - --runtime=python312
-      - --gen2
+      - --runtime=python310

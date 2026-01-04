@@ -13,9 +13,8 @@ steps:
       - --source=./function_data_conversion/
       - --entry-point=function_data_conversion
       - --trigger-http
-      - --runtime=python312
+      - --runtime=python310
       - --timeout=1800
-      - --gen2
       - --set-secrets=NR_CREDENTIALS_SECRET=projects/${PROJECT_ID}/secrets/NR_CREDENTIALS/versions/latest
       - --set-secrets=PROXY=projects/${PROJECT_ID}/secrets/HTTP_PROXY/versions/latest
 
