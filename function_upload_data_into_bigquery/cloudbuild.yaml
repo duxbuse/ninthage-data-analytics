@@ -12,7 +12,7 @@ steps:
   - deploy
   - function_upload_data_into_bigquery
   - --region=${_REGION}
-  - --source=.
+  - --source=./function_upload_data_into_bigquery/
   - --trigger-http
   - --runtime=python312
   - --timeout=540

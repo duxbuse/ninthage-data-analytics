@@ -12,7 +12,7 @@ steps:
       - deploy
       - function_static_data
       - --region=${_REGION}
-      - --source=.
+      - --source=./function_static_data/
       - --trigger-http
       - --runtime=python312
       - --timeout=540

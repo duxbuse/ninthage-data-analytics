@@ -12,7 +12,7 @@ steps:
   - deploy
   - function_discord_success_reporting
   - --region=${_REGION}
-  - --source=.
+  - --source=./function_discord_success_reporting/
   - --trigger-http
   - --runtime=python312
   - --gen2

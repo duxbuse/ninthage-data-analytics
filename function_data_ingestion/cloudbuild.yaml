@@ -12,7 +12,7 @@ steps:
   - deploy
   - function_data_ingestion
   - --region=${_REGION}
-  - --source=.
+  - --source=./function_data_ingestion/
   - --trigger-event-filters=type=google.cloud.storage.object.v1.finalized
   - --trigger-event-filters=bucket=tournament-lists
   - --runtime=python312

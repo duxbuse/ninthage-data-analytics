@@ -10,7 +10,7 @@ steps:
       - deploy
       - function_game_report
       - --region=${_REGION}
-      - --source=.
+      - --source=./function_game_report/
       - --trigger-http
       - --allow-unauthenticated
       - --runtime=python312

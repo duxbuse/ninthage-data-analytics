@@ -12,7 +12,7 @@ steps:
       - deploy
       - function_fading_flame
       - --region=${_REGION}
-      - --source=.
+      - --source=./function_fading_flame/
       - --trigger-http
       - --runtime=python312
       - --gen2
