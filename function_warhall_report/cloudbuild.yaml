@@ -13,4 +13,4 @@ steps:
       - --source=./function_warhall_report/
       - --trigger-http
       - --allow-unauthenticated
-      - --runtime=python39
+      - --runtime=python310

@@ -8,7 +8,6 @@ steps:
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
-      - beta
       - functions
       - deploy
       - function_new_recruit_tournaments
@@ -16,7 +15,7 @@ steps:
       - --source=./function_new_recruit_tournaments/
       - --trigger-http
       - --timeout=300
-      - --runtime=python39
+      - --runtime=python310
       - --memory=1024MB
       - --docker-registry=artifact-registry
       - --set-secrets=NR_CREDENTIALS_SECRET=projects/${PROJECT_ID}/secrets/NR_CREDENTIALS/versions/latest
