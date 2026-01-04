@@ -153,3 +153,107 @@ steps:
   - --source=./function_upload_data_into_bigquery/
   - --trigger-http
   - --runtime=python312
+
+- id: Deploy function_discord_bot
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_discord_bot
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_discord_bot/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_discord_error_reporting
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_discord_error_reporting
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_discord_error_reporting/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_discord_success_reporting
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_discord_success_reporting
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_discord_success_reporting/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_fading_flame
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_fading_flame
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_fading_flame/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_game_report
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_game_report
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_game_report/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_new_recruit_tournaments
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_new_recruit_tournaments
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_new_recruit_tournaments/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_static_data
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_static_data
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_static_data/
+  - --trigger-http
+  - --runtime=python312
+
+- id: Deploy function_warhall_report
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - function_warhall_report
+  - --gen2
+  - --region=${_REGION}
+  - --source=./function_warhall_report/
+  - --trigger-http
+  - --runtime=python312

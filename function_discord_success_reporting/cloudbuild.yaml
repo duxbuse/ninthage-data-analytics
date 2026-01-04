@@ -8,13 +8,13 @@ steps:
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
   - gcloud
-  - beta
   - functions
   - deploy
   - function_discord_success_reporting
   - --region=${_REGION}
-  - --source=./function_discord_success_reporting/
+  - --source=.
   - --trigger-http
-  - --runtime=python39
+  - --runtime=python312
+  - --gen2
   - --update-secrets=DISCORD_WEBHOOK_TOKEN=DISCORD_WEBHOOK_TOKEN:latest
   - --update-secrets=DISCORD_WEBHOOK_ID=DISCORD_WEBHOOK_ID:latest

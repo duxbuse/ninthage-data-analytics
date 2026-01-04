@@ -8,12 +8,12 @@ steps:
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
-      - beta
       - functions
       - deploy
       - function_fading_flame
       - --region=${_REGION}
-      - --source=./function_fading_flame/
+      - --source=.
       - --trigger-http
-      - --runtime=python39
+      - --runtime=python312
+      - --gen2
       - --update-secrets=API_KEY=FADING_FLAME_KEY:latest

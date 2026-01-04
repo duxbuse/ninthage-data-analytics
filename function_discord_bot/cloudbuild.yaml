@@ -12,7 +12,8 @@ steps:
   - deploy
   - function_discord_bot
   - --region=${_REGION}
-  - --source=./function_discord_bot/
+  - --source=.
   - --trigger-http
   - --allow-unauthenticated
-  - --runtime=python39
+  - --runtime=python312
+  - --gen2

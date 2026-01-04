@@ -10,10 +10,10 @@ steps:
       - deploy
       - function-data-conversion
       - --region=${_REGION}
-      - --source=./function_data_conversion/
+      - --source=.
       - --entry-point=function_data_conversion
       - --trigger-http
-      - --runtime=python39
+      - --runtime=python312
       - --timeout=1800
       - --gen2
       - --set-secrets=NR_CREDENTIALS_SECRET=projects/${PROJECT_ID}/secrets/NR_CREDENTIALS/versions/latest

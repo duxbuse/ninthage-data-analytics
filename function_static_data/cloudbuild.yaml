@@ -8,12 +8,12 @@ steps:
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   args:
       - gcloud
-      - beta
       - functions
       - deploy
       - function_static_data
       - --region=${_REGION}
-      - --source=./function_static_data/
+      - --source=.
       - --trigger-http
-      - --runtime=python39
+      - --runtime=python312
       - --timeout=540
+      - --gen2
