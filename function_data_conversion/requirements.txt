@@ -5,6 +5,6 @@ google-cloud-logging
 fuzzywuzzy
 python-Levenshtein
 unidecode
-pydantic<2.0
+pydantic<3.0
 functions-framework
 pytest
